@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/die-gruppe-c/Quotierte-Redeliste.svg?branch=master)](https://travis-ci.org/die-gruppe-c/Quotierte-Redeliste)
+
 # quotierte_redeliste
 
 Quotierte Redeliste für MOP
