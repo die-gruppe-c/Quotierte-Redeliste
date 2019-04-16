@@ -4,6 +4,6 @@ import 'package:quotierte_redeliste/main.dart';
 void main() {
   testWidgets('app should work', (tester) async {
     await tester.pumpWidget(new MyApp());
-    expect(find.text('Hello World'), findsOneWidget);
+    expect(find.text('Quoty'), findsOneWidget);
   });
 }
