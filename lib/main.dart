@@ -1,7 +1,7 @@
 // This sample shows adding an action to an [AppBar] that opens a shopping cart.
 
 import 'package:flutter/material.dart';
-import 'package:quotierte_redeliste/start_screen.dart';
+import 'package:quotierte_redeliste/start_screen/start_screen.dart';
 
 void main() => runApp(MyApp());
 
