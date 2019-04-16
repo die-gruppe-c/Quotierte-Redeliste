@@ -11,29 +11,43 @@ class Profile {
 
   Profile._internal();
   // End Singleton pattern
+  static const TAG_USERNAME = 'username';
+  static const TAG_TOKEN = 'usertoken';
+
+  String _username;
+  String _token;
 
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   Future getUsername() async {
-    final SharedPreferences prefs = await _prefs;
-    return prefs.getString('username');
+    if (_username == null) {
+      final SharedPreferences prefs = await _prefs;
+      _username = prefs.getString(TAG_USERNAME);
+    }
+
+    return _username;
   }
 
   setUsername(String username) async {
+    _username = username;
+
     final SharedPreferences prefs = await _prefs;
-    prefs.setString('username', username);
+    prefs.setString(TAG_USERNAME, username);
   }
 
   getToken() async {
-    final SharedPreferences prefs = await _prefs;
+    if (_token == null) {
+      final SharedPreferences prefs = await _prefs;
 
-    if (prefs.containsKey('usertoken')) {
-      String uuid = _generateToken();
-      prefs.setString('usertoken', uuid);
-      return uuid;
+      if (!prefs.containsKey(TAG_TOKEN)) {
+        _token = _generateToken();
+        prefs.setString(TAG_TOKEN, _token);
+      } else {
+        _token = prefs.getString(TAG_TOKEN);
+      }
     }
 
-    return prefs.getString('usertoken');
+    return _token;
   }
 
   static String _generateToken() {
