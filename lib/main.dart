@@ -12,8 +12,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Quoty',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+          primarySwatch: Colors.blue,
+          textTheme: TextTheme(
+              display1: TextStyle(color: Colors.grey, fontSize: 20.0))),
       home: StartScreen(),
     );
   }
