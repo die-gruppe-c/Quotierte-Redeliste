@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quotierte_redeliste/profile_screen.dart';
+import 'package:quotierte_redeliste/profile/profile_screen.dart';
 import 'package:quotierte_redeliste/start_screen/enter_new_room_tab.dart';
 import 'package:quotierte_redeliste/start_screen/history_tab.dart';
 import 'package:quotierte_redeliste/ui/create_room/CreateRoomScreen.dart';
