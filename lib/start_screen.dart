@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/create_room_screen.dart';
+import 'package:quotierte_redeliste/enter_room_screen.dart';
 import 'package:quotierte_redeliste/profile_screen.dart';
 
 class StartScreen extends StatelessWidget {
@@ -60,8 +61,9 @@ class StartScreen extends StatelessWidget {
                     Flexible(
                         child: TextField(
                             decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(3),
-                                labelText: 'Code zum Beitreten'),
+                              contentPadding: EdgeInsets.all(3),
+                              labelText: 'Raum Code eingeben',
+                            ),
                             onSubmitted: (code) {
                               // TODO ...
                             })),
@@ -70,7 +72,11 @@ class StartScreen extends StatelessWidget {
                     ),
                     RaisedButton(
                         onPressed: () {
-                          // TODO ...
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EnterRoomScreen()),
+                          );
                         },
                         child: const Text('beitreten'))
                   ]),
