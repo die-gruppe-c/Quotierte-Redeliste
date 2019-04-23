@@ -13,7 +13,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Quoty',
       theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primaryColor: Colors.white,
+          primarySwatch: Colors.red,
           textTheme: TextTheme(
               display1: TextStyle(color: Colors.grey, fontSize: 20.0))),
       home: StartScreen(),

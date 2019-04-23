@@ -30,16 +30,10 @@ class _DisplayRoomScreenState extends State<DisplayRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-        statusBarIconBrightness: Brightness.dark,
-        statusBarColor: Colors.white));
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.black,
           tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: () {
             Navigator.maybePop(context);

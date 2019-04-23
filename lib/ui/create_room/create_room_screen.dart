@@ -17,10 +17,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   static const double PADDING_SIDE = 16;
 
-  static const SAVE_BTN_ACT_COLOR = Colors.blueAccent;
-  static const SAVE_BTN_DISABLED_COLOR = Colors.black12;
-
-  var save_btn_color = SAVE_BTN_DISABLED_COLOR;
+  var saveBtnColor;
 
   bool appBarElevated = false;
 
@@ -33,30 +30,25 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-        statusBarIconBrightness: Brightness.dark,
-        statusBarColor: Colors.white));
+    if (saveBtnColor == null) saveBtnColor = Theme.of(context).disabledColor;
 
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close),
-          color: Colors.black,
           tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: () {
             Navigator.maybePop(context);
           },
         ),
-        brightness: Brightness.light,
-        backgroundColor: Colors.white,
         elevation: appBarElevated ? 4 : 0,
         actions: <Widget>[
           Container(
             padding: const EdgeInsets.only(
                 right: PADDING_SIDE, left: PADDING_SIDE, top: 12, bottom: 12),
             child: FlatButton(
-              color: save_btn_color,
+              color: saveBtnColor,
               textColor: Colors.white,
               child: Text("Erstellen"),
               onPressed: () {
@@ -91,9 +83,9 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                 createRoomBloc.setRoomName(text);
                 setState(() {
                   if (text.length > 0) {
-                    save_btn_color = SAVE_BTN_ACT_COLOR;
+                    saveBtnColor = Theme.of(context).accentColor;
                   } else {
-                    save_btn_color = SAVE_BTN_DISABLED_COLOR;
+                    saveBtnColor = Theme.of(context).disabledColor;
                   }
                 });
               },
