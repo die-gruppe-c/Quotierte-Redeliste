@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quotierte_redeliste/create_room_screen.dart';
-import 'package:quotierte_redeliste/profile/profile_screen.dart';
+import 'package:quotierte_redeliste/profile_screen.dart';
+import 'package:quotierte_redeliste/ui/create_room/CreateRoomScreen.dart';
 
 class StartScreen extends StatelessWidget {
   StartScreen({Key key}) : super(key: key);
