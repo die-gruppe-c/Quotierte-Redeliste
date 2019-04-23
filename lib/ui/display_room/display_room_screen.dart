@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:quotierte_redeliste/ui/display_room/DisplayRoomBloc.dart';
+import 'package:quotierte_redeliste/ui/display_room/display_room_bloc.dart';
 
 class DisplayRoomScreen extends StatefulWidget {
   int _id;
