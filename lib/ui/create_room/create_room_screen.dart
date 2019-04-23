@@ -96,7 +96,6 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
             )),
       ),
       // body is the majority of the screen.
-      backgroundColor: Colors.white,
       body: createRequestSend ? buildLoadingBody() : buildBody(),
     );
   }

@@ -134,9 +134,7 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                             }
                           },
                           style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ))),
               ],
             ),
