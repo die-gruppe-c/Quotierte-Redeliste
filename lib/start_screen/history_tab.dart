@@ -62,22 +62,25 @@ class _HistoryTabState extends State<HistoryTab> {
           child: ListView.builder(
         itemCount: _rooms.length,
         itemBuilder: (context, pos) {
-          return Padding(
-              padding: EdgeInsets.only(bottom: 2.0, left: 4, right: 4),
-              child: Card(
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
-                  child: Text(
-                    _rooms[pos],
-                    style: TextStyle(
-                      fontSize: 18.0,
-                    ),
-                  ),
-                ),
-              ));
+          return getListViewItem(pos);
         },
       ))
     ]);
+  }
+
+  Widget getListViewItem(pos) {
+    return Padding(
+        padding: EdgeInsets.only(bottom: 2.0, left: 4, right: 4),
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
+            child: Text(
+              _rooms[pos],
+              style: TextStyle(
+                fontSize: 18.0,
+              ),
+            ),
+          ),
+        ));
   }
 }
