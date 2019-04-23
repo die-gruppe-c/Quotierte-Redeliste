@@ -1,21 +1,18 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:quotierte_redeliste/models/Room.dart';
-import 'package:quotierte_redeliste/ui/create_room/CreateRoomBloc.dart';
-import 'package:quotierte_redeliste/ui/create_room/EditRoomWidget.dart';
-import 'package:quotierte_redeliste/ui/display_room/DisplayRoomScreen.dart';
+import 'package:quotierte_redeliste/models/room.dart';
+import 'package:quotierte_redeliste/ui/create_room/create_room_bloc.dart';
+import 'package:quotierte_redeliste/ui/create_room/edit_room_widget.dart';
+import 'package:quotierte_redeliste/ui/display_room/display_room_screen.dart';
 
 class CreateRoomScreen extends StatefulWidget {
   CreateRoomScreen({Key key}) : super(key: key);
 
   @override
   _CreateRoomScreenState createState() => _CreateRoomScreenState();
-
 }
 
 class _CreateRoomScreenState extends State<CreateRoomScreen> {
-
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   static const double PADDING_SIDE = 16;
@@ -38,8 +35,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
         statusBarIconBrightness: Brightness.dark,
-        statusBarColor: Colors.white
-    ));
+        statusBarColor: Colors.white));
 
     return Scaffold(
       key: _scaffoldKey,
@@ -57,12 +53,13 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
         elevation: appBarElevated ? 4 : 0,
         actions: <Widget>[
           Container(
-            padding: const EdgeInsets.only(right: PADDING_SIDE, left: PADDING_SIDE, top: 12, bottom: 12),
+            padding: const EdgeInsets.only(
+                right: PADDING_SIDE, left: PADDING_SIDE, top: 12, bottom: 12),
             child: FlatButton(
               color: save_btn_color,
               textColor: Colors.white,
               child: Text("Erstellen"),
-              onPressed: (){
+              onPressed: () {
                 if (!createRequestSend) {
                   createRoomBloc.postNewRoom(_onRoomCreated);
                   setState(() {
@@ -70,36 +67,41 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                   });
                 }
               },
-              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+              shape: new RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(4.0)),
             ),
           ),
         ],
         bottom: NameInputContainer(
             alignment: Alignment(-1.0, 0.0),
-            padding: const EdgeInsets.only(left: 56 ,right: PADDING_SIDE),
+            padding: const EdgeInsets.only(left: 56, right: PADDING_SIDE),
             child: TextField(
               autofocus: true,
               cursorColor: Colors.black54,
-              inputFormatters: [LengthLimitingTextInputFormatter(50),],
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(50),
+              ],
               textCapitalization: TextCapitalization.sentences,
               maxLines: null,
               decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: "Name eingeben",
-                  hintStyle: TextStyle( color: Colors.black54 )) ,
+                  hintStyle: TextStyle(color: Colors.black54)),
               onChanged: (text) {
                 createRoomBloc.setRoomName(text);
                 setState(() {
-                  if(text.length > 0){
+                  if (text.length > 0) {
                     save_btn_color = SAVE_BTN_ACT_COLOR;
-                  }else{
+                  } else {
                     save_btn_color = SAVE_BTN_DISABLED_COLOR;
                   }
                 });
               },
-              style: TextStyle( color: Colors.black, fontSize: 26, fontWeight: FontWeight.normal ),
-            )
-        ),
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 26,
+                  fontWeight: FontWeight.normal),
+            )),
       ),
       // body is the majority of the screen.
       backgroundColor: Colors.white,
@@ -107,25 +109,24 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     );
   }
 
-
-  _scrollListener(offset, minScrollExtent, outOfRangePosition){
+  _scrollListener(offset, minScrollExtent, outOfRangePosition) {
     bool newElevationState;
-    
+
     if (offset <= minScrollExtent && !outOfRangePosition) {
       newElevationState = false;
-    }else{
+    } else {
       newElevationState = true;
     }
 
-    if(newElevationState != appBarElevated){
+    if (newElevationState != appBarElevated) {
       setState(() {
         appBarElevated = newElevationState;
       });
     }
   }
 
-  _onRoomCreated({Room result, String error}){
-    if (error != null){
+  _onRoomCreated({Room result, String error}) {
+    if (error != null) {
       final snackBar = SnackBar(
         content: Row(
           children: <Widget>[
@@ -143,33 +144,41 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
       setState(() {
         createRequestSend = false;
       });
-    }else {
+    } else {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => DisplayRoomScreen(roomId: result.id,)),
+            builder: (context) => DisplayRoomScreen(
+                  roomId: result.id,
+                )),
       );
     }
   }
 
-  buildBody(){
+  buildBody() {
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Divider(color: Colors.black38, height: appBarElevated ? 0 : 2, ),
+          Divider(
+            color: Colors.black38,
+            height: appBarElevated ? 0 : 2,
+          ),
           EditRoomWidget(scrollListener: _scrollListener),
         ], // Children
       ),
     );
   }
 
-  buildLoadingBody(){
+  buildLoadingBody() {
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Divider(color: Colors.black38, height: appBarElevated ? 0 : 2, ),
+          Divider(
+            color: Colors.black38,
+            height: appBarElevated ? 0 : 2,
+          ),
           Expanded(
             child: Center(
               child: CircularProgressIndicator(),
@@ -179,15 +188,12 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
       ),
     );
   }
-  
 }
 
-
-class NameInputContainer extends Container implements PreferredSizeWidget{
-
+class NameInputContainer extends Container implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(56);
 
-  NameInputContainer({alignment, padding, child}) : super( child : child, alignment : alignment, padding : padding);
-
+  NameInputContainer({alignment, padding, child})
+      : super(child: child, alignment: alignment, padding: padding);
 }

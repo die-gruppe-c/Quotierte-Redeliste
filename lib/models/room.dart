@@ -1,18 +1,17 @@
-import 'package:quotierte_redeliste/models/Attribute.dart';
+import 'package:quotierte_redeliste/models/attribute.dart';
 
-class Room{
-
+class Room {
   int id;
   String name;
   DateTime createOn;
 
   List<Attribute> attributes;
 
-  Room(){
+  Room() {
     attributes = new List();
   }
 
-  Room.clone(Room room){
+  Room.clone(Room room) {
     id = room.id;
     name = room.name;
     createOn = room.createOn;
@@ -20,13 +19,11 @@ class Room{
     attributes = new List();
 
     room.attributes.forEach((attribute) {
-      if(attribute.name != "")
-        attributes.add(Attribute.clone(attribute));
+      if (attribute.name != "") attributes.add(Attribute.clone(attribute));
     });
-
   }
 
-  Room.fromJson(Map<String, dynamic> parsedJson){
+  Room.fromJson(Map<String, dynamic> parsedJson) {
     this.id = parsedJson['id'];
     this.name = parsedJson['name'];
 
@@ -44,11 +41,10 @@ class Room{
     attributes = List();
   }
 
-  Map toMap(){
+  Map toMap() {
     var map = new Map<String, dynamic>();
     map["room_name"] = this.name;
 
     return map;
   }
-
 }
