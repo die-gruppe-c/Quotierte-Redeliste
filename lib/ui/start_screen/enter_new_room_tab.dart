@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quotierte_redeliste/enter_room_screen.dart';
 
 class EnterNewRoomTab extends StatelessWidget {
   EnterNewRoomTab({Key key}) : super(key: key);
@@ -26,7 +27,7 @@ class EnterNewRoomTab extends StatelessWidget {
                       child: TextField(
                           decoration: InputDecoration(
                               contentPadding: EdgeInsets.all(3),
-                              labelText: 'Code zum Beitreten'),
+                              labelText: 'Raum Code eingeben'),
                           onSubmitted: (code) {
                             // TODO ...
                           })),
@@ -35,7 +36,11 @@ class EnterNewRoomTab extends StatelessWidget {
                   ),
                   RaisedButton(
                       onPressed: () {
-                        // TODO ...
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EnterRoomScreen()),
+                        );
                       },
                       child: const Text('beitreten'))
                 ]),
