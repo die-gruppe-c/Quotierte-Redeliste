@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quotierte_redeliste/ui/profile/profile.dart';
+import 'package:quotierte_redeliste/models/profile.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
