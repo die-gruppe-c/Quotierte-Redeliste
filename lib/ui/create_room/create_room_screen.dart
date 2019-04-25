@@ -17,10 +17,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   static const double PADDING_SIDE = 16;
 
-  static const SAVE_BTN_ACT_COLOR = Colors.blueAccent;
-  static const SAVE_BTN_DISABLED_COLOR = Colors.black12;
-
-  var save_btn_color = SAVE_BTN_DISABLED_COLOR;
+  var saveBtnColor;
 
   bool appBarElevated = false;
 
@@ -33,31 +30,25 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-        statusBarIconBrightness: Brightness.dark,
-        statusBarColor: Colors.white));
+    if (saveBtnColor == null) saveBtnColor = Theme.of(context).disabledColor;
 
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close),
-          color: Colors.black,
           tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: () {
             Navigator.maybePop(context);
           },
         ),
-        brightness: Brightness.light,
-        backgroundColor: Colors.white,
         elevation: appBarElevated ? 4 : 0,
         actions: <Widget>[
           Container(
             padding: const EdgeInsets.only(
                 right: PADDING_SIDE, left: PADDING_SIDE, top: 12, bottom: 12),
             child: FlatButton(
-              color: save_btn_color,
-              textColor: Colors.white,
+              color: saveBtnColor,
               child: Text("Erstellen"),
               onPressed: () {
                 if (!createRequestSend) {
@@ -77,34 +68,27 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
             padding: const EdgeInsets.only(left: 56, right: PADDING_SIDE),
             child: TextField(
               autofocus: true,
-              cursorColor: Colors.black54,
               inputFormatters: [
                 LengthLimitingTextInputFormatter(50),
               ],
               textCapitalization: TextCapitalization.sentences,
               maxLines: null,
               decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: "Name eingeben",
-                  hintStyle: TextStyle(color: Colors.black54)),
+                  border: InputBorder.none, hintText: "Name eingeben"),
               onChanged: (text) {
                 createRoomBloc.setRoomName(text);
                 setState(() {
                   if (text.length > 0) {
-                    save_btn_color = SAVE_BTN_ACT_COLOR;
+                    saveBtnColor = Theme.of(context).accentColor;
                   } else {
-                    save_btn_color = SAVE_BTN_DISABLED_COLOR;
+                    saveBtnColor = Theme.of(context).disabledColor;
                   }
                 });
               },
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 26,
-                  fontWeight: FontWeight.normal),
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.normal),
             )),
       ),
       // body is the majority of the screen.
-      backgroundColor: Colors.white,
       body: createRequestSend ? buildLoadingBody() : buildBody(),
     );
   }
@@ -161,7 +145,6 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Divider(
-            color: Colors.black38,
             height: appBarElevated ? 0 : 2,
           ),
           EditRoomWidget(scrollListener: _scrollListener),
@@ -176,7 +159,6 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Divider(
-            color: Colors.black38,
             height: appBarElevated ? 0 : 2,
           ),
           Expanded(

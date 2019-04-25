@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/models/profile.dart';
+import 'package:quotierte_redeliste/ui/themes/DefaultThemes.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -56,7 +57,7 @@ class _ProfileState extends State<ProfileScreen> {
                       Flexible(
                           child: TextField(
                         decoration:
-                            InputDecoration(contentPadding: EdgeInsets.all(3)),
+                            DefaultThemes.inputDecoration(context, null),
                         controller: _usernameController,
                       )),
                     ])

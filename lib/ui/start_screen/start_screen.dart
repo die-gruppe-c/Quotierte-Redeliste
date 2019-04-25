@@ -62,8 +62,6 @@ class StartScreen extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (context) => CreateRoomScreen()),
           ),
-      backgroundColor: Colors.red,
-      foregroundColor: Colors.white,
     );
   }
 }
