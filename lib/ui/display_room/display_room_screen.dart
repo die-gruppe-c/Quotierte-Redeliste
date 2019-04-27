@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:quotierte_redeliste/ui/display_room/display_room_bloc.dart';
 
 class DisplayRoomScreen extends StatefulWidget {
@@ -30,36 +29,23 @@ class _DisplayRoomScreenState extends State<DisplayRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-        statusBarIconBrightness: Brightness.dark,
-        statusBarColor: Colors.white));
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.black,
           tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: () {
             Navigator.maybePop(context);
           },
         ),
-        brightness: Brightness.light,
-        backgroundColor: Colors.white,
-        elevation: 0,
         actions: <Widget>[],
         bottom: NameDisplayContainer(
             alignment: Alignment(-1.0, 0.0),
             padding: const EdgeInsets.only(left: 56, right: PADDING_SIDE),
             child: Text(_stateRoomLoaded ? displayRoomBloc.getName() : "",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 26,
-                    fontWeight: FontWeight.normal))),
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.normal))),
       ),
       // body is the majority of the screen.
-      backgroundColor: Colors.white,
       body: _stateError
           ? null
           : Center(

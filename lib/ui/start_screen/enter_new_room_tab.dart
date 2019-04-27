@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/enter_room_screen.dart';
+import 'package:quotierte_redeliste/ui/themes/DefaultThemes.dart';
 
 class EnterNewRoomTab extends StatelessWidget {
   EnterNewRoomTab({Key key}) : super(key: key);
@@ -25,9 +26,8 @@ class EnterNewRoomTab extends StatelessWidget {
                 Row(children: [
                   Flexible(
                       child: TextField(
-                          decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all(3),
-                              labelText: 'Raum Code eingeben'),
+                          decoration: DefaultThemes.inputDecoration(
+                              context, 'Raum Code eingeben'),
                           onSubmitted: (code) {
                             // TODO ...
                           })),
@@ -54,7 +54,7 @@ class EnterNewRoomTab extends StatelessWidget {
               Padding(
                   padding: EdgeInsets.only(left: 10, right: 100),
                   child: IconTheme(
-                    data: IconThemeData(color: Colors.grey),
+                    data: IconThemeData(color: Theme.of(context).hintColor),
                     child: Icon(Icons.arrow_forward),
                   )),
             ])),

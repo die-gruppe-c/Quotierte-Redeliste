@@ -22,17 +22,6 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text('Attribute setzen'),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          elevation: 0.0,
-          textTheme: TextTheme(
-              title: TextStyle(
-            color: Colors.black,
-            fontSize: 20.0,
-          )),
-          iconTheme: IconThemeData(
-            color: Colors.black, //change your color here
-          ),
           actions: <Widget>[
             // Add actions
           ],
