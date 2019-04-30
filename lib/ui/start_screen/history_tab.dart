@@ -11,7 +11,8 @@ class HistoryTab extends StatefulWidget {
 class _HistoryTabState extends State<HistoryTab> {
   List<Room> _rooms;
 
-  _HistoryTabState() {
+  void initState() {
+    super.initState();
     Repository().getAllRooms().then((rooms) {
       setState(() {
         _rooms = rooms;
