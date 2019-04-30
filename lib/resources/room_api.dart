@@ -34,8 +34,6 @@ class RoomApi {
   }
 
   Future<List<Room>> getAllRooms() async {
-    print("return rooms");
-
     final headers = await getHeaders();
     final response = await client.get(BASE_URL + "/room", headers: headers);
 
@@ -46,8 +44,6 @@ class RoomApi {
       decodedJson.forEach((roomJson) {
         rooms.add(Room.fromJson(roomJson));
       });
-
-      print("return rooms: " + rooms.toString());
       return rooms;
     } else {
       throw Exception("Failed to load rooms, status: " +
