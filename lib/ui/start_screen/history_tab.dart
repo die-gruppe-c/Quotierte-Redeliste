@@ -1,6 +1,7 @@
-import 'dart:async';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:quotierte_redeliste/models/room.dart';
+import 'package:quotierte_redeliste/resources/repository.dart';
 
 class HistoryTab extends StatefulWidget {
   @override
@@ -8,40 +9,15 @@ class HistoryTab extends StatefulWidget {
 }
 
 class _HistoryTabState extends State<HistoryTab> {
-  Timer _timer;
+  List<Room> _rooms = [];
 
   _HistoryTabState() {
-    // TODO replace timer with load rooms from the backend
-    _timer = Timer(Duration(seconds: 2), () {
+    Repository().getAllRooms().then((rooms) {
       setState(() {
-        _rooms = [
-          "raum 1",
-          "raum 2",
-          "raum test",
-          "raum test 2",
-          "noch ein raum",
-          "oh yeah ein raum",
-          "und noch einer",
-          "einer mit einem ewig langen so laaaaangem text, dass er wahrscheinlich nicht mehr in die Liste passt",
-          "gaaaaanz viele räume",
-          "Oh ja",
-          "Noch mehr Räume",
-          "3",
-          "2",
-          "1",
-          "GAME OVER"
-        ];
+        _rooms = rooms;
       });
     });
   }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  List<String> _rooms = [];
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +51,7 @@ class _HistoryTabState extends State<HistoryTab> {
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
             child: Text(
-              _rooms[pos],
+              _rooms[pos].name,
               style: TextStyle(
                 fontSize: 18.0,
               ),

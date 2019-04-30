@@ -35,7 +35,7 @@ class Profile {
     prefs.setString(TAG_USERNAME, username);
   }
 
-  getToken() async {
+  Future<String> getToken() async {
     if (_token == null) {
       final SharedPreferences prefs = await _prefs;
 
