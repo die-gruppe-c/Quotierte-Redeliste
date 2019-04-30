@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' show Client;
+import 'package:quotierte_redeliste/resources/repository.dart';
 
 import '../models/room.dart';
 
 class RoomApi {
-  static const BASE_URL = "http://192.168.178.20:3000";
+  static const BASE_URL = "http://" + Repository.BASE_URL;
 
   Client client = Client();
 
