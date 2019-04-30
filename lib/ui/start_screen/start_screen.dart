@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/ui/create_room/create_room_screen.dart';
-import 'package:quotierte_redeliste/ui/moderator_screen/moderator_screen.dart';
 import 'package:quotierte_redeliste/ui/profile/profile_screen.dart';
 import 'package:quotierte_redeliste/ui/start_screen/enter_new_room_tab.dart';
 import 'package:quotierte_redeliste/ui/start_screen/history_tab.dart';
@@ -45,10 +44,7 @@ class StartScreen extends StatelessWidget {
           icon: Icon(Icons.question_answer),
           tooltip: 'Moderator ansicht',
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ModeratorScreen()),
-            );
+            Navigator.pushReplacementNamed(context, "/room/moderator");
           },
         ),
       ],

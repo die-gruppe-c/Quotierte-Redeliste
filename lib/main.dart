@@ -1,6 +1,7 @@
 // This sample shows adding an action to an [AppBar] that opens a shopping cart.
 
 import 'package:flutter/material.dart';
+import 'package:quotierte_redeliste/ui/moderator_screen/moderator_screen.dart';
 import 'package:quotierte_redeliste/ui/start_screen/start_screen.dart';
 
 void main() => runApp(MyApp());
@@ -33,6 +34,9 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.light(primary: PRIMARY_COLOR_DARK)),
       ),
       home: StartScreen(),
+      routes: {
+        "/room/moderator": (_) => new ModeratorScreen(),
+      },
     );
   }
 }
