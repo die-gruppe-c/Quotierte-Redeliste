@@ -9,7 +9,7 @@ class HistoryTab extends StatefulWidget {
 }
 
 class _HistoryTabState extends State<HistoryTab> {
-  List<Room> _rooms = [];
+  List<Room> _rooms;
 
   _HistoryTabState() {
     Repository().getAllRooms().then((rooms) {
@@ -21,7 +21,7 @@ class _HistoryTabState extends State<HistoryTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: _rooms.isEmpty ? getEmptyState() : getListView());
+    return Container(child: _rooms == null ? getEmptyState() : getListView());
   }
 
   Widget getEmptyState() {
@@ -33,14 +33,22 @@ class _HistoryTabState extends State<HistoryTab> {
   }
 
   Widget getListView() {
-    return Column(children: [
-      Expanded(
-          child: ListView.builder(
-        itemCount: _rooms.length,
-        itemBuilder: (context, pos) {
-          return getListViewItem(pos);
-        },
-      ))
+    return _rooms.isEmpty
+        ? noDataAvailable()
+        : Column(children: [
+            Expanded(
+                child: ListView.builder(
+              itemCount: _rooms.length,
+              itemBuilder: (context, pos) {
+                return getListViewItem(pos);
+              },
+            ))
+          ]);
+  }
+
+  Widget noDataAvailable() {
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Text('Keine Daten vorhanden', style: Theme.of(context).textTheme.display1)
     ]);
   }
 
