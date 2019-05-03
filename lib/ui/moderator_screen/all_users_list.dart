@@ -14,11 +14,54 @@ class AllUsersList extends StatefulWidget {
 
 class _AllUsersListState extends State<AllUsersList> {
   RoomWebSocket _webSocket = Repository().webSocket();
+  List<User> _sortedUsers;
+
+  @override
+  void initState() {
+    super.initState();
+    _sortedUsers = widget.users;
+
+    _webSocket.getAllUsersSorted().listen((List<String> sortedList) {
+      setState(() {
+        _sortedUsers.sort((User userA, User userB) {
+          int sortNumberA = sortedList.indexOf(userA.id);
+          int sortNumberB = sortedList.indexOf(userB.id);
+          return sortNumberA.compareTo(sortNumberB);
+        });
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [],
-    );
+    return _sortedUsers.length != 0
+        ? _getList(_sortedUsers)
+        : Text("Keine Daten vorhanden");
+  }
+
+  Widget _getList(List<User> list) {
+    return Expanded(
+        child: ListView.builder(
+      itemCount: list.length,
+      itemBuilder: (context, pos) {
+        return _getListViewItem(list[pos]);
+      },
+    ));
+  }
+
+  Widget _getListViewItem(User user) {
+    return Padding(
+        padding: EdgeInsets.only(bottom: 2.0, left: 4, right: 4),
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
+            child: Text(
+              user.name,
+              style: TextStyle(
+                fontSize: 18.0,
+              ),
+            ),
+          ),
+        ));
   }
 }

@@ -39,20 +39,24 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
                           WantToSpeakList(snapshot.data),
                         ],
                       )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  CircularProgressIndicator(),
-                                  Padding(padding: EdgeInsets.only(right: 20)),
-                                  Text('Lade Daten...')
-                                ]),
-                          ]);
+                    : _getLoadingIndicator();
               },
             )));
+  }
+
+  Widget _getLoadingIndicator() {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                CircularProgressIndicator(),
+                Padding(padding: EdgeInsets.only(right: 20)),
+                Text('Lade Daten...')
+              ]),
+        ]);
   }
 }
