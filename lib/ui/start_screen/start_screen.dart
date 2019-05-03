@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/ui/create_room/create_room_screen.dart';
-import 'package:quotierte_redeliste/ui/profile/profile_screen.dart';
+import 'package:quotierte_redeliste/ui/display_profile/profile_screen.dart';
 import 'package:quotierte_redeliste/ui/start_screen/enter_new_room_tab.dart';
 import 'package:quotierte_redeliste/ui/start_screen/history_tab.dart';
 
@@ -24,8 +24,28 @@ class StartScreen extends StatelessWidget {
       title: Text('Quoty'),
       bottom: TabBar(
         tabs: [
-          Tab(text: 'Raum beitreten'),
-          Tab(text: 'Verlauf'),
+          new Tab(
+            child: new Row(
+              children: <Widget>[
+                new Icon(Icons.open_in_new),
+                new SizedBox(
+                  width: 5.0,
+                ),
+                new Text("Raum beitreten"),
+              ],
+            ),
+          ),
+          new Tab(
+            child: new Row(
+              children: <Widget>[
+                new Icon(Icons.history),
+                new SizedBox(
+                  width: 5.0,
+                ),
+                new Text("Vergangene Räume"),
+              ],
+            ),
+          ),
         ],
       ),
       actions: <Widget>[

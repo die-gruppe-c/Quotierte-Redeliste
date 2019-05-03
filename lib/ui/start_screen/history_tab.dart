@@ -49,10 +49,10 @@ class _HistoryTabState extends State<HistoryTab> {
   }
 
   Widget getEmptyState() {
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       CircularProgressIndicator(),
-      Padding(padding: EdgeInsets.only(right: 20)),
-      Text('Lade Daten...')
+      Padding(padding: EdgeInsets.only(top: 20)),
+      Text('Räume werden geladen')
     ]);
   }
 

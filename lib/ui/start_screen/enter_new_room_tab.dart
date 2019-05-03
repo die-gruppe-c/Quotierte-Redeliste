@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quotierte_redeliste/enter_room_screen.dart';
+import 'package:quotierte_redeliste/ui/enter_room/enter_room_screen.dart';
 import 'package:quotierte_redeliste/ui/themes/DefaultThemes.dart';
 
 class EnterNewRoomTab extends StatelessWidget {
@@ -13,9 +13,17 @@ class EnterNewRoomTab extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(left: 16, right: 16, top: 26),
           child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Image.asset(
+                  'assets/images/login_jdch.jpg',
+                  height: 125,
+                  width: 125,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 25),
+                ),
                 Text(
                     'Frage den Moderator eines Raumes nach dem Beitritts-Code '
                     'und gebe ihn hier ein',
@@ -42,7 +50,19 @@ class EnterNewRoomTab extends StatelessWidget {
                               builder: (context) => EnterRoomScreen()),
                         );
                       },
-                      child: const Text('beitreten'))
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Icon(
+                            Icons.vpn_key,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            '   Beitreten', //Real Padding missing.
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ))
                 ]),
               ]),
         ),
