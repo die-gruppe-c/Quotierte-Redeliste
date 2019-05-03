@@ -1,26 +1,56 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:core';
 
 import 'package:quotierte_redeliste/models/profile.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:web_socket_channel/io.dart';
 
 class RoomWebSocket {
+  // Singleton pattern
+  static final RoomWebSocket _singleton = RoomWebSocket._internal();
+
+  factory RoomWebSocket() {
+    return _singleton;
+  }
+
   static const BASE_URL = "ws://" + Repository.BASE_URL;
 
   IOWebSocketChannel _webSocket;
 
-  StreamController<List<User>> _streamAllUsers = StreamController<List<User>>();
-  StreamController<List<String>> _streamNextSpeakers =
-      StreamController<List<String>>();
-  StreamController<List<String>> _streamAllUsersSorted =
-      StreamController<List<String>>();
+  StreamController<List<User>> _streamAllUsers =
+      StreamController<List<User>>.broadcast();
+  StreamController<List<String>> _streamSpeakers =
+      StreamController<List<String>>.broadcast();
+  StreamController<List<String>> _streamSortedUsers =
+      StreamController<List<String>>.broadcast();
   StreamController<List<String>> _streamWantToSpeak =
-      StreamController<List<String>>();
+      StreamController<List<String>>.broadcast();
   StreamController<List<String>> _streamSpeakCategories =
-      StreamController<List<String>>();
+      StreamController<List<String>>.broadcast();
+
+  Observable<List<User>> _allUsersObservable;
+  Observable<List<String>> _speakersObservable;
+  Observable<List<String>> _sortedUsersObservable;
+  Observable<List<String>> _wantToSpeakObservable;
+  Observable<List<String>> _speakCategoriesObservable;
+
+  RoomWebSocket._internal() {
+    _allUsersObservable = Observable(_streamAllUsers.stream).shareValue();
+    _speakersObservable = Observable(_streamSpeakers.stream).shareValue();
+    _sortedUsersObservable = Observable(_streamSortedUsers.stream).shareValue();
+    _wantToSpeakObservable = Observable(_streamWantToSpeak.stream).shareValue();
+    _speakCategoriesObservable =
+        Observable(_streamSpeakCategories.stream).shareValue();
+
+    // listen to the observables to save the last value
+    _allUsersObservable.listen((data) {});
+    _speakersObservable.listen((data) {});
+    _sortedUsersObservable.listen((data) {});
+    _wantToSpeakObservable.listen((data) {});
+    _speakCategoriesObservable.listen((data) {});
+  }
 
   connect() {
     _webSocket = IOWebSocketChannel.connect(BASE_URL);
@@ -49,6 +79,34 @@ class RoomWebSocket {
     });
 
     _sendId();
+
+//    Timer(Duration(seconds: 2), () {
+//      List<User> users = List();
+//      for (int i = 0; i < 30; i++) {
+//        User user = User();
+//        user.name = "Test name" + i.toString();
+//        user.id = i.toString();
+//        users.add(user);
+//      }
+//
+//      print("send all users");
+//      _streamAllUsers.add(users);
+//
+//      print("send sorted users");
+//      List<String> usersId = List();
+//      for (int i = 29; i >= 0; i--) {
+//        usersId.add(i.toString());
+//      }
+//
+//      _usersSorted(usersId);
+//    });
+//
+//    Timer(Duration(seconds: 3), () {
+//      List<String> speak = ["1", "2"];
+//      print("send speaking list: " + speak.toString());
+//
+//      _speakingList(speak);
+//    });
   }
 
   _sendId() {
@@ -67,7 +125,7 @@ class RoomWebSocket {
   }
 
   _speakingList(List<String> ids) {
-    _streamNextSpeakers.add(ids);
+    _streamSpeakers.add(ids);
   }
 
   _speakCategories(List<String> categories) {
@@ -75,7 +133,7 @@ class RoomWebSocket {
   }
 
   _usersSorted(List<String> ids) {
-    _streamAllUsersSorted.add(ids);
+    _streamSortedUsers.add(ids);
   }
 
   _usersWantToSpeak(List<String> ids) {
@@ -86,30 +144,30 @@ class RoomWebSocket {
     _webSocket.sink.close();
 
     _streamAllUsers.close();
-    _streamNextSpeakers.close();
-    _streamAllUsersSorted.close();
+    _streamSpeakers.close();
+    _streamSortedUsers.close();
     _streamWantToSpeak.close();
     _streamSpeakCategories.close();
   }
 
   Stream<List<User>> getAllUsers() {
-    return _streamAllUsers.stream;
+    return _allUsersObservable;
   }
 
   Stream<List<String>> getSpeakingList() {
-    return _streamNextSpeakers.stream;
+    return _speakersObservable;
   }
 
   Stream<List<String>> getSpeakCategories() {
-    return _streamSpeakCategories.stream;
+    return _speakCategoriesObservable;
   }
 
   Stream<List<String>> getAllUsersSorted() {
-    return _streamAllUsersSorted.stream;
+    return _sortedUsersObservable;
   }
 
   Stream<List<String>> getUsersWantToSpeak() {
-    return _streamWantToSpeak.stream;
+    return _wantToSpeakObservable;
   }
 
   wantToSpeak(String category) {
