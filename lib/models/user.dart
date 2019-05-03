@@ -4,6 +4,8 @@ class User {
   Map<String, String> attributes;
   bool createdByModerator = false;
 
+  User();
+
   User.fromJson(Map<String, dynamic> json) {
     this.id = json['id'];
     this.name = json['name'];
