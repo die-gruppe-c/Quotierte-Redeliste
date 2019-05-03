@@ -19,16 +19,11 @@ class RoomWebSocket {
 
   IOWebSocketChannel _webSocket;
 
-  StreamController<List<User>> _streamAllUsers =
-      StreamController<List<User>>.broadcast();
-  StreamController<List<String>> _streamSpeakers =
-      StreamController<List<String>>.broadcast();
-  StreamController<List<String>> _streamSortedUsers =
-      StreamController<List<String>>.broadcast();
-  StreamController<List<String>> _streamWantToSpeak =
-      StreamController<List<String>>.broadcast();
-  StreamController<List<String>> _streamSpeakCategories =
-      StreamController<List<String>>.broadcast();
+  StreamController<List<User>> _streamAllUsers;
+  StreamController<List<String>> _streamSpeakers;
+  StreamController<List<String>> _streamSortedUsers;
+  StreamController<List<String>> _streamWantToSpeak;
+  StreamController<List<String>> _streamSpeakCategories;
 
   Observable<List<User>> _allUsersObservable;
   Observable<List<String>> _speakersObservable;
@@ -36,7 +31,15 @@ class RoomWebSocket {
   Observable<List<String>> _wantToSpeakObservable;
   Observable<List<String>> _speakCategoriesObservable;
 
-  RoomWebSocket._internal() {
+  RoomWebSocket._internal();
+
+  _initStreamsAndObservables() {
+    _streamAllUsers = StreamController<List<User>>.broadcast();
+    _streamSpeakers = StreamController<List<String>>.broadcast();
+    _streamSortedUsers = StreamController<List<String>>.broadcast();
+    _streamWantToSpeak = StreamController<List<String>>.broadcast();
+    _streamSpeakCategories = StreamController<List<String>>.broadcast();
+
     _allUsersObservable = Observable(_streamAllUsers.stream).shareValue();
     _speakersObservable = Observable(_streamSpeakers.stream).shareValue();
     _sortedUsersObservable = Observable(_streamSortedUsers.stream).shareValue();
@@ -53,6 +56,8 @@ class RoomWebSocket {
   }
 
   connect() {
+    _initStreamsAndObservables();
+
     _webSocket = IOWebSocketChannel.connect(BASE_URL);
 
     _webSocket.stream.listen((data) {
