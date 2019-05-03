@@ -7,4 +7,6 @@ class Repository {
   Future<Room> getRoom(int id) => roomApi.getRoom(id);
 
   Future<Room> createRoom(Room room) => roomApi.createRoom(room);
+
+  Future<List<Room>> getAllRooms() => roomApi.getAllRooms();
 }
