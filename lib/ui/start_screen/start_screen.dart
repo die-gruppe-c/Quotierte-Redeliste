@@ -15,6 +15,8 @@ class StartScreen extends StatelessWidget {
           appBar: setAppbar(context),
           // body is the majority of the screen.
           body: TabBarView(children: [EnterNewRoomTab(), HistoryTab()]),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
           floatingActionButton: setFloatingActionButton(context),
         ));
   }
@@ -64,12 +66,12 @@ class StartScreen extends StatelessWidget {
   }
 
   Widget setFloatingActionButton(context) {
-    return FloatingActionButton(
-      child: Icon(Icons.add),
-      onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreateRoomScreen()),
-          ),
-    );
+    return FloatingActionButton.extended(
+        icon: Icon(Icons.add),
+        onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CreateRoomScreen()),
+            ),
+        label: new Text('Raum erstellen'));
   }
 }
