@@ -17,7 +17,7 @@ class EnterNewRoomTab extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Image.asset(
-                  'assets/images/login_jdch.jpg',
+                  'assets/images/login_jdch.png',
                   height: 125,
                   width: 125,
                 ),
@@ -55,7 +55,6 @@ class EnterNewRoomTab extends StatelessWidget {
                         children: <Widget>[
                           Icon(
                             Icons.vpn_key,
-                            color: Colors.white,
                           ),
                           Text(
                             '   Beitreten', //Real Padding missing.
