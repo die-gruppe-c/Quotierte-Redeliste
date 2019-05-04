@@ -12,13 +12,11 @@ class ResponsiveContainer extends StatelessWidget {
   }
 
   static bool isTablet(BuildContext context) {
-    // The equivalent of the "smallestWidth" qualifier on Android.
-    var shortestSide = MediaQuery.of(context).size.shortestSide;
+    var shortestSide = MediaQuery.of(context).size.width;
 
     // Determine if we should use mobile layout or not. The
     // number 600 here is a common breakpoint for a typical
     // 7-inch tablet.
-    final bool useMobileLayout = shortestSide < 600;
-    return !useMobileLayout;
+    return shortestSide > 500;
   }
 }
