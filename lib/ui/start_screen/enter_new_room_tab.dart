@@ -1,9 +1,40 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/ui/enter_room/enter_room_screen.dart';
 import 'package:quotierte_redeliste/ui/themes/DefaultThemes.dart';
 
-class EnterNewRoomTab extends StatelessWidget {
-  EnterNewRoomTab({Key key}) : super(key: key);
+class EnterNewRoomTab extends StatefulWidget {
+  @override
+  _EnterNewRoomState createState() => _EnterNewRoomState();
+}
+
+class _EnterNewRoomState extends State<EnterNewRoomTab> {
+  bool _enterRoomButtonDisabled = true;
+  TextEditingController _roomCodeController = TextEditingController();
+
+  _EnterNewRoomState() {
+    _roomCodeController.addListener(() {
+      if (_roomCodeController.text == "") {
+        setState(() {
+          _enterRoomButtonDisabled = true;
+        });
+      } else if (_enterRoomButtonDisabled) {
+        setState(() {
+          _enterRoomButtonDisabled = false;
+        });
+      }
+    });
+  }
+
+  _enterNewRoom(context) {
+    if (_roomCodeController.text != "") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EnterRoomScreen(_roomCodeController.text)),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,20 +67,17 @@ class EnterNewRoomTab extends StatelessWidget {
                       child: TextField(
                           decoration: DefaultThemes.inputDecoration(
                               context, 'Raum Code eingeben'),
+                          controller: _roomCodeController,
                           onSubmitted: (code) {
-                            // TODO ...
+                            _enterNewRoom(context);
                           })),
                   Padding(
                     padding: EdgeInsets.only(right: 10),
                   ),
                   RaisedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EnterRoomScreen()),
-                        );
-                      },
+                      onPressed: _enterRoomButtonDisabled
+                          ? null
+                          : () => _enterNewRoom(context),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[

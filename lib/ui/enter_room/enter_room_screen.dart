@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class EnterRoomScreen extends StatefulWidget {
-  EnterRoomScreen({Key key}) : super(key: key);
+  final String roomId;
+
+  EnterRoomScreen(this.roomId, {Key key}) : super(key: key);
 
   @override
   _EnterRoomScreenState createState() => new _EnterRoomScreenState();
