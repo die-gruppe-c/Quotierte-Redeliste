@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/resources/room_websocket.dart';
+import 'package:quotierte_redeliste/ui/moderator_screen/user_widget.dart';
 
 class SpeakingList extends StatefulWidget {
   final List<User> users;
@@ -48,24 +49,8 @@ class _SpeakingListState extends State<SpeakingList> {
         child: ListView.builder(
       itemCount: list.length,
       itemBuilder: (context, pos) {
-        return _getListViewItem(list[pos]);
+        return UserWidget(list[pos]);
       },
     ));
-  }
-
-  Widget _getListViewItem(User user) {
-    return Padding(
-        padding: EdgeInsets.only(bottom: 2.0, left: 4, right: 4),
-        child: Card(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
-            child: Text(
-              user.name,
-              style: TextStyle(
-                fontSize: 18.0,
-              ),
-            ),
-          ),
-        ));
   }
 }
