@@ -26,7 +26,6 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
         child: Scaffold(
             appBar: AppBar(
               title: Text(roomName),
-//          automaticallyImplyLeading: false,
             ),
             body: StreamBuilder(
               stream: _webSocket.getAllUsers(),

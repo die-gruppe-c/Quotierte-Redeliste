@@ -6,6 +6,7 @@ import 'package:quotierte_redeliste/ui/moderator_screen/user_widget.dart';
 
 class AllUsersList extends StatefulWidget {
   final List<User> users;
+  final ScrollController scrollController = ScrollController();
 
   AllUsersList(this.users, {Key key}) : super(key: key);
 
@@ -43,6 +44,7 @@ class _AllUsersListState extends State<AllUsersList> {
   Widget _getList(List<User> list) {
     return Expanded(
         child: ListView.builder(
+      controller: widget.scrollController,
       itemCount: list.length,
       itemBuilder: (context, pos) {
         return UserWidget(list[pos]);

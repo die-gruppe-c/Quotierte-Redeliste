@@ -46,11 +46,28 @@ class _SpeakingListState extends State<SpeakingList> {
 
   Widget _getList(List<User> list) {
     return Expanded(
-        child: ListView.builder(
-      itemCount: list.length,
-      itemBuilder: (context, pos) {
-        return UserWidget(list[pos]);
-      },
-    ));
+      child: ReorderableListView(
+          children: list.map((user) {
+            return UserWidget(
+              user,
+              key: Key(user.id),
+            );
+          }).toList(),
+          onReorder: _listReordered),
+    );
+  }
+
+  _listReordered(int oldIndex, int newIndex) {
+    // TODO soll der state dirket gesetzt werden oder soll auf eine Antwort vom backend gewartet werden?
+    setState(() {
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+      final item = _usersSpeakingList.removeAt(oldIndex);
+      _usersSpeakingList.insert(newIndex, item);
+    });
+
+    _webSocket.changeOrderOfSpeakingList(
+        _usersSpeakingList[oldIndex].id, newIndex);
   }
 }

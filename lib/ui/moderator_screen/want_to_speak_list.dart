@@ -6,6 +6,7 @@ import 'package:quotierte_redeliste/ui/moderator_screen/user_widget.dart';
 
 class WantToSpeakList extends StatefulWidget {
   final List<User> users;
+  final ScrollController scrollController = ScrollController();
 
   WantToSpeakList(this.users, {Key key}) : super(key: key);
 
@@ -47,6 +48,7 @@ class _WantToSpeakListState extends State<WantToSpeakList> {
   Widget _getList(List<User> list) {
     return Expanded(
         child: ListView.builder(
+      controller: widget.scrollController,
       itemCount: list.length,
       itemBuilder: (context, pos) {
         return UserWidget(
