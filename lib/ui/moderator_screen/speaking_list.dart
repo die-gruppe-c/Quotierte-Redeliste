@@ -54,10 +54,18 @@ class _SpeakingListState extends State<SpeakingList> {
             return UserWidget(
               user,
               key: Key(user.id),
+              onTap: () {
+                _removeUserFromSpeakingList(user.id);
+              },
             );
           }).toList(),
           onReorder: _listReordered),
     );
+  }
+
+  _removeUserFromSpeakingList(String userId) {
+    print("remove user: " + userId);
+    _webSocket.removeUserFromSpeakingList(userId);
   }
 
   _listReordered(int oldIndex, int newIndex) {

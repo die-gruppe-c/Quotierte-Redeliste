@@ -198,6 +198,10 @@ class RoomWebSocket {
     String data = WebSocketCommands.ADD_USER_TO_SPEAKING_LIST + ":" + userId;
     _webSocket.sink.add(data);
   }
+
+  removeUserFromSpeakingList(String userId) {
+    // TODO implement
+  }
 }
 
 class WebSocketCommands {
