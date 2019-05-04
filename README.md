@@ -1,8 +1,8 @@
 [![Build Status](https://travis-ci.org/die-gruppe-c/Quotierte-Redeliste.svg?branch=master)](https://travis-ci.org/die-gruppe-c/Quotierte-Redeliste)
 
-# quotierte_redeliste
+# Quoty - Quotierte Redeliste
 
-Quotierte Redeliste für MOP
+App zu führen von Quotierten Redelisten. Programmiert in Flutter für das Modul Mobile Programmierung (MOP) im SS2019.
 
 ## Getting Started
 
