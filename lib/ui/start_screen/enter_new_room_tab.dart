@@ -93,6 +93,9 @@ class _EnterNewRoomState extends State<EnterNewRoomTab> {
                             ],
                           )),
                     ]),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 100),
+                    )
                   ]),
             )
           ], // Children
