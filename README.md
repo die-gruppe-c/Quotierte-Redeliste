@@ -2,7 +2,7 @@
 
 # Quoty - Quotierte Redeliste
 
-App zum Führen von Quotierten Redelisten. Programmiert in Flutter für das Modul Mobile Programmierung (MOP) im SS2019.
+App zum Führen von quotierten Redelisten. Programmiert in Flutter für das Modul Mobile Programmierung (MOP) im SS2019.
 
 ## Getting Started
 
