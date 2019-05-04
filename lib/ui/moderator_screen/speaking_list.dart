@@ -41,7 +41,10 @@ class _SpeakingListState extends State<SpeakingList> {
   Widget build(BuildContext context) {
     return _usersSpeakingList.length != 0
         ? _getList(_usersSpeakingList)
-        : Text("Keine Redner");
+        : Expanded(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [Text("Keine Redner")]));
   }
 
   Widget _getList(List<User> list) {

@@ -38,7 +38,10 @@ class _AllUsersListState extends State<AllUsersList> {
   Widget build(BuildContext context) {
     return _sortedUsers.length != 0
         ? _getList(_sortedUsers)
-        : Text("Keine Daten vorhanden");
+        : Expanded(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [Text("Keine Teilnehmer")]));
   }
 
   Widget _getList(List<User> list) {

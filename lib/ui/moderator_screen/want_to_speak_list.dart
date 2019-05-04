@@ -42,7 +42,10 @@ class _WantToSpeakListState extends State<WantToSpeakList> {
   Widget build(BuildContext context) {
     return _usersWantToSpeak.length != 0
         ? _getList(_usersWantToSpeak)
-        : Text("Keine Meldungen");
+        : Expanded(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [Text("Keine Meldungen")]));
   }
 
   Widget _getList(List<User> list) {
