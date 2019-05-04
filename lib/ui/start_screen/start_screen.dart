@@ -61,6 +61,14 @@ class StartScreen extends StatelessWidget {
             );
           },
         ),
+        // TODO remove only for testing
+        IconButton(
+          icon: Icon(Icons.question_answer),
+          tooltip: 'Moderator ansicht',
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, "/room/moderator");
+          },
+        ),
       ],
     );
   }
