@@ -13,4 +13,6 @@ class Repository {
   Future<Room> createRoom(Room room) => roomApi.createRoom(room);
 
   RoomWebSocket webSocket() => roomWebSocket;
+
+  Future<List<Room>> getAllRooms() => roomApi.getAllRooms();
 }
