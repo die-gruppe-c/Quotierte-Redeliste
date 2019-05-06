@@ -4,7 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/ui/moderator_screen/moderator_screen.dart';
 import 'package:quotierte_redeliste/ui/start_screen/start_screen.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.white, //top bar color
+    statusBarIconBrightness: Brightness.dark, //top bar icons
+    systemNavigationBarColor: Colors.white, //bottom bar color
+    systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
+  ));
+  runApp(MyApp());
+}
 
 const PRIMARY_COLOR = Colors.white;
 const PRIMARY_COLOR_DARK = Colors.black87;
