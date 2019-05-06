@@ -14,24 +14,53 @@ class EnterRoomScreen extends StatefulWidget {
 
 class _EnterRoomScreenState extends State<EnterRoomScreen> {
   Room _room;
-
-  List<String> _genders = <String>['', 'Männlich', 'Weiblich', 'Diverse'];
-  List<String> _partys = <String>['', 'SPD', 'FDP', 'AFD', 'CDU'];
-  String _gender = 'Männlich';
-  String _party = 'CDU';
+  bool _loading = true;
+  List<String> selectedAttributes;
 
   void initState() {
     super.initState();
-    Repository().getRoom(1).then((room) {
+    Repository().getRoom(int.parse(widget.roomId)).then((room) {
       setState(() {
         _room = room;
+        _loading = false;
+        selectedAttributes = _room.attributes.map((attr) {
+          return attr.values[0].value;
+        }).toList();
+      });
+    }).catchError((error) {
+      print(error.toString());
+      setState(() {
+        _loading = false;
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return getAttributeView();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Raum"),
+      ),
+      body: _loading ? _getLoadingIndicator() : getAttributeView(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: _room != null ? setFloatingActionButton() : null,
+    );
+  }
+
+  Widget _getLoadingIndicator() {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                CircularProgressIndicator(),
+                Padding(padding: EdgeInsets.only(right: 20)),
+                Text('Lade Daten...')
+              ]),
+        ]);
   }
 
   Widget getAttributeView() {
@@ -45,7 +74,6 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
                 return getListViewItem(pos);
               },
             )),
-            setFloatingActionButton(),
           ]);
   }
 
@@ -62,7 +90,7 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
           Padding(
             padding: EdgeInsets.only(bottom: 25),
           ),
-          Text('Kein Beitritt in Raum' + _room.name + 'möglich.',
+          Text('Kein Beitritt in Raum möglich.',
               style: Theme.of(context).textTheme.display1),
         ]);
   }
@@ -70,17 +98,12 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
   Widget getListViewItem(pos) {
     return Padding(
         padding: EdgeInsets.only(bottom: 2.0, left: 4, right: 4),
-        child: Card(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
-            child: Text(
-              _room.name,
-              style: TextStyle(
-                fontSize: 18.0,
-              ),
-            ),
-          ),
-        ));
+        child: _getDropdown(
+            pos,
+            _room.attributes[pos].name,
+            _room.attributes[pos].values.map((attr) {
+              return attr.value;
+            }).toList()));
   }
 
   Widget setFloatingActionButton() {
@@ -88,6 +111,37 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
         icon: Icon(Icons.save),
         onPressed: () => {},
         label: new Text('Speichern'));
+  }
+
+  Widget _getDropdown(int pos, String name, List<String> values) {
+    return new Form(
+        autovalidate: true,
+        child: new Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: new FormField(builder: (FormFieldState state) {
+              return InputDecorator(
+                decoration: InputDecoration(
+                  labelText: name,
+                ),
+                child: new DropdownButtonHideUnderline(
+                  child: new DropdownButton(
+                    value: selectedAttributes[pos],
+                    isDense: true,
+                    items: values.map((String value) {
+                      return new DropdownMenuItem(
+                        value: value,
+                        child: new Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedAttributes[pos] = newValue;
+                      });
+                    },
+                  ),
+                ),
+              );
+            })));
   }
 }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quotierte_redeliste/models/attribute.dart';
+import 'package:quotierte_redeliste/models/attribute_value.dart';
 import 'package:quotierte_redeliste/ui/create_room/create_room_bloc.dart';
 
 class EditRoomWidget extends StatefulWidget {
@@ -155,7 +156,7 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
     var iconColor = Theme.of(context).primaryColorDark;
 
     if (valueIdx == attribute.values.length - 1 &&
-        attribute.values[valueIdx].length == 0) {
+        attribute.values[valueIdx].value.length == 0) {
       icon = Icons.add;
       iconColor = Theme.of(context).hintColor;
     }
@@ -177,9 +178,10 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                   child: TextField(
                     controller: new TextEditingController.fromValue(
                         new TextEditingValue(
-                            text: attribute.values[valueIdx],
+                            text: attribute.values[valueIdx].value,
                             selection: new TextSelection.collapsed(
-                                offset: attribute.values[valueIdx].length))),
+                                offset:
+                                    attribute.values[valueIdx].value.length))),
                     cursorColor: Theme.of(context).hintColor,
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(50),
@@ -191,14 +193,15 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                         hintStyle:
                             TextStyle(color: Theme.of(context).hintColor)),
                     onChanged: (text) {
-                      attribute.values[valueIdx] = text;
+                      attribute.values[valueIdx].value = text;
                       setState(() {
                         if (valueIdx == attribute.values.length - 1 &&
                             text.length > 0) {
-                          attribute.values.add("");
+                          attribute.values.add(AttributeValue(""));
                         } else if (valueIdx == attribute.values.length - 2 &&
                             text.length == 0 &&
-                            attribute.values[attribute.values.length - 1] ==
+                            attribute.values[attribute.values.length - 1]
+                                    .value ==
                                 "") {
                           attribute.values.removeLast();
                         }
@@ -206,7 +209,7 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                     },
                     onEditingComplete: () {
                       if (valueIdx < attribute.values.length - 2 &&
-                          attribute.values[valueIdx] == "") {
+                          attribute.values[valueIdx].value == "") {
                         setState(() {
                           attribute.values.removeAt(valueIdx);
                         });
@@ -224,7 +227,7 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
     int index = createRoomBloc.getAttributeCount();
 
     var newAttribute = new Attribute("");
-    newAttribute.values.add("");
+    newAttribute.values.add(AttributeValue(""));
 
     createRoomBloc.addAttribute(newAttribute);
 
