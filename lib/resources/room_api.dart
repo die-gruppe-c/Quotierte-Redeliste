@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' show Client;
-import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/models/profile.dart';
+import 'package:quotierte_redeliste/resources/repository.dart';
 
 import '../models/room.dart';
 
 class RoomApi {
-  static const BASE_URL = "http://" + Repository.BASE_URL;
+  static const BASE_URL = "https://" + Repository.BASE_URL;
 
   Client client = Client();
 
@@ -20,7 +20,7 @@ class RoomApi {
     if (response.statusCode == 201) {
       return Room.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to create room');
+      throw Exception('Failed to create room: ' + response.body);
     }
   }
 
@@ -30,7 +30,8 @@ class RoomApi {
     if (response.statusCode == 200) {
       return Room.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to load room');
+      throw Exception(
+          'Failed to load room: ' + response.body != null ? response.body : "");
     }
   }
 
