@@ -1,4 +1,5 @@
 import 'package:quotierte_redeliste/models/attribute.dart';
+import 'package:quotierte_redeliste/models/attribute_value.dart';
 import 'package:quotierte_redeliste/models/room.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 
@@ -10,7 +11,7 @@ class CreateRoomBloc {
   createNewRoom() {
     _room = Room();
     var attribute = Attribute("");
-    attribute.values.add("");
+    attribute.values.add(AttributeValue(""));
     _room.attributes.add(attribute);
   }
 

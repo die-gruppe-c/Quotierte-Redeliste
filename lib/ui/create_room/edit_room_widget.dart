@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quotierte_redeliste/models/attribute.dart';
+import 'package:quotierte_redeliste/models/attribute_value.dart';
 import 'package:quotierte_redeliste/ui/create_room/create_room_bloc.dart';
 
 class EditRoomWidget extends StatefulWidget {
@@ -15,7 +16,6 @@ class EditRoomWidget extends StatefulWidget {
 }
 
 class _EditRoomWidgetState extends State<EditRoomWidget> {
-  static const HINT_COLOR = Colors.black38;
   static const double PADDING_SIDE = 16;
   static const int ADD_ATTRIBUTE_ANIM_DURATION = 300;
   static const int REMOVE_ATTRIBUTE_ANIM_DURATION = 400;
@@ -62,13 +62,11 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
 
   _buildAttributeListItem(Attribute attribute, [int attrIdx]) {
     var icon = Icons.add;
-    var icon_color = HINT_COLOR;
 
     if (attrIdx != null &&
         (attrIdx != createRoomBloc.getAttributeCount() - 1 ||
             attribute.name.length != 0)) {
       icon = Icons.category;
-      icon_color = Colors.black;
     }
 
     return Container(
@@ -84,7 +82,6 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                           left: PADDING_SIDE, right: PADDING_SIDE),
                       child: Icon(
                         icon,
-                        color: icon_color,
                       )),
                 ),
                 Expanded(
@@ -96,7 +93,7 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                                   text: attribute.name,
                                   selection: new TextSelection.collapsed(
                                       offset: attribute.name.length))),
-                          cursorColor: HINT_COLOR,
+                          cursorColor: Theme.of(context).hintColor,
                           inputFormatters: [
                             LengthLimitingTextInputFormatter(50),
                           ],
@@ -104,7 +101,8 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                           decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: "Attribut hinzufügen",
-                              hintStyle: TextStyle(color: HINT_COLOR)),
+                              hintStyle: TextStyle(
+                                  color: Theme.of(context).hintColor)),
                           onChanged: (text) {
                             attribute.name = text;
                             if (attrIdx != null) {
@@ -134,15 +132,14 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                             }
                           },
                           style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ))),
               ],
             ),
             ListView.builder(
               itemBuilder: (context, position) {
-                return _buildAttributeValueListItem(attribute, position);
+                return _buildAttributeValueListItem(
+                    context, attribute, position);
               },
               itemCount: attribute.values.length,
               physics: const ClampingScrollPhysics(),
@@ -153,14 +150,15 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
         ));
   }
 
-  _buildAttributeValueListItem(Attribute attribute, int valueIdx) {
+  _buildAttributeValueListItem(
+      BuildContext context, Attribute attribute, int valueIdx) {
     var icon = Icons.arrow_right;
-    var icon_color = Colors.black;
+    var iconColor = Theme.of(context).primaryColorDark;
 
     if (valueIdx == attribute.values.length - 1 &&
-        attribute.values[valueIdx].length == 0) {
+        attribute.values[valueIdx].value.length == 0) {
       icon = Icons.add;
-      icon_color = HINT_COLOR;
+      iconColor = Theme.of(context).hintColor;
     }
 
     return Container(
@@ -171,7 +169,7 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                 padding: const EdgeInsets.only(left: 56, right: 4),
                 child: Icon(
                   icon,
-                  color: icon_color,
+                  color: iconColor,
                 )),
           ),
           Expanded(
@@ -180,10 +178,11 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                   child: TextField(
                     controller: new TextEditingController.fromValue(
                         new TextEditingValue(
-                            text: attribute.values[valueIdx],
+                            text: attribute.values[valueIdx].value,
                             selection: new TextSelection.collapsed(
-                                offset: attribute.values[valueIdx].length))),
-                    cursorColor: HINT_COLOR,
+                                offset:
+                                    attribute.values[valueIdx].value.length))),
+                    cursorColor: Theme.of(context).hintColor,
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(50),
                     ],
@@ -191,16 +190,18 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                     decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: "Wert hinzufügen",
-                        hintStyle: TextStyle(color: HINT_COLOR)),
+                        hintStyle:
+                            TextStyle(color: Theme.of(context).hintColor)),
                     onChanged: (text) {
-                      attribute.values[valueIdx] = text;
+                      attribute.values[valueIdx].value = text;
                       setState(() {
                         if (valueIdx == attribute.values.length - 1 &&
                             text.length > 0) {
-                          attribute.values.add("");
+                          attribute.values.add(AttributeValue(""));
                         } else if (valueIdx == attribute.values.length - 2 &&
                             text.length == 0 &&
-                            attribute.values[attribute.values.length - 1] ==
+                            attribute.values[attribute.values.length - 1]
+                                    .value ==
                                 "") {
                           attribute.values.removeLast();
                         }
@@ -208,16 +209,14 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                     },
                     onEditingComplete: () {
                       if (valueIdx < attribute.values.length - 2 &&
-                          attribute.values[valueIdx] == "") {
+                          attribute.values[valueIdx].value == "") {
                         setState(() {
                           attribute.values.removeAt(valueIdx);
                         });
                       }
                     },
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal),
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                   ))),
         ],
       ),
@@ -228,7 +227,7 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
     int index = createRoomBloc.getAttributeCount();
 
     var newAttribute = new Attribute("");
-    newAttribute.values.add("");
+    newAttribute.values.add(AttributeValue(""));
 
     createRoomBloc.addAttribute(newAttribute);
 

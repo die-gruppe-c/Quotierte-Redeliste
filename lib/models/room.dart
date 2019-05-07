@@ -30,20 +30,18 @@ class Room {
     if (parsedJson['created_on'] != null)
       this.createOn = DateTime.parse(parsedJson['created_on']);
 
-    /*
     List<Attribute> tempAttributes = [];
     for (int i = 0; i < parsedJson['attributes'].length; i++) {
-      Attribute attribute = Attribute.fromJsonObject(parsedJson['attributes'][i]);
+      Attribute attribute =
+          Attribute.fromJsonObject(parsedJson['attributes'][i]);
       tempAttributes.add(attribute);
     }
     attributes = tempAttributes;
-    */
-    attributes = List();
   }
 
   Map toMap() {
     var map = new Map<String, dynamic>();
-    map["room_name"] = this.name;
+    map["name"] = this.name;
 
     return map;
   }

@@ -36,6 +36,8 @@ class Profile {
   }
 
   Future<String> getToken() async {
+    return "1234_1";
+
     if (_token == null) {
       final SharedPreferences prefs = await _prefs;
 

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:quotierte_redeliste/models/profile.dart';
 import 'package:quotierte_redeliste/models/user.dart';
@@ -58,60 +57,75 @@ class RoomWebSocket {
   connect() {
     _initStreamsAndObservables();
 
-    _webSocket = IOWebSocketChannel.connect(BASE_URL);
+//    _webSocket = IOWebSocketChannel.connect(BASE_URL);
+//
+//    _webSocket.stream.listen((data) {
+//      Map<String, dynamic> parsedJson = json.decode(data);
+//      String command = parsedJson["command"];
+//      dynamic commandData = parsedJson["data"];
+//      switch (command) {
+//        case WebSocketCommands.ALL_USERS:
+//          _allUsers(commandData);
+//          break;
+//        case WebSocketCommands.SPEAKING_LIST:
+//          _speakingList(commandData);
+//          break;
+//        case WebSocketCommands.SPEAK_CATEGORIES:
+//          _speakCategories(commandData);
+//          break;
+//        case WebSocketCommands.USERS_SORTED:
+//          _usersSorted(commandData);
+//          break;
+//        case WebSocketCommands.USERS_WANT_TO_SPEAK:
+//          _usersWantToSpeak(commandData);
+//          break;
+//      }
+//    });
+//
+//    _sendId();
 
-    _webSocket.stream.listen((data) {
-      Map<String, dynamic> parsedJson = json.decode(data);
-      String command = parsedJson["command"];
-      dynamic commandData = parsedJson["data"];
-      switch (command) {
-        case WebSocketCommands.ALL_USERS:
-          _allUsers(commandData);
-          break;
-        case WebSocketCommands.SPEAKING_LIST:
-          _speakingList(commandData);
-          break;
-        case WebSocketCommands.SPEAK_CATEGORIES:
-          _speakCategories(commandData);
-          break;
-        case WebSocketCommands.USERS_SORTED:
-          _usersSorted(commandData);
-          break;
-        case WebSocketCommands.USERS_WANT_TO_SPEAK:
-          _usersWantToSpeak(commandData);
-          break;
+    Timer(Duration(seconds: 2), () {
+      List<User> users = List();
+      for (int i = 0; i < 30; i++) {
+        User user = User();
+        user.name = "Test name" + i.toString();
+        user.id = i.toString();
+        user.attributes = Map<String, String>();
+        user.attributes["geschlecht"] = "männlich";
+        user.attributes["partei"] = "CDU";
+        users.add(user);
       }
+
+      print("send all users");
+      _streamAllUsers.add(users);
+
+      print("send sorted users");
+      List<String> usersId = List();
+      for (int i = 29; i >= 0; i--) {
+        usersId.add(i.toString());
+      }
+
+      _usersSorted(usersId);
     });
 
-    _sendId();
+    Timer(Duration(seconds: 3), () {
+      List<String> speak = [
+        "1",
+        "2",
+        "3",
+        "4",
+        "6",
+        "8",
+        "9",
+        "11",
+        "12",
+        "23"
+      ];
+      print("send speaking list: " + speak.toString());
 
-//    Timer(Duration(seconds: 2), () {
-//      List<User> users = List();
-//      for (int i = 0; i < 30; i++) {
-//        User user = User();
-//        user.name = "Test name" + i.toString();
-//        user.id = i.toString();
-//        users.add(user);
-//      }
-//
-//      print("send all users");
-//      _streamAllUsers.add(users);
-//
-//      print("send sorted users");
-//      List<String> usersId = List();
-//      for (int i = 29; i >= 0; i--) {
-//        usersId.add(i.toString());
-//      }
-//
-//      _usersSorted(usersId);
-//    });
-//
-//    Timer(Duration(seconds: 3), () {
-//      List<String> speak = ["1", "2"];
-//      print("send speaking list: " + speak.toString());
-//
-//      _speakingList(speak);
-//    });
+      _speakingList(speak);
+      _usersWantToSpeak(speak);
+    });
   }
 
   _sendId() {
@@ -197,6 +211,10 @@ class RoomWebSocket {
   addUserToSpeakingList(String userId) {
     String data = WebSocketCommands.ADD_USER_TO_SPEAKING_LIST + ":" + userId;
     _webSocket.sink.add(data);
+  }
+
+  removeUserFromSpeakingList(String userId) {
+    // TODO implement
   }
 }
 

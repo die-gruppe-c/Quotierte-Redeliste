@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/ui/create_room/create_room_screen.dart';
-import 'package:quotierte_redeliste/ui/profile/profile_screen.dart';
+import 'package:quotierte_redeliste/ui/display_profile/profile_screen.dart';
 import 'package:quotierte_redeliste/ui/start_screen/enter_new_room_tab.dart';
 import 'package:quotierte_redeliste/ui/start_screen/history_tab.dart';
 
@@ -15,6 +15,8 @@ class StartScreen extends StatelessWidget {
           appBar: setAppbar(context),
           // body is the majority of the screen.
           body: TabBarView(children: [EnterNewRoomTab(), HistoryTab()]),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
           floatingActionButton: setFloatingActionButton(context),
         ));
   }
@@ -24,8 +26,28 @@ class StartScreen extends StatelessWidget {
       title: Text('Quoty'),
       bottom: TabBar(
         tabs: [
-          Tab(text: 'Raum beitreten'),
-          Tab(text: 'Verlauf'),
+          new Tab(
+            child: new Row(
+              children: <Widget>[
+                new Icon(Icons.open_in_new),
+                new SizedBox(
+                  width: 5.0,
+                ),
+                new Text("Raum beitreten"),
+              ],
+            ),
+          ),
+          new Tab(
+            child: new Row(
+              children: <Widget>[
+                new Icon(Icons.history),
+                new SizedBox(
+                  width: 5.0,
+                ),
+                new Text("Vergangene Räume"),
+              ],
+            ),
+          ),
         ],
       ),
       actions: <Widget>[
@@ -39,19 +61,25 @@ class StartScreen extends StatelessWidget {
             );
           },
         ),
+        // TODO remove only for testing
+        IconButton(
+          icon: Icon(Icons.question_answer),
+          tooltip: 'Moderator ansicht',
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, "/room/moderator");
+          },
+        ),
       ],
     );
   }
 
   Widget setFloatingActionButton(context) {
-    return FloatingActionButton(
-      child: Icon(Icons.add),
-      onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreateRoomScreen()),
-          ),
-      backgroundColor: Colors.red,
-      foregroundColor: Colors.white,
-    );
+    return FloatingActionButton.extended(
+        icon: Icon(Icons.add),
+        onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CreateRoomScreen()),
+            ),
+        label: new Text('Raum erstellen'));
   }
 }
