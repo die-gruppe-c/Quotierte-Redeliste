@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:quotierte_redeliste/models/profile.dart';
 import 'package:quotierte_redeliste/models/user.dart';
@@ -57,75 +58,79 @@ class RoomWebSocket {
   connect() {
     _initStreamsAndObservables();
 
-//    _webSocket = IOWebSocketChannel.connect(BASE_URL);
-//
-//    _webSocket.stream.listen((data) {
-//      Map<String, dynamic> parsedJson = json.decode(data);
-//      String command = parsedJson["command"];
-//      dynamic commandData = parsedJson["data"];
-//      switch (command) {
-//        case WebSocketCommands.ALL_USERS:
-//          _allUsers(commandData);
-//          break;
-//        case WebSocketCommands.SPEAKING_LIST:
-//          _speakingList(commandData);
-//          break;
-//        case WebSocketCommands.SPEAK_CATEGORIES:
-//          _speakCategories(commandData);
-//          break;
-//        case WebSocketCommands.USERS_SORTED:
-//          _usersSorted(commandData);
-//          break;
-//        case WebSocketCommands.USERS_WANT_TO_SPEAK:
-//          _usersWantToSpeak(commandData);
-//          break;
+    _webSocket = IOWebSocketChannel.connect(BASE_URL);
+
+    _webSocket.stream.listen((data) {
+      Map<String, dynamic> parsedJson = json.decode(data);
+      String command = parsedJson["command"];
+      dynamic commandData = parsedJson["data"];
+
+      print("Websocket command: " + command);
+      print("Websocket data: " + commandData.toString());
+
+      switch (command) {
+        case WebSocketCommands.ALL_USERS:
+          _allUsers(commandData);
+          break;
+        case WebSocketCommands.SPEAKING_LIST:
+          _speakingList(commandData);
+          break;
+        case WebSocketCommands.SPEAK_CATEGORIES:
+          _speakCategories(commandData);
+          break;
+        case WebSocketCommands.USERS_SORTED:
+          _usersSorted(commandData);
+          break;
+        case WebSocketCommands.USERS_WANT_TO_SPEAK:
+          _usersWantToSpeak(commandData);
+          break;
+      }
+    });
+
+    _sendId();
+
+//    Timer(Duration(seconds: 2), () {
+//      List<User> users = List();
+//      for (int i = 0; i < 30; i++) {
+//        User user = User();
+//        user.name = "Test name" + i.toString();
+//        user.id = i.toString();
+//        user.attributes = Map<String, String>();
+//        user.attributes["geschlecht"] = "männlich";
+//        user.attributes["partei"] = "CDU";
+//        users.add(user);
 //      }
+//
+//      print("send all users");
+//      _streamAllUsers.add(users);
+//
+//      print("send sorted users");
+//      List<String> usersId = List();
+//      for (int i = 29; i >= 0; i--) {
+//        usersId.add(i.toString());
+//      }
+//
+//      _usersSorted(usersId);
 //    });
 //
-//    _sendId();
-
-    Timer(Duration(seconds: 2), () {
-      List<User> users = List();
-      for (int i = 0; i < 30; i++) {
-        User user = User();
-        user.name = "Test name" + i.toString();
-        user.id = i.toString();
-        user.attributes = Map<String, String>();
-        user.attributes["geschlecht"] = "männlich";
-        user.attributes["partei"] = "CDU";
-        users.add(user);
-      }
-
-      print("send all users");
-      _streamAllUsers.add(users);
-
-      print("send sorted users");
-      List<String> usersId = List();
-      for (int i = 29; i >= 0; i--) {
-        usersId.add(i.toString());
-      }
-
-      _usersSorted(usersId);
-    });
-
-    Timer(Duration(seconds: 3), () {
-      List<String> speak = [
-        "1",
-        "2",
-        "3",
-        "4",
-        "6",
-        "8",
-        "9",
-        "11",
-        "12",
-        "23"
-      ];
-      print("send speaking list: " + speak.toString());
-
-      _speakingList(speak);
-      _usersWantToSpeak(speak);
-    });
+//    Timer(Duration(seconds: 3), () {
+//      List<String> speak = [
+//        "1",
+//        "2",
+//        "3",
+//        "4",
+//        "6",
+//        "8",
+//        "9",
+//        "11",
+//        "12",
+//        "23"
+//      ];
+//      print("send speaking list: " + speak.toString());
+//
+//      _speakingList(speak);
+//      _usersWantToSpeak(speak);
+//    });
   }
 
   _sendId() {
@@ -220,16 +225,18 @@ class RoomWebSocket {
 
 class WebSocketCommands {
   // receive
+  static const STARTED = "started"; // TODO
   static const ALL_USERS = "allUsers";
   static const SPEAKING_LIST = "speakingList";
-  static const SPEAK_CATEGORIES = "speakCategories";
+  static const SPEAK_CATEGORIES = "speechTypes";
   static const USERS_SORTED = "usersSorted";
   static const USERS_WANT_TO_SPEAK = "usersWantToSpeak";
 
   // send
+  static const START = "start"; // TODO moderator starts the room
   static const REGISTER = "register";
   static const WANT_TO_SPEAK = "wantToSpeak";
   static const WANT_NOT_TO_SPEAK = "wantNotToSpeak";
-  static const CHANGE_ORDER_SPEAKING_LIST = "changeOrder";
-  static const ADD_USER_TO_SPEAKING_LIST = "addUserToSpeakingList";
+  static const CHANGE_ORDER_SPEAKING_LIST = "changeSortOrder";
+  static const ADD_USER_TO_SPEAKING_LIST = "addUserToSpeechList";
 }
