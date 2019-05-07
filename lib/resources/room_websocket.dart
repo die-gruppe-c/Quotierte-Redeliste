@@ -84,6 +84,9 @@ class RoomWebSocket {
         case WebSocketCommands.USERS_WANT_TO_SPEAK:
           _usersWantToSpeak(commandData);
           break;
+        case WebSocketCommands.STARTED:
+          _roomStarted();
+          break;
       }
     });
 
@@ -164,6 +167,10 @@ class RoomWebSocket {
     _streamWantToSpeak.add(ids);
   }
 
+  _roomStarted() {
+    // TODO implement
+  }
+
   close() {
     _webSocket.sink.close();
 
@@ -221,11 +228,16 @@ class RoomWebSocket {
   removeUserFromSpeakingList(String userId) {
     // TODO implement
   }
+
+  start() {
+    String data = WebSocketCommands.START;
+    _webSocket.sink.add(data);
+  }
 }
 
 class WebSocketCommands {
   // receive
-  static const STARTED = "started"; // TODO
+  static const STARTED = "started";
   static const ALL_USERS = "allUsers";
   static const SPEAKING_LIST = "speakingList";
   static const SPEAK_CATEGORIES = "speechTypes";
@@ -233,7 +245,7 @@ class WebSocketCommands {
   static const USERS_WANT_TO_SPEAK = "usersWantToSpeak";
 
   // send
-  static const START = "start"; // TODO moderator starts the room
+  static const START = "start";
   static const REGISTER = "register";
   static const WANT_TO_SPEAK = "wantToSpeak";
   static const WANT_NOT_TO_SPEAK = "wantNotToSpeak";
