@@ -2,23 +2,25 @@ class User {
   String id;
   String name;
   Map<String, String> attributes;
-  bool createdByModerator = false;
+  bool createdByOwner = true;
+  bool online = false;
 
   User();
 
   User.fromJson(Map<String, dynamic> json) {
-    this.id = json['id'];
+    this.id = json['uuid'];
     this.name = json['name'];
 
-    if (json['createdByModerator'] != null)
-      this.createdByModerator = json['createdByModerator'];
+    this.createdByOwner = json['createdByOwner'];
+    this.online = json['online'];
 
     this.attributes = Map<String, String>();
 
-    if (json['attributes']) {
+    if (json['attributes'] != null) {
       List attributes = json['attributes'];
+      print(attributes.toString());
       attributes.forEach((attrJson) {
-        this.attributes[attrJson["name"]] = attrJson["value"];
+        this.attributes[attrJson["name"]] = attrJson["values"][0]["name"];
       });
     }
   }

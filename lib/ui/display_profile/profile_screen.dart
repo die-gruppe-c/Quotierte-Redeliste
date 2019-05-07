@@ -14,10 +14,20 @@ class _ProfileState extends State<ProfileScreen> {
           _usernameController = TextEditingController(text: _username);
           _usernameController.addListener(_updateUsername);
         }));
+
+    Profile().getToken().then((token) => setState(() {
+          _token = token;
+          _tokenController = TextEditingController(text: _token);
+          _tokenController.addListener(() {
+            Profile().setToken(_tokenController.text);
+          });
+        }));
   }
 
   String _username = "";
+  String _token = "";
   TextEditingController _usernameController;
+  TextEditingController _tokenController;
 
   _updateUsername() {
     Profile().setUsername(_usernameController.text);
@@ -59,6 +69,20 @@ class _ProfileState extends State<ProfileScreen> {
                         decoration:
                             DefaultThemes.inputDecoration(context, null),
                         controller: _usernameController,
+                      )),
+                    ]),
+                    Padding(padding: EdgeInsets.only(top: 10)),
+                    // TODO only for test purpose
+                    Row(children: [
+                      Text("Token: "),
+                      Padding(
+                        padding: EdgeInsets.only(right: 10),
+                      ),
+                      Flexible(
+                          child: TextField(
+                        decoration:
+                            DefaultThemes.inputDecoration(context, null),
+                        controller: _tokenController,
                       )),
                     ])
                   ])),
