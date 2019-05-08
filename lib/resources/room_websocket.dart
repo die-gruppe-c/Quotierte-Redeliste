@@ -91,49 +91,6 @@ class RoomWebSocket {
     });
 
     _sendId();
-
-//    Timer(Duration(seconds: 2), () {
-//      List<User> users = List();
-//      for (int i = 0; i < 30; i++) {
-//        User user = User();
-//        user.name = "Test name" + i.toString();
-//        user.id = i.toString();
-//        user.attributes = Map<String, String>();
-//        user.attributes["geschlecht"] = "männlich";
-//        user.attributes["partei"] = "CDU";
-//        users.add(user);
-//      }
-//
-//      print("send all users");
-//      _streamAllUsers.add(users);
-//
-//      print("send sorted users");
-//      List<String> usersId = List();
-//      for (int i = 29; i >= 0; i--) {
-//        usersId.add(i.toString());
-//      }
-//
-//      _usersSorted(usersId);
-//    });
-//
-//    Timer(Duration(seconds: 3), () {
-//      List<String> speak = [
-//        "1",
-//        "2",
-//        "3",
-//        "4",
-//        "6",
-//        "8",
-//        "9",
-//        "11",
-//        "12",
-//        "23"
-//      ];
-//      print("send speaking list: " + speak.toString());
-//
-//      _speakingList(speak);
-//      _usersWantToSpeak(speak);
-//    });
   }
 
   _sendId() {
