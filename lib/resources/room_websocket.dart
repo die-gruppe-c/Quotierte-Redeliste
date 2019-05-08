@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:quotierte_redeliste/models/profile.dart';
+import 'package:quotierte_redeliste/models/speaking_category.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:rxdart/rxdart.dart';
@@ -43,7 +44,8 @@ class RoomWebSocket {
   _ObservableStream<List<String>> _streamSpeakers = _ObservableStream();
   _ObservableStream<List<String>> _streamSortedUsers = _ObservableStream();
   _ObservableStream<List<String>> _streamWantToSpeak = _ObservableStream();
-  _ObservableStream<List<String>> _streamSpeakCategories = _ObservableStream();
+  _ObservableStream<List<SpeakingCategory>> _streamSpeakCategories =
+      _ObservableStream();
   _ObservableStream<RoomState> _streamRoomState = _ObservableStream();
 
   RoomWebSocket._internal();
@@ -103,8 +105,13 @@ class RoomWebSocket {
     _streamSpeakers.add(ids);
   }
 
-  _speakCategories(List<String> categories) {
-    _streamSpeakCategories.add(categories);
+  _speakCategories(Map<String, String> categories) {
+    List<SpeakingCategory> newSpeakingCategories = List();
+
+    categories.forEach((key, value) =>
+        newSpeakingCategories.add(SpeakingCategory(key, value)));
+
+    _streamSpeakCategories.add(newSpeakingCategories);
   }
 
   _usersSorted(List<String> ids) {
@@ -137,7 +144,7 @@ class RoomWebSocket {
     return _streamSpeakers.getStream();
   }
 
-  Stream<List<String>> getSpeakCategories() {
+  Stream<List<SpeakingCategory>> getSpeakCategories() {
     return _streamSpeakCategories.getStream();
   }
 
@@ -149,8 +156,8 @@ class RoomWebSocket {
     return _streamWantToSpeak.getStream();
   }
 
-  wantToSpeak(String category) {
-    String data = _WebSocketCommands.WANT_TO_SPEAK + ":" + category;
+  wantToSpeak(SpeakingCategory category) {
+    String data = _WebSocketCommands.WANT_TO_SPEAK + ":" + category.id;
     _webSocket.sink.add(data);
   }
 
