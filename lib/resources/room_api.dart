@@ -13,7 +13,7 @@ class RoomApi {
   Client client = Client();
 
   Future<Room> createRoom(Room room) async {
-    final headers = await getHeaders();
+    final headers = await _getHeaders();
     final response = await client.post(BASE_URL + "/room/create",
         body: json.encode(room.toMap()), headers: headers);
 
@@ -36,7 +36,7 @@ class RoomApi {
   }
 
   Future<List<Room>> getAllRooms() async {
-    final headers = await getHeaders();
+    final headers = await _getHeaders();
     final response = await client.get(BASE_URL + "/room", headers: headers);
 
     if (response.statusCode == 200) {
@@ -55,7 +55,7 @@ class RoomApi {
     }
   }
 
-  Future<Map> getHeaders() async {
+  Future<Map> _getHeaders() async {
     var map = new Map<String, String>();
     map["guest_uuid"] = await Profile().getToken();
     map["Content-Type"] = "application/json";
