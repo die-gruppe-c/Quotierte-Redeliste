@@ -60,22 +60,22 @@ class RoomWebSocket {
       print("Websocket data: " + commandData.toString());
 
       switch (command) {
-        case WebSocketCommands.ALL_USERS:
+        case _WebSocketCommands.ALL_USERS:
           _allUsers(commandData);
           break;
-        case WebSocketCommands.SPEAKING_LIST:
+        case _WebSocketCommands.SPEAKING_LIST:
           _speakingList(commandData);
           break;
-        case WebSocketCommands.SPEAK_CATEGORIES:
+        case _WebSocketCommands.SPEAK_CATEGORIES:
           _speakCategories(commandData);
           break;
-        case WebSocketCommands.USERS_SORTED:
+        case _WebSocketCommands.USERS_SORTED:
           _usersSorted(commandData);
           break;
-        case WebSocketCommands.USERS_WANT_TO_SPEAK:
+        case _WebSocketCommands.USERS_WANT_TO_SPEAK:
           _usersWantToSpeak(commandData);
           break;
-        case WebSocketCommands.STARTED:
+        case _WebSocketCommands.STARTED:
           _roomStarted();
           break;
       }
@@ -86,7 +86,7 @@ class RoomWebSocket {
 
   _sendId() {
     Profile().getToken().then((token) {
-      _webSocket.sink.add(WebSocketCommands.REGISTER + ":" + token);
+      _webSocket.sink.add(_WebSocketCommands.REGISTER + ":" + token);
     });
   }
 
@@ -150,17 +150,17 @@ class RoomWebSocket {
   }
 
   wantToSpeak(String category) {
-    String data = WebSocketCommands.WANT_TO_SPEAK + ":" + category;
+    String data = _WebSocketCommands.WANT_TO_SPEAK + ":" + category;
     _webSocket.sink.add(data);
   }
 
   doNotWantToSpeak() {
-    String data = WebSocketCommands.WANT_NOT_TO_SPEAK;
+    String data = _WebSocketCommands.WANT_NOT_TO_SPEAK;
     _webSocket.sink.add(data);
   }
 
   changeOrderOfSpeakingList(String userId, int newPosition) {
-    String data = WebSocketCommands.CHANGE_ORDER_SPEAKING_LIST +
+    String data = _WebSocketCommands.CHANGE_ORDER_SPEAKING_LIST +
         ":" +
         userId +
         "," +
@@ -169,7 +169,7 @@ class RoomWebSocket {
   }
 
   addUserToSpeakingList(String userId) {
-    String data = WebSocketCommands.ADD_USER_TO_SPEAKING_LIST + ":" + userId;
+    String data = _WebSocketCommands.ADD_USER_TO_SPEAKING_LIST + ":" + userId;
     _webSocket.sink.add(data);
   }
 
@@ -178,14 +178,14 @@ class RoomWebSocket {
   }
 
   start() {
-    String data = WebSocketCommands.START;
+    String data = _WebSocketCommands.START;
     _webSocket.sink.add(data);
   }
 }
 
 enum RoomState { STARTED }
 
-class WebSocketCommands {
+class _WebSocketCommands {
   // receive
   static const STARTED = "started";
   static const ALL_USERS = "allUsers";
