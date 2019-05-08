@@ -55,6 +55,53 @@ class RoomApi {
     }
   }
 
+  /// attributes: key is the name of the attribute,
+  ///             value is the selected value for the attribute
+  /// name: username
+  /// uuid: only when the moderator adds a user
+  Future<void> joinRoom(
+      String roomId, String name, Map<String, String> attributes,
+      {String uuid}) async {
+    final headers = await _getHeaders();
+    final body = Map<String, dynamic>();
+
+    body["roomId"] = roomId;
+    body["name"] = name;
+    if (uuid != null) body["uuid"] = uuid;
+
+    // Attributes
+    body["attributes"] = _getAttributesJsonFromMap(attributes);
+
+    final response = await client.post(BASE_URL + "/room/join",
+        body: json.encode(body), headers: headers);
+
+    if (response.statusCode == 201) {
+      print("Room created: " + response.body);
+      return;
+    } else {
+      throw Exception('Fehler beim beitreten: ' + response.body);
+    }
+  }
+
+  String _getAttributesJsonFromMap(Map<String, String> attributes) {
+    List<Map<String, dynamic>> attributesList = List();
+
+    attributes.forEach((key, value) {
+      Map<String, dynamic> oneAttributeMap = Map();
+      oneAttributeMap["name"] = key;
+
+      List<Map<String, String>> valueList = List();
+      Map<String, String> valueMap = Map();
+      valueMap["name"] = value;
+      valueList.add(valueMap);
+
+      oneAttributeMap["values"] = valueList;
+      attributesList.add(oneAttributeMap);
+    });
+
+    return json.encode(attributesList);
+  }
+
   Future<Map> _getHeaders() async {
     var map = new Map<String, String>();
     map["guest_uuid"] = await Profile().getToken();
