@@ -181,7 +181,9 @@ class RoomWebSocket {
   }
 
   removeUserFromSpeakingList(String userId) {
-    // TODO implement
+    String data =
+        _WebSocketCommands.REMOVE_USER_FROM_SPEAKING_LIST + ":" + userId;
+    _webSocket.sink.add(data);
   }
 
   start() {
@@ -194,18 +196,26 @@ enum RoomState { STARTED }
 
 class _WebSocketCommands {
   // receive
-  static const STARTED = "started";
-  static const ALL_USERS = "allUsers";
-  static const SPEAKING_LIST = "speakingList";
-  static const SPEAK_CATEGORIES = "speechTypes";
+
+  // only moderator
   static const USERS_SORTED = "usersSorted";
   static const USERS_WANT_TO_SPEAK = "usersWantToSpeak";
 
+  static const SPEAKING_LIST = "speakingList";
+  static const STARTED = "started";
+  static const ALL_USERS = "allUsers";
+  static const SPEAK_CATEGORIES = "speechTypes";
+
   // send
+
+  // only moderator
+//  static const UPDATE_USER_LIST = "updateUserList"; only for testing
   static const START = "start";
+  static const CHANGE_ORDER_SPEAKING_LIST = "changeSortOrder";
+  static const ADD_USER_TO_SPEAKING_LIST = "addUserToSpeechList";
+  static const REMOVE_USER_FROM_SPEAKING_LIST = "removeUserFromSpeechList";
+
   static const REGISTER = "register";
   static const WANT_TO_SPEAK = "wantToSpeak";
   static const WANT_NOT_TO_SPEAK = "wantNotToSpeak";
-  static const CHANGE_ORDER_SPEAKING_LIST = "changeSortOrder";
-  static const ADD_USER_TO_SPEAKING_LIST = "addUserToSpeechList";
 }
