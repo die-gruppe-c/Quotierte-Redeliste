@@ -24,12 +24,14 @@ class RoomWebSocket {
   StreamController<List<String>> _streamSortedUsers;
   StreamController<List<String>> _streamWantToSpeak;
   StreamController<List<String>> _streamSpeakCategories;
+  StreamController<RoomState> _streamRoomState;
 
   Observable<List<User>> _allUsersObservable;
   Observable<List<String>> _speakersObservable;
   Observable<List<String>> _sortedUsersObservable;
   Observable<List<String>> _wantToSpeakObservable;
   Observable<List<String>> _speakCategoriesObservable;
+  Observable<RoomState> _roomStateObservable;
 
   RoomWebSocket._internal();
 
@@ -39,6 +41,7 @@ class RoomWebSocket {
     _streamSortedUsers = StreamController<List<String>>.broadcast();
     _streamWantToSpeak = StreamController<List<String>>.broadcast();
     _streamSpeakCategories = StreamController<List<String>>.broadcast();
+    _streamRoomState = StreamController<RoomState>.broadcast();
 
     _allUsersObservable = Observable(_streamAllUsers.stream).shareValue();
     _speakersObservable = Observable(_streamSpeakers.stream).shareValue();
@@ -46,6 +49,7 @@ class RoomWebSocket {
     _wantToSpeakObservable = Observable(_streamWantToSpeak.stream).shareValue();
     _speakCategoriesObservable =
         Observable(_streamSpeakCategories.stream).shareValue();
+    _roomStateObservable = Observable(_streamRoomState.stream).shareValue();
 
     // listen to the observables to save the last value
     _allUsersObservable.listen((data) {});
@@ -53,6 +57,7 @@ class RoomWebSocket {
     _sortedUsersObservable.listen((data) {});
     _wantToSpeakObservable.listen((data) {});
     _speakCategoriesObservable.listen((data) {});
+    _roomStateObservable.listen((data) {});
   }
 
   connect() {
@@ -125,7 +130,7 @@ class RoomWebSocket {
   }
 
   _roomStarted() {
-    // TODO implement
+    _streamRoomState.add(RoomState.STARTED);
   }
 
   close() {
@@ -191,6 +196,8 @@ class RoomWebSocket {
     _webSocket.sink.add(data);
   }
 }
+
+enum RoomState { STARTED }
 
 class WebSocketCommands {
   // receive
