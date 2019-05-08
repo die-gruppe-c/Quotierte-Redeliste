@@ -40,18 +40,39 @@ class RoomWebSocket {
 
   IOWebSocketChannel _webSocket;
 
-  _ObservableStream<List<User>> _streamAllUsers = _ObservableStream();
-  _ObservableStream<List<String>> _streamSpeakers = _ObservableStream();
-  _ObservableStream<List<String>> _streamSortedUsers = _ObservableStream();
-  _ObservableStream<List<String>> _streamWantToSpeak = _ObservableStream();
-  _ObservableStream<List<SpeakingCategory>> _streamSpeakCategories =
-      _ObservableStream();
-  _ObservableStream<RoomState> _streamRoomState = _ObservableStream();
+  _ObservableStream<List<User>> _streamAllUsers;
+  _ObservableStream<List<String>> _streamSpeakers;
+  _ObservableStream<List<String>> _streamSortedUsers;
+  _ObservableStream<List<String>> _streamWantToSpeak;
+  _ObservableStream<List<SpeakingCategory>> _streamSpeakCategories;
+  _ObservableStream<RoomState> _streamRoomState;
+
+  bool _closed = true;
 
   RoomWebSocket._internal();
 
+  _initStreams() {
+    // close all connections that where opened before
+    if (!_closed) close();
+
+    _streamAllUsers = _ObservableStream();
+    _streamSpeakers = _ObservableStream();
+    _streamSortedUsers = _ObservableStream();
+    _streamWantToSpeak = _ObservableStream();
+    _streamSpeakCategories = _ObservableStream();
+    _streamRoomState = _ObservableStream();
+  }
+
+  /// call this only once
   connect() {
+    print("Websocket connect");
+
+    _initStreams();
+
     _webSocket = IOWebSocketChannel.connect(BASE_URL);
+    _closed = false;
+
+    print("Websocket connected");
 
     _webSocket.stream.listen((data) {
       Map<String, dynamic> parsedJson = json.decode(data);
@@ -134,6 +155,8 @@ class RoomWebSocket {
     _streamSortedUsers.close();
     _streamWantToSpeak.close();
     _streamSpeakCategories.close();
+
+    _closed = true;
   }
 
   Stream<List<User>> getAllUsers() {
