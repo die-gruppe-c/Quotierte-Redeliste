@@ -20,7 +20,7 @@ class RoomApi {
     if (response.statusCode == 201) {
       return Room.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to create room: ' + response.body);
+      throw Exception('Failed to create room: \n' + response.body);
     }
   }
 
