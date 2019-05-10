@@ -4,6 +4,8 @@ class Room {
   int id;
   String name;
   DateTime createOn;
+  bool archived;
+  bool running;
 
   List<Attribute> attributes;
 
@@ -15,6 +17,8 @@ class Room {
     id = room.id;
     name = room.name;
     createOn = room.createOn;
+    archived = room.archived;
+    running = room.running;
 
     attributes = new List();
 
@@ -26,6 +30,8 @@ class Room {
   Room.fromJson(Map<String, dynamic> parsedJson) {
     this.id = parsedJson['id'];
     this.name = parsedJson['name'];
+    this.archived = parsedJson['archived'];
+    this.running = parsedJson['running'];
 
     if (parsedJson['created_on'] != null)
       this.createOn = DateTime.parse(parsedJson['created_on']);
