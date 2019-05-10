@@ -37,6 +37,10 @@ class Attribute {
     List<Map<String, dynamic>> values =
         this.values.map((attribute) => attribute.toMap()).toList();
 
+    int weights = 0;
+    this.values.forEach((attribute) => weights += attribute.weight);
+    assert(weights == 100);
+
     map['values'] = values;
 
     return map;
