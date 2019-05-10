@@ -29,4 +29,16 @@ class Attribute {
     }
     values = tempValues;
   }
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = Map();
+    map['name'] = this.name;
+
+    List<Map<String, dynamic>> values =
+        this.values.map((attribute) => attribute.toMap()).toList();
+
+    map['values'] = values;
+
+    return map;
+  }
 }
