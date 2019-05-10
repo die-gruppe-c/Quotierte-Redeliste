@@ -55,6 +55,26 @@ class RoomApi {
     }
   }
 
+  Future<Room> getRoomToJoin() async {
+    final headers = await _getHeaders();
+    final response =
+        await client.get(BASE_URL + "/room/rejoin", headers: headers);
+
+    if (response.statusCode == 200) {
+      if (response.body.length > 1) {
+        Map decodedJson = json.decode(response.body);
+        return Room.fromJson(decodedJson);
+      } else {
+        return null;
+      }
+    } else {
+      throw Exception("Failed to load rejoin, status: " +
+          response.statusCode.toString() +
+          ", body: " +
+          response.body);
+    }
+  }
+
   /// attributes: key is the name of the attribute,
   ///             value is the selected value for the attribute
   /// name: username
