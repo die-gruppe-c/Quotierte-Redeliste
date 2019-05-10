@@ -4,7 +4,6 @@ class Room {
   int id;
   String name;
   DateTime createOn;
-
   List<Attribute> attributes;
 
   Room() {

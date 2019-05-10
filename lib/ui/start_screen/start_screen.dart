@@ -1,3 +1,4 @@
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/ui/create_room/create_room_screen.dart';
 import 'package:quotierte_redeliste/ui/display_profile/profile_screen.dart';
@@ -9,64 +10,86 @@ class StartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: setAppbar(context),
-          // body is the majority of the screen.
-          body: TabBarView(children: [EnterNewRoomTab(), HistoryTab()]),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: setFloatingActionButton(context),
-        ));
+    return Scaffold(
+      appBar: setAppbar(context),
+      body: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+        Row(children: <Widget>[
+          Expanded(
+            child: new Container(
+                margin: const EdgeInsets.only(left: 16.0, right: 20.0),
+                child: Divider(
+                  color: Theme.of(context).accentColor,
+                  height: 40,
+                )),
+          ),
+          Text("Raum beitreten"),
+          Expanded(
+            child: new Container(
+                margin: const EdgeInsets.only(left: 20.0, right: 16.0),
+                child: Divider(
+                  color: Theme.of(context).accentColor,
+                  height: 40,
+                )),
+          ),
+        ]),
+        EnterNewRoomTab(),
+        Row(children: <Widget>[
+          Expanded(
+            child: new Container(
+                margin: const EdgeInsets.only(left: 16.0, right: 20.0),
+                child: Divider(
+                  color: Theme.of(context).accentColor,
+                  height: 40,
+                )),
+          ),
+          Text("Vergangene Räume"),
+          Expanded(
+            child: new Container(
+                margin: const EdgeInsets.only(left: 20.0, right: 16.0),
+                child: Divider(
+                  color: Theme.of(context).accentColor,
+                  height: 40,
+                )),
+          ),
+        ]),
+        HistoryTab(),
+      ]),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: setFloatingActionButton(context),
+    );
   }
 
   Widget setAppbar(context) {
     return AppBar(
       title: Text('Quoty'),
-      bottom: TabBar(
-        tabs: [
-          new Tab(
-            child: new Row(
-              children: <Widget>[
-                new Icon(Icons.open_in_new),
-                new SizedBox(
-                  width: 5.0,
-                ),
-                new Text("Raum beitreten"),
-              ],
-            ),
-          ),
-          new Tab(
-            child: new Row(
-              children: <Widget>[
-                new Icon(Icons.history),
-                new SizedBox(
-                  width: 5.0,
-                ),
-                new Text("Vergangene Räume"),
-              ],
-            ),
-          ),
-        ],
-      ),
       actions: <Widget>[
         IconButton(
+          icon: new Icon(
+            Theme.of(context).brightness == Brightness.light
+                ? Icons.brightness_5
+                : Icons.brightness_7,
+          ),
+          onPressed: () {
+            DynamicTheme.of(context).setBrightness(
+                Theme.of(context).brightness == Brightness.dark
+                    ? Brightness.light
+                    : Brightness.dark);
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.speaker_notes),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, "/room/moderator");
+          },
+        ),
+        IconButton(
+          // TODO remove only for testing
           icon: Icon(Icons.account_circle),
-          tooltip: 'Profil bearbeiten',
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => ProfileScreen()),
             );
-          },
-        ),
-        // TODO remove only for testing
-        IconButton(
-          icon: Icon(Icons.question_answer),
-          tooltip: 'Moderator ansicht',
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, "/room/moderator");
           },
         ),
       ],

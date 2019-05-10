@@ -1,40 +1,28 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:quotierte_redeliste/models/room.dart';
 
 class ClientScreen extends StatefulWidget {
-  ClientScreen({Key key}) : super(key: key);
+  final int roomId;
+  ClientScreen(this.roomId, {Key key}) : super(key: key);
+
+  @override
+  _ClientScreenState createState() => _ClientScreenState();
+}
+
+class _ClientScreenState extends State<ClientScreen> {
+  Room _room;
+
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: setAppbar(context),
-          // body is the majority of the screen.
-
-          floatingActionButton: setFloatingActionButton(context),
-        ));
-  }
-
-  Widget setAppbar(context) {
-    return AppBar(
-      title: Text('Quoty'),
-      bottom: TabBar(
-        tabs: [
-          Tab(text: 'Raum beitreten'),
-          Tab(text: 'Verlauf'),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Attribute auswählen"),
       ),
-      actions: <Widget>[],
     );
-  }
-
-  Widget setFloatingActionButton(context) {
-    return FloatingActionButton(child: Icon(Icons.add), onPressed: () {});
-  }
-
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return null;
   }
 }

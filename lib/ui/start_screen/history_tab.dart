@@ -27,9 +27,13 @@ class _HistoryTabState extends State<HistoryTab> {
 
   Widget getEmptyState() {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      CircularProgressIndicator(),
-      Padding(padding: EdgeInsets.only(top: 20)),
-      Text('Räume werden geladen')
+      Padding(
+          padding: EdgeInsets.only(top: 150),
+          child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+            CircularProgressIndicator(),
+            Padding(padding: EdgeInsets.only(top: 25)),
+            Text('Räume werden geladen')
+          ]))
     ]);
   }
 
@@ -48,8 +52,12 @@ class _HistoryTabState extends State<HistoryTab> {
   }
 
   Widget noDataAvailable() {
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text('Keine Daten vorhanden', style: Theme.of(context).textTheme.display1)
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Padding(
+          padding: EdgeInsets.only(top: 150),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [Text('Kein Räume gefunden.')]))
     ]);
   }
 
