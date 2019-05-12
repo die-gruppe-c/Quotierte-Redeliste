@@ -71,7 +71,7 @@ class _EnterNewRoomState extends State<EnterNewRoomTab> {
                   ),
                   color: Theme.of(context).accentColor,
                   textColor: Theme.of(context).accentTextTheme.button.color,
-                  label: Text('Raum beitreten',
+                  label: Text('BEITRETEN',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       )),
