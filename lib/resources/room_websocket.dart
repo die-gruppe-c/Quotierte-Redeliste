@@ -2,10 +2,31 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:quotierte_redeliste/models/profile.dart';
+import 'package:quotierte_redeliste/models/speaking_category.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:web_socket_channel/io.dart';
+
+/// creates a broadcast stream and starts listening to it
+/// when a user subscribes the stream from getStream() the
+/// last value will be emitted at the time of the subscription
+class _ObservableStream<T> {
+  StreamController<T> _streamController;
+  Observable<T> _observable;
+
+  _ObservableStream() {
+    _streamController = StreamController<T>.broadcast();
+    _observable = Observable(_streamController.stream).shareValue();
+    _observable.listen((data) {});
+  }
+
+  Stream<T> getStream() => _observable;
+
+  add(T send) => _streamController.add(send);
+
+  close() => _streamController.close();
+}
 
 class RoomWebSocket {
   // Singleton pattern
@@ -19,46 +40,39 @@ class RoomWebSocket {
 
   IOWebSocketChannel _webSocket;
 
-  StreamController<List<User>> _streamAllUsers;
-  StreamController<List<String>> _streamSpeakers;
-  StreamController<List<String>> _streamSortedUsers;
-  StreamController<List<String>> _streamWantToSpeak;
-  StreamController<List<String>> _streamSpeakCategories;
+  _ObservableStream<List<User>> _streamAllUsers;
+  _ObservableStream<List<String>> _streamSpeakers;
+  _ObservableStream<List<String>> _streamSortedUsers;
+  _ObservableStream<List<String>> _streamWantToSpeak;
+  _ObservableStream<List<SpeakingCategory>> _streamSpeakCategories;
+  _ObservableStream<RoomState> _streamRoomState;
 
-  Observable<List<User>> _allUsersObservable;
-  Observable<List<String>> _speakersObservable;
-  Observable<List<String>> _sortedUsersObservable;
-  Observable<List<String>> _wantToSpeakObservable;
-  Observable<List<String>> _speakCategoriesObservable;
+  bool _closed = true;
 
   RoomWebSocket._internal();
 
-  _initStreamsAndObservables() {
-    _streamAllUsers = StreamController<List<User>>.broadcast();
-    _streamSpeakers = StreamController<List<String>>.broadcast();
-    _streamSortedUsers = StreamController<List<String>>.broadcast();
-    _streamWantToSpeak = StreamController<List<String>>.broadcast();
-    _streamSpeakCategories = StreamController<List<String>>.broadcast();
+  _initStreams() {
+    // close all connections that where opened before
+    if (!_closed) close();
 
-    _allUsersObservable = Observable(_streamAllUsers.stream).shareValue();
-    _speakersObservable = Observable(_streamSpeakers.stream).shareValue();
-    _sortedUsersObservable = Observable(_streamSortedUsers.stream).shareValue();
-    _wantToSpeakObservable = Observable(_streamWantToSpeak.stream).shareValue();
-    _speakCategoriesObservable =
-        Observable(_streamSpeakCategories.stream).shareValue();
-
-    // listen to the observables to save the last value
-    _allUsersObservable.listen((data) {});
-    _speakersObservable.listen((data) {});
-    _sortedUsersObservable.listen((data) {});
-    _wantToSpeakObservable.listen((data) {});
-    _speakCategoriesObservable.listen((data) {});
+    _streamAllUsers = _ObservableStream();
+    _streamSpeakers = _ObservableStream();
+    _streamSortedUsers = _ObservableStream();
+    _streamWantToSpeak = _ObservableStream();
+    _streamSpeakCategories = _ObservableStream();
+    _streamRoomState = _ObservableStream();
   }
 
+  /// call this only once
   connect() {
-    _initStreamsAndObservables();
+    print("Websocket connect");
+
+    _initStreams();
 
     _webSocket = IOWebSocketChannel.connect(BASE_URL);
+    _closed = false;
+
+    print("Websocket connected");
 
     _webSocket.stream.listen((data) {
       Map<String, dynamic> parsedJson = json.decode(data);
@@ -69,76 +83,33 @@ class RoomWebSocket {
       print("Websocket data: " + commandData.toString());
 
       switch (command) {
-        case WebSocketCommands.ALL_USERS:
+        case _WebSocketCommands.ALL_USERS:
           _allUsers(commandData);
           break;
-        case WebSocketCommands.SPEAKING_LIST:
+        case _WebSocketCommands.SPEAKING_LIST:
           _speakingList(commandData);
           break;
-        case WebSocketCommands.SPEAK_CATEGORIES:
+        case _WebSocketCommands.SPEAK_CATEGORIES:
           _speakCategories(commandData);
           break;
-        case WebSocketCommands.USERS_SORTED:
+        case _WebSocketCommands.USERS_SORTED:
           _usersSorted(commandData);
           break;
-        case WebSocketCommands.USERS_WANT_TO_SPEAK:
+        case _WebSocketCommands.USERS_WANT_TO_SPEAK:
           _usersWantToSpeak(commandData);
           break;
-        case WebSocketCommands.STARTED:
+        case _WebSocketCommands.STARTED:
           _roomStarted();
           break;
       }
-    });
+    }, onDone: _onClosed, onError: _onError);
 
     _sendId();
-
-//    Timer(Duration(seconds: 2), () {
-//      List<User> users = List();
-//      for (int i = 0; i < 30; i++) {
-//        User user = User();
-//        user.name = "Test name" + i.toString();
-//        user.id = i.toString();
-//        user.attributes = Map<String, String>();
-//        user.attributes["geschlecht"] = "männlich";
-//        user.attributes["partei"] = "CDU";
-//        users.add(user);
-//      }
-//
-//      print("send all users");
-//      _streamAllUsers.add(users);
-//
-//      print("send sorted users");
-//      List<String> usersId = List();
-//      for (int i = 29; i >= 0; i--) {
-//        usersId.add(i.toString());
-//      }
-//
-//      _usersSorted(usersId);
-//    });
-//
-//    Timer(Duration(seconds: 3), () {
-//      List<String> speak = [
-//        "1",
-//        "2",
-//        "3",
-//        "4",
-//        "6",
-//        "8",
-//        "9",
-//        "11",
-//        "12",
-//        "23"
-//      ];
-//      print("send speaking list: " + speak.toString());
-//
-//      _speakingList(speak);
-//      _usersWantToSpeak(speak);
-//    });
   }
 
   _sendId() {
     Profile().getToken().then((token) {
-      _webSocket.sink.add(WebSocketCommands.REGISTER + ":" + token);
+      _webSocket.sink.add(_WebSocketCommands.REGISTER + ":" + token);
     });
   }
 
@@ -155,8 +126,13 @@ class RoomWebSocket {
     _streamSpeakers.add(ids);
   }
 
-  _speakCategories(List<String> categories) {
-    _streamSpeakCategories.add(categories);
+  _speakCategories(Map<String, String> categories) {
+    List<SpeakingCategory> newSpeakingCategories = List();
+
+    categories.forEach((key, value) =>
+        newSpeakingCategories.add(SpeakingCategory(key, value)));
+
+    _streamSpeakCategories.add(newSpeakingCategories);
   }
 
   _usersSorted(List<String> ids) {
@@ -168,7 +144,17 @@ class RoomWebSocket {
   }
 
   _roomStarted() {
-    // TODO implement
+    _streamRoomState.add(RoomState.STARTED);
+  }
+
+  _onClosed() {
+    _streamRoomState.add(RoomState.DISCONNECTED);
+    close();
+  }
+
+  _onError(error) {
+    _streamRoomState.add(RoomState.ERROR);
+    close();
   }
 
   close() {
@@ -179,40 +165,42 @@ class RoomWebSocket {
     _streamSortedUsers.close();
     _streamWantToSpeak.close();
     _streamSpeakCategories.close();
+
+    _closed = true;
   }
 
   Stream<List<User>> getAllUsers() {
-    return _allUsersObservable;
+    return _streamAllUsers.getStream();
   }
 
   Stream<List<String>> getSpeakingList() {
-    return _speakersObservable;
+    return _streamSpeakers.getStream();
   }
 
-  Stream<List<String>> getSpeakCategories() {
-    return _speakCategoriesObservable;
+  Stream<List<SpeakingCategory>> getSpeakCategories() {
+    return _streamSpeakCategories.getStream();
   }
 
   Stream<List<String>> getAllUsersSorted() {
-    return _sortedUsersObservable;
+    return _streamSortedUsers.getStream();
   }
 
   Stream<List<String>> getUsersWantToSpeak() {
-    return _wantToSpeakObservable;
+    return _streamWantToSpeak.getStream();
   }
 
-  wantToSpeak(String category) {
-    String data = WebSocketCommands.WANT_TO_SPEAK + ":" + category;
+  wantToSpeak(SpeakingCategory category) {
+    String data = _WebSocketCommands.WANT_TO_SPEAK + ":" + category.id;
     _webSocket.sink.add(data);
   }
 
   doNotWantToSpeak() {
-    String data = WebSocketCommands.WANT_NOT_TO_SPEAK;
+    String data = _WebSocketCommands.WANT_NOT_TO_SPEAK;
     _webSocket.sink.add(data);
   }
 
   changeOrderOfSpeakingList(String userId, int newPosition) {
-    String data = WebSocketCommands.CHANGE_ORDER_SPEAKING_LIST +
+    String data = _WebSocketCommands.CHANGE_ORDER_SPEAKING_LIST +
         ":" +
         userId +
         "," +
@@ -221,34 +209,46 @@ class RoomWebSocket {
   }
 
   addUserToSpeakingList(String userId) {
-    String data = WebSocketCommands.ADD_USER_TO_SPEAKING_LIST + ":" + userId;
+    String data = _WebSocketCommands.ADD_USER_TO_SPEAKING_LIST + ":" + userId;
     _webSocket.sink.add(data);
   }
 
   removeUserFromSpeakingList(String userId) {
-    // TODO implement
+    String data =
+        _WebSocketCommands.REMOVE_USER_FROM_SPEAKING_LIST + ":" + userId;
+    _webSocket.sink.add(data);
   }
 
   start() {
-    String data = WebSocketCommands.START;
+    String data = _WebSocketCommands.START;
     _webSocket.sink.add(data);
   }
 }
 
-class WebSocketCommands {
+enum RoomState { STARTED, DISCONNECTED, ERROR }
+
+class _WebSocketCommands {
   // receive
-  static const STARTED = "started";
-  static const ALL_USERS = "allUsers";
-  static const SPEAKING_LIST = "speakingList";
-  static const SPEAK_CATEGORIES = "speechTypes";
+
+  // only moderator
   static const USERS_SORTED = "usersSorted";
   static const USERS_WANT_TO_SPEAK = "usersWantToSpeak";
 
+  static const SPEAKING_LIST = "speakingList";
+  static const STARTED = "started";
+  static const ALL_USERS = "allUsers";
+  static const SPEAK_CATEGORIES = "speechTypes";
+
   // send
+
+  // only moderator
+//  static const UPDATE_USER_LIST = "updateUserList"; only for testing
   static const START = "start";
+  static const CHANGE_ORDER_SPEAKING_LIST = "changeSortOrder";
+  static const ADD_USER_TO_SPEAKING_LIST = "addUserToSpeechList";
+  static const REMOVE_USER_FROM_SPEAKING_LIST = "removeUserFromSpeechList";
+
   static const REGISTER = "register";
   static const WANT_TO_SPEAK = "wantToSpeak";
   static const WANT_NOT_TO_SPEAK = "wantNotToSpeak";
-  static const CHANGE_ORDER_SPEAKING_LIST = "changeSortOrder";
-  static const ADD_USER_TO_SPEAKING_LIST = "addUserToSpeechList";
 }
