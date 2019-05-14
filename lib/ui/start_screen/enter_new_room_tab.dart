@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quotierte_redeliste/ui/enter_room/enter_room_screen.dart';
+import 'package:quotierte_redeliste/ui/themes/DefaultThemes.dart';
 
 class EnterNewRoomTab extends StatefulWidget {
   @override
@@ -54,11 +55,8 @@ class _EnterNewRoomState extends State<EnterNewRoomTab> {
                         maxLength: 4,
                         keyboardType: TextInputType
                             .number, //TODO: Letters still possible trough copy/paste
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          counterText: "",
-                          labelText: 'Raum ID',
-                        ),
+                        decoration:
+                            DefaultThemes.inputDecoration(context, "Raum ID"),
                         controller: _roomCodeController,
                         onSubmitted: (code) {
                           _enterNewRoom(context);

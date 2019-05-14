@@ -60,28 +60,20 @@ class _ProfileState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(children: [
-                      Text("Name: "),
-                      Padding(
-                        padding: EdgeInsets.only(right: 10),
-                      ),
                       Flexible(
                           child: TextField(
                         decoration:
-                            DefaultThemes.inputDecoration(context, null),
+                            DefaultThemes.inputDecoration(context, "Name"),
                         controller: _usernameController,
                       )),
                     ]),
-                    Padding(padding: EdgeInsets.only(top: 10)),
+                    Padding(padding: EdgeInsets.only(top: 30)),
                     // TODO only for test purpose
                     Row(children: [
-                      Text("Token: "),
-                      Padding(
-                        padding: EdgeInsets.only(right: 10),
-                      ),
                       Flexible(
                           child: TextField(
                         decoration:
-                            DefaultThemes.inputDecoration(context, null),
+                            DefaultThemes.inputDecoration(context, "Token"),
                         controller: _tokenController,
                       )),
                     ])
