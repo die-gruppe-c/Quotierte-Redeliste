@@ -35,9 +35,15 @@ class Profile {
     prefs.setString(TAG_USERNAME, username);
   }
 
-  Future<String> getToken() async {
-    return "1234_1";
+  // TODO only for test purpose
+  setToken(String token) async {
+    _token = token;
 
+    final SharedPreferences prefs = await _prefs;
+    prefs.setString(TAG_TOKEN, token);
+  }
+
+  Future<String> getToken() async {
     if (_token == null) {
       final SharedPreferences prefs = await _prefs;
 

@@ -4,8 +4,15 @@ import 'package:flutter/services.dart';
 import 'package:quotierte_redeliste/ui/moderator_screen/moderator_screen.dart';
 import 'package:quotierte_redeliste/ui/start_screen/start_screen.dart';
 
+const PRIMARY_COLOR = Colors.white;
+const PRIMARY_COLOR_DARK = Colors.black87;
+const HINT_COLOR = Colors.black38;
+const ACCENT_COLOR = Colors.red;
+const DISABLED_COLOR = Colors.black26;
+
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+
     //statusBarColor: Colors.white, //top bar color TODO: Fehler in der Anzeige
     //statusBarIconBrightness: Brightness.dark, //top bar icons
     systemNavigationBarColor: Colors.white, //bottom bar color
@@ -13,12 +20,6 @@ void main() {
   ));
   runApp(MyApp());
 }
-
-const PRIMARY_COLOR = Colors.green;
-const PRIMARY_COLOR_DARK = Colors.black87;
-const HINT_COLOR = Colors.black38;
-const ACCENT_COLOR = Colors.red;
-const DISABLED_COLOR = Colors.black26;
 
 class MyApp extends StatelessWidget {
   @override

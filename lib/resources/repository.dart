@@ -12,6 +12,8 @@ class Repository {
 
   Future<Room> createRoom(Room room) => roomApi.createRoom(room);
 
+  Future<Room> getRoomToJoin() => roomApi.getRoomToJoin();
+
   RoomWebSocket webSocket() => roomWebSocket;
 
   Future<List<Room>> getAllRooms() => roomApi.getAllRooms();

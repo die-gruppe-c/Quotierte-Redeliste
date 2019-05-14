@@ -5,6 +5,7 @@ import 'package:quotierte_redeliste/ui/create_room/create_room_screen.dart';
 import 'package:quotierte_redeliste/ui/display_profile/profile_screen.dart';
 import 'package:quotierte_redeliste/ui/start_screen/enter_new_room_tab.dart';
 import 'package:quotierte_redeliste/ui/start_screen/history_tab.dart';
+import 'package:quotierte_redeliste/ui/waiting_room/waiting_room_screen.dart';
 
 class StartScreen extends StatelessWidget {
   StartScreen({Key key}) : super(key: key);
@@ -89,7 +90,10 @@ class StartScreen extends StatelessWidget {
         IconButton(
           icon: Icon(Icons.speaker_notes),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, "/room/moderator");
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => WaitingRoomScreen()),
+            );
           },
         ),
         IconButton(

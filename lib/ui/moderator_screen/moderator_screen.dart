@@ -44,6 +44,8 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
                   ],
                 ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: _floatingActionButton(context),
         body: StreamBuilder(
           stream: _webSocket.getAllUsers(),
           builder: (context, snapshot) {
@@ -52,6 +54,13 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
                 : _getLoadingIndicator();
           },
         ));
+  }
+
+  Widget _floatingActionButton(context) {
+    return FloatingActionButton.extended(
+        icon: Icon(Icons.play_arrow),
+        onPressed: () => _webSocket.start(),
+        label: new Text('Start'));
   }
 
   Widget _buildWithData(BuildContext context, List<User> users) {
