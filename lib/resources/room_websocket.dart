@@ -249,6 +249,10 @@ class RoomWebSocket {
     String data = _WebSocketCommands.START;
     _webSocket.sink.add(data);
   }
+
+  updateUserList() {
+    _webSocket.sink.add(_WebSocketCommands.UPDATE_USER_LIST);
+  }
 }
 
 enum RoomState { STARTED, DISCONNECTED, ERROR }
@@ -269,7 +273,7 @@ class _WebSocketCommands {
   // send
 
   // only moderator
-//  static const UPDATE_USER_LIST = "updateUserList"; only for testing
+  static const UPDATE_USER_LIST = "updateUserList";
   static const START = "start";
   static const CHANGE_ORDER_SPEAKING_LIST = "changeSortOrder";
   static const ADD_USER_TO_SPEAKING_LIST = "addUserToSpeechList";

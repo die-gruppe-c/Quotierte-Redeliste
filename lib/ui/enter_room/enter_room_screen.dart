@@ -8,9 +8,10 @@ import 'package:quotierte_redeliste/ui/themes/DefaultThemes.dart';
 
 class EnterRoomScreen extends StatefulWidget {
   final String roomId;
-  final bool useDefaultName;
+  final Room room;
+  final bool forOtherUser;
 
-  EnterRoomScreen(this.roomId, {this.useDefaultName = true, Key key})
+  EnterRoomScreen(this.roomId, {this.forOtherUser = false, this.room, Key key})
       : super(key: key);
 
   @override
@@ -30,7 +31,7 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
   void initState() {
     super.initState();
 
-    if (widget.useDefaultName == true) {
+    if (widget.forOtherUser != true) {
       Profile().getUsername().then((username) {
         print("username: " + username);
         nameController = TextEditingController(text: username);
@@ -39,20 +40,28 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
       nameController = TextEditingController();
     }
 
-    Repository().getRoom(int.parse(widget.roomId)).then((room) {
-      setState(() {
-        _room = room;
-        _loading = false;
-        selectedAttributes = _room.attributes.map((attr) {
-          return attr.values[0].value;
-        }).toList();
+    if (widget.room == null) {
+      Repository().getRoom(int.parse(widget.roomId)).then((room) {
+        setState(() {
+          _setRoomAsState(room);
+        });
+      }).catchError((error) {
+        print(error.toString());
+        setState(() {
+          _loading = false;
+        });
       });
-    }).catchError((error) {
-      print(error.toString());
-      setState(() {
-        _loading = false;
-      });
-    });
+    } else {
+      _setRoomAsState(widget.room);
+    }
+  }
+
+  _setRoomAsState(Room room) {
+    _loading = false;
+    _room = room;
+    selectedAttributes = room.attributes.map((attr) {
+      return attr.values[0].value;
+    }).toList();
   }
 
   _sendData() {
@@ -66,13 +75,23 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
       attributes[_room.attributes[i].name] = selectedAttributes[i];
     }
 
+    String uuid;
+    if (widget.forOtherUser) {
+      uuid = Profile.generateToken();
+    }
+
     Repository()
-        .joinRoom(_room.id.toString(), nameController.text, attributes)
+        .joinRoom(_room.id.toString(), nameController.text, attributes,
+            uuid: uuid)
         .then((_) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => new ClientScreen(_room.id)),
-      );
+      if (widget.forOtherUser) {
+        Navigator.pop(context, true);
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => new ClientScreen(_room.id)),
+        );
+      }
     }, onError: (error) {
       _showError(error.toString());
     });
@@ -93,6 +112,7 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
       ),
     );
 
+    _scaffoldKey.currentState..removeCurrentSnackBar();
     _scaffoldKey.currentState.showSnackBar(snackBar);
 
     setState(() {
@@ -146,6 +166,7 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
                     )),
                 Expanded(
                     child: ListView.builder(
+                  padding: EdgeInsets.only(bottom: 60),
                   itemCount: _room.attributes.length,
                   itemBuilder: (context, pos) {
                     return getListViewItem(pos);
