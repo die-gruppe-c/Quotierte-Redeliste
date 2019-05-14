@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quotierte_redeliste/ui/enter_room/enter_room_screen.dart';
-import 'package:quotierte_redeliste/ui/themes/DefaultThemes.dart';
 
 class EnterNewRoomTab extends StatefulWidget {
   @override
@@ -18,7 +18,8 @@ class _EnterNewRoomState extends State<EnterNewRoomTab> {
         setState(() {
           _enterRoomButtonDisabled = true;
         });
-      } else if (_enterRoomButtonDisabled) {
+      } else if (_enterRoomButtonDisabled &&
+          _roomCodeController.text.length == 4) {
         setState(() {
           _enterRoomButtonDisabled = false;
         });
@@ -31,74 +32,54 @@ class _EnterNewRoomState extends State<EnterNewRoomTab> {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => EnterRoomScreen(_roomCodeController.text)),
+            builder: (context) =>
+                new EnterRoomScreen(_roomCodeController.text)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 16, right: 16, top: 26),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image.asset(
-                      'assets/images/login_jdch.png',
-                      height: 250,
-                      width: 250,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 25),
-                    ),
-                    Text(
-                        'Frage den Moderator eines Raumes nach dem Beitritts-Code '
-                        'und gebe ihn hier ein',
-                        style: Theme.of(context).textTheme.display1),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 25),
-                    ),
-                    Row(children: [
-                      Flexible(
-                          child: TextField(
-                              decoration: DefaultThemes.inputDecoration(
-                                  context, 'Raum Code eingeben'),
-                              controller: _roomCodeController,
-                              onSubmitted: (code) {
-                                _enterNewRoom(context);
-                              })),
-                      Padding(
-                        padding: EdgeInsets.only(right: 10),
-                      ),
-                      RaisedButton(
-                          onPressed: _enterRoomButtonDisabled
-                              ? null
-                              : () => _enterNewRoom(context),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              Icon(
-                                Icons.vpn_key,
-                              ),
-                              Text(
-                                '   Beitreten', //Real Padding missing.
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          )),
-                    ]),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 100),
-                    )
-                  ]),
-            )
-          ], // Children
+    return Padding(
+        padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
+        child: Container(
+          height: 60,
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                    child: TextField(
+                        textAlign: TextAlign.center,
+                        maxLength: 4,
+                        keyboardType: TextInputType
+                            .number, //TODO: Letters still possible trough copy/paste
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          counterText: "",
+                          labelText: 'Raum ID',
+                        ),
+                        controller: _roomCodeController,
+                        onSubmitted: (code) {
+                          _enterNewRoom(context);
+                        })),
+                Padding(padding: EdgeInsets.only(left: 25)),
+                Expanded(
+                    child: RaisedButton.icon(
+                  icon: Icon(
+                    MdiIcons.key,
+                  ),
+                  color: Theme.of(context).accentColor,
+                  textColor: Theme.of(context).accentTextTheme.button.color,
+                  label: Text('BEITRETEN',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      )),
+                  onPressed: _enterRoomButtonDisabled
+                      ? null
+                      : () => _enterNewRoom(context),
+                )),
+              ]),
         ));
   }
 }

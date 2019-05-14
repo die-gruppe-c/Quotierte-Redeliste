@@ -5,6 +5,7 @@ class Room {
   String name;
   String owner;
   DateTime createOn;
+
   bool archived;
   bool running;
 

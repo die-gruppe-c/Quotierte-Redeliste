@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quotierte_redeliste/models/attribute.dart';
 import 'package:quotierte_redeliste/models/attribute_value.dart';
 import 'package:quotierte_redeliste/ui/create_room/create_room_bloc.dart';
@@ -61,12 +62,12 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
   }
 
   _buildAttributeListItem(Attribute attribute, [int attrIdx]) {
-    var icon = Icons.add;
+    var icon = Icons.label_outline;
 
     if (attrIdx != null &&
         (attrIdx != createRoomBloc.getAttributeCount() - 1 ||
             attribute.name.length != 0)) {
-      icon = Icons.category;
+      icon = Icons.label;
     }
 
     return Container(
@@ -152,12 +153,13 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
 
   _buildAttributeValueListItem(
       BuildContext context, Attribute attribute, int valueIdx) {
-    var icon = Icons.arrow_right;
-    var iconColor = Theme.of(context).primaryColorDark;
+    var icon = MdiIcons.menuRight;
+    var iconColor = Theme.of(context).primaryIconTheme.color;
 
     if (valueIdx == attribute.values.length - 1 &&
         attribute.values[valueIdx].value.length == 0) {
-      icon = Icons.add;
+      icon = MdiIcons.menuRightOutline;
+
       iconColor = Theme.of(context).hintColor;
     }
 
@@ -227,6 +229,7 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
     int index = createRoomBloc.getAttributeCount();
 
     var newAttribute = new Attribute("");
+    newAttribute.name = "";
     newAttribute.values.add(AttributeValue(""));
 
     createRoomBloc.addAttribute(newAttribute);
