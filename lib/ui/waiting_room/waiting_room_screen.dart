@@ -42,7 +42,7 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
     _roomSubscription = widget.webSocket.getRoomData().listen((Room room) {
       print("Room: " + room.toString());
       if (room.running) {
-        _navigateToModeratorScreen();
+        //_navigateToModeratorScreen();
       }
     });
   }
@@ -61,6 +61,11 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
     );
   }
 
+  _createNewUser() {
+    print("create new user");
+    // TODO implement
+  }
+
   Future<bool> _onWillPop() async {
     widget.webSocket.close();
     return true;
@@ -77,18 +82,38 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerFloat,
             floatingActionButton: _getFloatingActionButton(),
-            body: navigateOrShowContent(context)));
+            body: showContentOrError(context)));
   }
 
-  Widget navigateOrShowContent(BuildContext context) {
+  Widget showContentOrError(BuildContext context) {
     if (_state == RoomState.ERROR) {
       return Container(
           child: Text("Error: " + widget.webSocket.getErrorMessage()));
     } else if (_state == RoomState.DISCONNECTED) {
       return Container(child: Text("Disconnected"));
     } else {
-      return Row(children: [_getList()]);
+      return Column(children: [_addUser(), _getList()]);
     }
+  }
+
+  Widget _addUser() {
+    return Container(
+        decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: Theme.of(context).disabledColor)),
+        ),
+        child: ListTile(
+            onTap: _createNewUser,
+            leading: Icon(
+              Icons.add_circle_outline,
+              size: 40,
+              color: Theme.of(context).hintColor,
+            ),
+            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            title: Row(children: [
+              Padding(padding: EdgeInsets.only(right: 16)),
+              Text("Benutzer ohne Handy hinzufügen")
+            ])));
   }
 
   Widget _getList() {
