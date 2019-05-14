@@ -17,10 +17,6 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
 
   RoomWebSocket _webSocket = Repository().webSocket();
 
-  _ModeratorScreenState() {
-    _webSocket.connect();
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(

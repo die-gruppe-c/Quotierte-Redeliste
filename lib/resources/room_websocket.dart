@@ -153,6 +153,7 @@ class RoomWebSocket {
   }
 
   _onError(error) {
+    this._errorMessage = error.toString();
     _streamRoomState.add(RoomState.ERROR);
     close();
   }
