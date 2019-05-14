@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 
 class UserWidget extends StatelessWidget {
@@ -21,7 +22,7 @@ class UserWidget extends StatelessWidget {
           title: Text(
             user.name,
             style: TextStyle(
-              fontSize: 18.0,
+              fontSize: 20.0,
             ),
           ),
           subtitle: Padding(
@@ -30,14 +31,11 @@ class UserWidget extends StatelessWidget {
                 children: user.attributes.values.map((attribute) {
                   return Padding(
                       padding: EdgeInsets.only(right: 15),
-                      child: Container(
-                          // TODO change to color from attribute
-                          decoration: BoxDecoration(
-                              color: Colors.amberAccent,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8))),
-                          padding: EdgeInsets.all(5),
-                          child: Text(attribute)));
+                      child: Chip(
+                        avatar: Icon(MdiIcons.information),
+                        label: Text(attribute),
+                      ));
+                  // TODO change to color from attribute
                 }).toList(),
               )),
         ));

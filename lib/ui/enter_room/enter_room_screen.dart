@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/models/room.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
+import 'package:quotierte_redeliste/ui/display_client/display_client_screen.dart';
 
 class EnterRoomScreen extends StatefulWidget {
   final String roomId;
@@ -39,9 +40,9 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Raum"),
+        title: Text("Attribute auswählen"),
       ),
-      body: _loading ? _getLoadingIndicator() : getAttributeView(),
+      body: _loading ? noValidRoom() : getAttributeView(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: _room != null ? setFloatingActionButton() : null,
     );
@@ -66,38 +67,39 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
   Widget getAttributeView() {
     return _room == null
         ? noValidRoom()
-        : Column(children: [
-            Expanded(
-                child: ListView.builder(
-              itemCount: _room.attributes.length,
-              itemBuilder: (context, pos) {
-                return getListViewItem(pos);
-              },
-            )),
-          ]);
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+                Expanded(
+                    child: ListView.builder(
+                  itemCount: _room.attributes.length,
+                  itemBuilder: (context, pos) {
+                    return getListViewItem(pos);
+                  },
+                )),
+              ]);
   }
 
   Widget noValidRoom() {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+    return Center(
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
           Image.asset(
             'assets/images/page_not_found_su7k.png',
             height: 250,
             width: 250,
           ),
-          Padding(
-            padding: EdgeInsets.only(bottom: 25),
-          ),
           Text('Kein Beitritt in Raum möglich.',
               style: Theme.of(context).textTheme.display1),
-        ]);
+        ]));
   }
 
   Widget getListViewItem(pos) {
     return Padding(
-        padding: EdgeInsets.only(bottom: 2.0, left: 4, right: 4),
+        padding: EdgeInsets.only(top: 20, bottom: 20.0, left: 5, right: 5),
         child: _getDropdown(
             pos,
             _room.attributes[pos].name,
@@ -109,7 +111,13 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
   Widget setFloatingActionButton() {
     return FloatingActionButton.extended(
         icon: Icon(Icons.save),
-        onPressed: () => {},
+        onPressed: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => new ClientScreen(_room.id)),
+              )
+            },
         label: new Text('Speichern'));
   }
 

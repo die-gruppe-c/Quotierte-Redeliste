@@ -1,5 +1,4 @@
-// This sample shows adding an action to an [AppBar] that opens a shopping cart.
-
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quotierte_redeliste/ui/moderator_screen/moderator_screen.dart';
@@ -13,22 +12,54 @@ const DISABLED_COLOR = Colors.black26;
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: PRIMARY_COLOR, //top bar color
-    statusBarIconBrightness: Brightness.dark, //top bar icons
-    systemNavigationBarColor: PRIMARY_COLOR, //bottom bar color
+
+    //statusBarColor: Colors.white, //top bar color TODO: Fehler in der Anzeige
+    //statusBarIconBrightness: Brightness.dark, //top bar icons
+    systemNavigationBarColor: Colors.white, //bottom bar color
     systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
   ));
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
+  Widget build(BuildContext context) {
+    return new DynamicTheme(
+        defaultBrightness: Brightness.light,
+        data: (brightness) => new ThemeData(
+              /*toggleableActiveColor:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Colors.redAccent[200]
+                      : (Theme.of(context).accentColor ?? Colors.red[600]),
+              accentColor: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.redAccent[200]
+                  : Colors.red[500],*/
+              scaffoldBackgroundColor: brightness == Brightness.dark
+                  ? Colors.grey[850]
+                  : Colors.white,
+              primarySwatch: ACCENT_COLOR,
+              brightness: brightness,
+            ),
+        themedWidgetBuilder: (context, theme) {
+          return new MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Quoty',
+            theme: theme,
+            home: StartScreen(),
+            routes: {
+              "/room/moderator": (_) => new ModeratorScreen(),
+            },
+          );
+        });
+  }
+}
+
+/*
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Quoty',
-      theme: ThemeData(
+      /*theme: ThemeData(
         primaryColor: PRIMARY_COLOR,
         primaryColorDark: PRIMARY_COLOR_DARK,
         hintColor: HINT_COLOR,
@@ -43,11 +74,11 @@ class MyApp extends StatelessWidget {
             buttonColor: ACCENT_COLOR,
             textTheme: ButtonTextTheme.primary,
             colorScheme: ColorScheme.light(primary: PRIMARY_COLOR_DARK)),
-      ),
+      ),*/
       home: StartScreen(),
       routes: {
         "/room/moderator": (_) => new ModeratorScreen(),
       },
     );
   }
-}
+}*/

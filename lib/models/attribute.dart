@@ -14,7 +14,9 @@ class Attribute {
     values = new List();
 
     attribute.values.forEach((value) {
-      values.add(AttributeValue.clone(value));
+      if (value.value != "") {
+        values.add(AttributeValue.clone(value));
+      }
     });
   }
 

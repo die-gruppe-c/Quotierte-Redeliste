@@ -20,7 +20,7 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () async => false,
+        onWillPop: () async => true,
         child: ResponsiveContainer.isTablet(context)
             ? _buildScaffold(context)
             : DefaultTabController(length: 3, child: _buildScaffold(context)));

@@ -35,6 +35,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        title: Text('Quoty'),
         leading: IconButton(
           icon: const Icon(Icons.close),
           tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
@@ -49,7 +50,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                 right: PADDING_SIDE, left: PADDING_SIDE, top: 12, bottom: 12),
             child: FlatButton(
               color: saveBtnColor,
-              child: Text("Erstellen"),
+              child: Text("ERSTELLEN"),
               onPressed: () {
                 if (!createRequestSend) {
                   createRoomBloc.postNewRoom(_onRoomCreated);
@@ -74,7 +75,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
               textCapitalization: TextCapitalization.sentences,
               maxLines: null,
               decoration: InputDecoration(
-                  border: InputBorder.none, hintText: "Name eingeben"),
+                  border: InputBorder.none, hintText: "Raumname eingeben"),
               onChanged: (text) {
                 createRoomBloc.setRoomName(text);
                 setState(() {

@@ -29,11 +29,18 @@ dependencies:
   http: ^0.12.0+1
   web_socket_channel: ^1.0.12
   rxdart: ^0.21.0
+  dynamic_theme: ^1.0.0
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.7.0"
   flutter_test:
     sdk: flutter
 
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#ffffff"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
