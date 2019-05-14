@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:quotierte_redeliste/models/attribute_value.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 
 class UserWidget extends StatelessWidget {
@@ -28,12 +29,14 @@ class UserWidget extends StatelessWidget {
           subtitle: Padding(
               padding: EdgeInsets.only(top: 10),
               child: Row(
-                children: user.attributes.values.map((attribute) {
+                children: user.attributes.map((attribute) {
+                  AttributeValue attributeValue = attribute.values[0];
+
                   return Padding(
                       padding: EdgeInsets.only(right: 15),
                       child: Chip(
                         avatar: Icon(MdiIcons.information),
-                        label: Text(attribute),
+                        label: Text(attributeValue.value),
                       ));
                   // TODO change to color from attribute
                 }).toList(),

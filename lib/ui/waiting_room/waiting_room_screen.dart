@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/resources/room_websocket.dart';
+import 'package:quotierte_redeliste/ui/moderator_screen/moderator_screen.dart';
 import 'package:quotierte_redeliste/ui/moderator_screen/user_widget.dart';
-
-import '../../models/room.dart';
-import '../moderator_screen/moderator_screen.dart';
 
 class WaitingRoomScreen extends StatefulWidget {
   final RoomWebSocket webSocket = Repository().webSocket();
@@ -39,7 +37,7 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
       }
     });
 
-    _roomSubscription = widget.webSocket.getRoomData().listen((Room room) {
+    _roomSubscription = widget.webSocket.getRoomData().listen((room) {
       print("Room: " + room.toString());
       if (room.running) {
         //_navigateToModeratorScreen();
