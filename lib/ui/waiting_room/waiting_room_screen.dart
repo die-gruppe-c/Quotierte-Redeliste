@@ -9,6 +9,8 @@ class WaitingRoomScreen extends StatefulWidget {
 
   WaitingRoomScreen() {
     webSocket.connect();
+
+    // TODO listen for start command and change screen
   }
 
   @override
@@ -52,7 +54,6 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
 
   Widget _getLoadingIndicator() {
     return Expanded(
-//      constraints: BoxConstraints.expand(),
         child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -74,7 +75,6 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
         icon: Icon(Icons.play_arrow),
         onPressed: () {
           widget.webSocket.start();
-          // TODO open moderator screen
         });
   }
 }
