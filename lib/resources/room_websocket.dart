@@ -102,7 +102,7 @@ class RoomWebSocket {
           _roomStarted();
           break;
       }
-    });
+    }, onDone: _onClosed, onError: _onError);
 
     _sendId();
   }
@@ -145,6 +145,16 @@ class RoomWebSocket {
 
   _roomStarted() {
     _streamRoomState.add(RoomState.STARTED);
+  }
+
+  _onClosed() {
+    _streamRoomState.add(RoomState.DISCONNECTED);
+    close();
+  }
+
+  _onError(error) {
+    _streamRoomState.add(RoomState.ERROR);
+    close();
   }
 
   close() {
@@ -215,7 +225,7 @@ class RoomWebSocket {
   }
 }
 
-enum RoomState { STARTED }
+enum RoomState { STARTED, DISCONNECTED, ERROR }
 
 class _WebSocketCommands {
   // receive
