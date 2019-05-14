@@ -12,9 +12,7 @@ const DISABLED_COLOR = Colors.black26;
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-
-    //statusBarColor: Colors.white, //top bar color TODO: Fehler in der Anzeige
-    //statusBarIconBrightness: Brightness.dark, //top bar icons
+    // TODO change when darkmode changes
     systemNavigationBarColor: Colors.white, //bottom bar color
     systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
   ));
@@ -26,20 +24,33 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new DynamicTheme(
         defaultBrightness: Brightness.light,
-        data: (brightness) => new ThemeData(
-              /*toggleableActiveColor:
-                  Theme.of(context).brightness == Brightness.dark
-                      ? Colors.redAccent[200]
-                      : (Theme.of(context).accentColor ?? Colors.red[600]),
-              accentColor: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.redAccent[200]
-                  : Colors.red[500],*/
-              scaffoldBackgroundColor: brightness == Brightness.dark
-                  ? Colors.grey[850]
-                  : Colors.white,
+        data: (brightness) {
+          if (brightness == Brightness.light) {
+            return ThemeData(
+                primaryColor: PRIMARY_COLOR,
+                primaryColorDark: PRIMARY_COLOR_DARK,
+                hintColor: HINT_COLOR,
+                textSelectionColor: ACCENT_COLOR,
+                textSelectionHandleColor: ACCENT_COLOR,
+                cursorColor: ACCENT_COLOR,
+                accentColor: ACCENT_COLOR,
+                disabledColor: DISABLED_COLOR,
+                textTheme: TextTheme(
+                    display1: TextStyle(color: HINT_COLOR, fontSize: 20.0)),
+                buttonTheme: ButtonThemeData(
+                    buttonColor: ACCENT_COLOR,
+                    textTheme: ButtonTextTheme.primary,
+                    colorScheme:
+                        ColorScheme.light(primary: PRIMARY_COLOR_DARK)),
+                brightness: brightness);
+          } else {
+            return ThemeData(
+              scaffoldBackgroundColor: Colors.grey[850],
               primarySwatch: ACCENT_COLOR,
               brightness: brightness,
-            ),
+            );
+          }
+        },
         themedWidgetBuilder: (context, theme) {
           return new MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -53,32 +64,3 @@ class MyApp extends StatelessWidget {
         });
   }
 }
-
-/*
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Quoty',
-      /*theme: ThemeData(
-        primaryColor: PRIMARY_COLOR,
-        primaryColorDark: PRIMARY_COLOR_DARK,
-        hintColor: HINT_COLOR,
-        textSelectionColor: ACCENT_COLOR,
-        textSelectionHandleColor: ACCENT_COLOR,
-        cursorColor: ACCENT_COLOR,
-        accentColor: ACCENT_COLOR,
-        disabledColor: DISABLED_COLOR,
-        textTheme:
-            TextTheme(display1: TextStyle(color: HINT_COLOR, fontSize: 20.0)),
-        buttonTheme: ButtonThemeData(
-            buttonColor: ACCENT_COLOR,
-            textTheme: ButtonTextTheme.primary,
-            colorScheme: ColorScheme.light(primary: PRIMARY_COLOR_DARK)),
-      ),*/
-      home: StartScreen(),
-      routes: {
-        "/room/moderator": (_) => new ModeratorScreen(),
-      },
-    );
-  }
-}*/
