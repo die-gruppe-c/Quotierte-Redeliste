@@ -51,19 +51,21 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
   }
 
   Widget _getLoadingIndicator() {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                CircularProgressIndicator(),
-                Padding(padding: EdgeInsets.only(right: 20)),
-                Text('Lade Daten...')
-              ]),
-        ]);
+    return Expanded(
+//      constraints: BoxConstraints.expand(),
+        child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              CircularProgressIndicator(),
+              Padding(padding: EdgeInsets.only(right: 20)),
+              Text('Lade Daten...')
+            ])
+      ],
+    ));
   }
 
   Widget _getFloatingActionButton() {
