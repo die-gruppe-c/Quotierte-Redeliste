@@ -50,7 +50,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                 right: PADDING_SIDE, left: PADDING_SIDE, top: 12, bottom: 12),
             child: FlatButton(
               color: saveBtnColor,
-              child: Text("Erstellen"),
+              child: Text("ERSTELLEN"),
               onPressed: () {
                 if (!createRequestSend) {
                   createRoomBloc.postNewRoom(_onRoomCreated);

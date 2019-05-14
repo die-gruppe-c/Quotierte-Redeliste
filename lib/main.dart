@@ -7,7 +7,7 @@ import 'package:quotierte_redeliste/ui/start_screen/start_screen.dart';
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     //statusBarColor: Colors.white, //top bar color TODO: Fehler in der Anzeige
-    //statusBarIconBrightness: Brightness.light, //top bar icons
+    //statusBarIconBrightness: Brightness.dark, //top bar icons
     systemNavigationBarColor: Colors.white, //bottom bar color
     systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
   ));
@@ -33,6 +33,9 @@ class MyApp extends StatelessWidget {
               accentColor: Theme.of(context).brightness == Brightness.dark
                   ? Colors.redAccent[200]
                   : Colors.red[500],*/
+              scaffoldBackgroundColor: brightness == Brightness.dark
+                  ? Colors.grey[850]
+                  : Colors.white,
               primarySwatch: ACCENT_COLOR,
               brightness: brightness,
             ),

@@ -229,6 +229,7 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
     int index = createRoomBloc.getAttributeCount();
 
     var newAttribute = new Attribute("");
+    newAttribute.name = "";
     newAttribute.values.add(AttributeValue(""));
 
     createRoomBloc.addAttribute(newAttribute);
