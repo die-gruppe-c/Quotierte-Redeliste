@@ -48,6 +48,7 @@ class RoomWebSocket {
   _ObservableStream<RoomState> _streamRoomState;
 
   bool _closed = true;
+  String _errorMessage;
 
   RoomWebSocket._internal();
 
@@ -126,11 +127,11 @@ class RoomWebSocket {
     _streamSpeakers.add(ids);
   }
 
-  _speakCategories(Map<String, String> categories) {
+  _speakCategories(Map<String, dynamic> categories) {
     List<SpeakingCategory> newSpeakingCategories = List();
 
     categories.forEach((key, value) =>
-        newSpeakingCategories.add(SpeakingCategory(key, value)));
+        newSpeakingCategories.add(SpeakingCategory(key, value.toString())));
 
     _streamSpeakCategories.add(newSpeakingCategories);
   }
@@ -188,6 +189,14 @@ class RoomWebSocket {
 
   Stream<List<String>> getUsersWantToSpeak() {
     return _streamWantToSpeak.getStream();
+  }
+
+  Stream<RoomState> getRoomState() {
+    return _streamRoomState.getStream();
+  }
+
+  String getErrorMessage() {
+    return _errorMessage;
   }
 
   wantToSpeak(SpeakingCategory category) {
