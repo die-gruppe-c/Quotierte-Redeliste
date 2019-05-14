@@ -19,7 +19,7 @@ class Profile {
 
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  Future getUsername() async {
+  Future<String> getUsername() async {
     if (_username == null) {
       final SharedPreferences prefs = await _prefs;
       _username = prefs.getString(TAG_USERNAME);

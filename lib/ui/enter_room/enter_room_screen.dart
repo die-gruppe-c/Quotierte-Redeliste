@@ -1,25 +1,44 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:quotierte_redeliste/models/profile.dart';
 import 'package:quotierte_redeliste/models/room.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/ui/display_client/display_client_screen.dart';
+import 'package:quotierte_redeliste/ui/themes/DefaultThemes.dart';
 
 class EnterRoomScreen extends StatefulWidget {
   final String roomId;
+  final bool useDefaultName;
 
-  EnterRoomScreen(this.roomId, {Key key}) : super(key: key);
+  EnterRoomScreen(this.roomId, {this.useDefaultName = true, Key key})
+      : super(key: key);
 
   @override
   _EnterRoomScreenState createState() => _EnterRoomScreenState();
 }
 
 class _EnterRoomScreenState extends State<EnterRoomScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   Room _room;
   bool _loading = true;
+  String loadingString = "Lade Daten...";
   List<String> selectedAttributes;
+
+  TextEditingController nameController;
 
   void initState() {
     super.initState();
+
+    if (widget.useDefaultName == true) {
+      Profile().getUsername().then((username) {
+        print("username: " + username);
+        nameController = TextEditingController(text: username);
+      });
+    } else {
+      nameController = TextEditingController();
+    }
+
     Repository().getRoom(int.parse(widget.roomId)).then((room) {
       setState(() {
         _room = room;
@@ -36,15 +55,62 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
     });
   }
 
+  _sendData() {
+    setState(() {
+      _loading = true;
+      loadingString = "Sende Daten...";
+    });
+
+    Map<String, String> attributes = Map();
+    for (int i = 0; i < _room.attributes.length; i++) {
+      attributes[_room.attributes[i].name] = selectedAttributes[i];
+    }
+
+    Repository()
+        .joinRoom(_room.id.toString(), nameController.text, attributes)
+        .then((_) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => new ClientScreen(_room.id)),
+      );
+    }, onError: (error) {
+      _showError(error.toString());
+    });
+  }
+
+  _showError(String error) {
+    final snackBar = SnackBar(
+      duration: Duration(seconds: 6),
+      content: Row(
+        children: <Widget>[
+          Icon(Icons.error),
+          Expanded(
+              child: Container(
+            padding: const EdgeInsets.only(left: 8),
+            child: Text(error),
+          ))
+        ],
+      ),
+    );
+
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+
+    setState(() {
+      _loading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Attribute auswählen"),
       ),
-      body: _loading ? noValidRoom() : getAttributeView(),
+      body: _loading ? _getLoadingIndicator() : getAttributeView(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: _room != null ? setFloatingActionButton() : null,
+      floatingActionButton:
+          _room != null && _loading == false ? setFloatingActionButton() : null,
     );
   }
 
@@ -59,7 +125,7 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
               children: [
                 CircularProgressIndicator(),
                 Padding(padding: EdgeInsets.only(right: 20)),
-                Text('Lade Daten...')
+                Text(loadingString)
               ]),
         ]);
   }
@@ -71,6 +137,13 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+                Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+                    child: TextField(
+                      controller: nameController,
+                      decoration:
+                          DefaultThemes.inputDecoration(context, "Name"),
+                    )),
                 Expanded(
                     child: ListView.builder(
                   itemCount: _room.attributes.length,
@@ -99,7 +172,7 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
 
   Widget getListViewItem(pos) {
     return Padding(
-        padding: EdgeInsets.only(top: 20, bottom: 20.0, left: 5, right: 5),
+        padding: EdgeInsets.only(top: 0, bottom: 20.0, left: 5, right: 5),
         child: _getDropdown(
             pos,
             _room.attributes[pos].name,
@@ -111,13 +184,7 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
   Widget setFloatingActionButton() {
     return FloatingActionButton.extended(
         icon: Icon(Icons.save),
-        onPressed: () => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => new ClientScreen(_room.id)),
-              )
-            },
+        onPressed: _sendData,
         label: new Text('Speichern'));
   }
 
