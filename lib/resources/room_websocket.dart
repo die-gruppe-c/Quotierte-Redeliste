@@ -8,6 +8,8 @@ import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:web_socket_channel/io.dart';
 
+import '../models/room.dart';
+
 /// creates a broadcast stream and starts listening to it
 /// when a user subscribes the stream from getStream() the
 /// last value will be emitted at the time of the subscription
@@ -45,6 +47,7 @@ class RoomWebSocket {
   _ObservableStream<List<String>> _streamSortedUsers;
   _ObservableStream<List<String>> _streamWantToSpeak;
   _ObservableStream<List<SpeakingCategory>> _streamSpeakCategories;
+  _ObservableStream<Room> _streamRoomData;
   _ObservableStream<RoomState> _streamRoomState;
 
   bool _closed = true;
@@ -62,6 +65,7 @@ class RoomWebSocket {
     _streamWantToSpeak = _ObservableStream();
     _streamSpeakCategories = _ObservableStream();
     _streamRoomState = _ObservableStream();
+    _streamRoomData = _ObservableStream();
   }
 
   /// call this only once
@@ -101,6 +105,9 @@ class RoomWebSocket {
           break;
         case _WebSocketCommands.STARTED:
           _roomStarted();
+          break;
+        case _WebSocketCommands.ROOM:
+          _roomData(commandData);
           break;
       }
     }, onDone: _onClosed, onError: _onError);
@@ -148,6 +155,10 @@ class RoomWebSocket {
     _streamRoomState.add(RoomState.STARTED);
   }
 
+  _roomData(Map<String, dynamic> roomData) {
+    _streamRoomData.add(Room.fromJson(roomData));
+  }
+
   _onClosed() {
     _streamRoomState.add(RoomState.DISCONNECTED);
     close();
@@ -167,6 +178,7 @@ class RoomWebSocket {
     _streamSortedUsers.close();
     _streamWantToSpeak.close();
     _streamSpeakCategories.close();
+    _streamRoomData.close();
 
     _closed = true;
   }
@@ -189,6 +201,10 @@ class RoomWebSocket {
 
   Stream<List<String>> getUsersWantToSpeak() {
     return _streamWantToSpeak.getStream();
+  }
+
+  Stream<Room> getRoomData() {
+    return _streamRoomData.getStream();
   }
 
   Stream<RoomState> getRoomState() {
@@ -244,6 +260,7 @@ class _WebSocketCommands {
   static const USERS_SORTED = "usersSorted";
   static const USERS_WANT_TO_SPEAK = "usersWantToSpeak";
 
+  static const ROOM = "room";
   static const SPEAKING_LIST = "speakingList";
   static const STARTED = "started";
   static const ALL_USERS = "allUsers";

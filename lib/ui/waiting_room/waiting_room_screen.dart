@@ -6,6 +6,7 @@ import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/resources/room_websocket.dart';
 import 'package:quotierte_redeliste/ui/moderator_screen/user_widget.dart';
 
+import '../../models/room.dart';
 import '../moderator_screen/moderator_screen.dart';
 
 class WaitingRoomScreen extends StatefulWidget {
@@ -22,6 +23,7 @@ class WaitingRoomScreen extends StatefulWidget {
 class _WaitingRoomState extends State<WaitingRoomScreen> {
   RoomState _state;
   StreamSubscription _stateSubscription;
+  StreamSubscription _roomSubscription;
 
   @override
   void initState() {
@@ -29,14 +31,18 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
 
     _stateSubscription = widget.webSocket.getRoomState().listen((state) {
       if (state == RoomState.STARTED) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ModeratorScreen()),
-        );
+        _navigateToModeratorScreen();
       } else {
         setState(() {
           _state = state;
         });
+      }
+    });
+
+    _roomSubscription = widget.webSocket.getRoomData().listen((Room room) {
+      print("Room: " + room.toString());
+      if (room.running) {
+        _navigateToModeratorScreen();
       }
     });
   }
@@ -45,6 +51,14 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
   void dispose() {
     super.dispose();
     _stateSubscription.cancel();
+    _roomSubscription.cancel();
+  }
+
+  _navigateToModeratorScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ModeratorScreen()),
+    );
   }
 
   Future<bool> _onWillPop() async {
