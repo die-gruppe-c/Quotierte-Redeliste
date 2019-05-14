@@ -163,14 +163,26 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
   }
 
   Widget _buildWithData(BuildContext context, List<User> users) {
+    print("users: " + users.toString());
     return Expanded(
-        child: ListView.builder(
-      padding: EdgeInsets.only(bottom: 80),
-      itemCount: users.length,
-      itemBuilder: (context, pos) {
-        return UserWidget(users[pos]);
-      },
-    ));
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Container(
+          decoration: BoxDecoration(color: Theme.of(context).hintColor),
+          padding: EdgeInsets.all(10),
+          child: Text(
+            "Anzahl Gäste: " + users.length.toString(),
+            textAlign: TextAlign.center,
+          )),
+      Expanded(
+          child: ListView.builder(
+        padding: EdgeInsets.only(bottom: 80),
+        itemCount: users.length,
+        itemBuilder: (context, pos) {
+          return UserWidget(users[pos]);
+        },
+      ))
+    ]));
   }
 
   Widget _getLoadingIndicator() {
