@@ -1,5 +1,6 @@
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:quotierte_redeliste/ui/moderator_screen/moderator_screen.dart';
 import 'package:quotierte_redeliste/ui/start_screen/start_screen.dart';
@@ -16,6 +17,8 @@ void main() {
     systemNavigationBarColor: Colors.white, //bottom bar color
     systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
   ));
+
+//  debugPaintSizeEnabled = true;
   runApp(MyApp());
 }
 
