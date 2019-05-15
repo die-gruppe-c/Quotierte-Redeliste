@@ -163,12 +163,11 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
   }
 
   Widget _buildWithData(BuildContext context, List<User> users) {
-    print("users: " + users.toString());
     return Expanded(
         child:
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Container(
-          decoration: BoxDecoration(color: Theme.of(context).hintColor),
+          decoration: BoxDecoration(color: Theme.of(context).splashColor),
           padding: EdgeInsets.all(10),
           child: Text(
             "Anzahl Gäste: " + users.length.toString(),
