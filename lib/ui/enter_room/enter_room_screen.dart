@@ -35,9 +35,11 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
       Profile().getUsername().then((username) {
         print("username: " + username);
         nameController = TextEditingController(text: username);
+        nameController.addListener(() => setState(() {}));
       });
     } else {
       nameController = TextEditingController();
+      nameController.addListener(() => setState(() {}));
     }
 
     if (widget.room == null) {
@@ -205,7 +207,9 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
   Widget setFloatingActionButton() {
     return FloatingActionButton.extended(
         icon: Icon(Icons.save),
-        onPressed: _sendData,
+        backgroundColor:
+            nameController.text != "" ? null : Theme.of(context).disabledColor,
+        onPressed: nameController.text != "" ? _sendData : null,
         label: new Text('Speichern'));
   }
 
