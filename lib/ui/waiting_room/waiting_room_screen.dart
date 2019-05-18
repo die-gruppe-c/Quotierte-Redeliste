@@ -13,10 +13,6 @@ import 'package:quotierte_redeliste/ui/moderator_screen/user_widget.dart';
 class WaitingRoomScreen extends StatefulWidget {
   final RoomWebSocket webSocket = Repository().webSocket();
 
-  WaitingRoomScreen() {
-    webSocket.connect();
-  }
-
   @override
   State<StatefulWidget> createState() => _WaitingRoomState();
 }
@@ -30,6 +26,14 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
   @override
   void initState() {
     super.initState();
+    _startConnection();
+  }
+
+  _startConnection() {
+    setState(() {
+      _state = null;
+    });
+    widget.webSocket.connect();
 
     _stateSubscription = widget.webSocket.getRoomState().listen((state) {
       if (state == RoomState.STARTED) {
@@ -117,13 +121,27 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
 
   Widget showContentOrError(BuildContext context) {
     if (_state == RoomState.ERROR) {
-      return Container(
-          child: Text("Error: " + widget.webSocket.getErrorMessage()));
+      return _showError("Error: " + widget.webSocket.getErrorMessage());
     } else if (_state == RoomState.DISCONNECTED) {
-      return Container(child: Text("Disconnected"));
+      return _showError(
+          "Verbindung verloren \n\n" + widget.webSocket.getErrorMessage());
     } else {
       return Column(children: [_addUser(), _getList()]);
     }
+  }
+
+  Widget _showError(String error) {
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Flexible(
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text(error, textAlign: TextAlign.center),
+        Padding(padding: EdgeInsets.only(top: 25)),
+        RaisedButton(
+          child: Text("Erneut verbinden"),
+          onPressed: _startConnection,
+        )
+      ]))
+    ]);
   }
 
   Widget _addUser() {

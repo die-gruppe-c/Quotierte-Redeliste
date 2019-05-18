@@ -24,6 +24,7 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
   Room _room;
   bool _loading = true;
   String loadingString = "Lade Daten...";
+  String errorMessage;
   List<String> selectedAttributes;
 
   TextEditingController nameController;
@@ -43,19 +44,28 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
     }
 
     if (widget.room == null) {
-      Repository().getRoom(int.parse(widget.roomId)).then((room) {
-        setState(() {
-          _setRoomAsState(room);
-        });
-      }).catchError((error) {
-        print(error.toString());
-        setState(() {
-          _loading = false;
-        });
-      });
+      _loadRoomData();
     } else {
       _setRoomAsState(widget.room);
     }
+  }
+
+  _loadRoomData() {
+    setState(() {
+      _loading = true;
+    });
+
+    Repository().getRoom(int.parse(widget.roomId)).then((room) {
+      setState(() {
+        _setRoomAsState(room);
+      });
+    }).catchError((error) {
+      print(error.toString());
+      setState(() {
+        _loading = false;
+        errorMessage = error.toString();
+      });
+    });
   }
 
   _setRoomAsState(Room room) {
@@ -183,13 +193,15 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-          Image.asset(
-            'assets/images/page_not_found_su7k.png',
-            height: 250,
-            width: 250,
+          Text(
+            'Kein Beitritt in Raum möglich. \n\n' + errorMessage,
+            textAlign: TextAlign.center,
           ),
-          Text('Kein Beitritt in Raum möglich.',
-              style: Theme.of(context).textTheme.display1),
+          Padding(padding: EdgeInsets.only(top: 20)),
+          RaisedButton(
+            child: Text("Erneut versuchen"),
+            onPressed: _loadRoomData,
+          )
         ]));
   }
 
