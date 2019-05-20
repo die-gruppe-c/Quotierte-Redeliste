@@ -1,50 +1,148 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:quotierte_redeliste/models/profile.dart';
 import 'package:quotierte_redeliste/models/room.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/ui/display_client/display_client_screen.dart';
+import 'package:quotierte_redeliste/ui/themes/DefaultThemes.dart';
 
 class EnterRoomScreen extends StatefulWidget {
   final String roomId;
+  final Room room;
+  final bool forOtherUser;
 
-  EnterRoomScreen(this.roomId, {Key key}) : super(key: key);
+  EnterRoomScreen(this.roomId, {this.forOtherUser = false, this.room, Key key})
+      : super(key: key);
 
   @override
   _EnterRoomScreenState createState() => _EnterRoomScreenState();
 }
 
 class _EnterRoomScreenState extends State<EnterRoomScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   Room _room;
   bool _loading = true;
+  String loadingString = "Lade Daten...";
+  String errorMessage;
   List<String> selectedAttributes;
+
+  TextEditingController nameController;
 
   void initState() {
     super.initState();
+
+    if (widget.forOtherUser != true) {
+      Profile().getUsername().then((username) {
+        print("username: " + username);
+        nameController = TextEditingController(text: username);
+        nameController.addListener(() => setState(() {}));
+      });
+    } else {
+      nameController = TextEditingController();
+      nameController.addListener(() => setState(() {}));
+    }
+
+    if (widget.room == null) {
+      _loadRoomData();
+    } else {
+      _setRoomAsState(widget.room);
+    }
+  }
+
+  _loadRoomData() {
+    setState(() {
+      _loading = true;
+    });
+
     Repository().getRoom(int.parse(widget.roomId)).then((room) {
       setState(() {
-        _room = room;
-        _loading = false;
-        selectedAttributes = _room.attributes.map((attr) {
-          return attr.values[0].value;
-        }).toList();
+        _setRoomAsState(room);
       });
     }).catchError((error) {
       print(error.toString());
       setState(() {
         _loading = false;
+        errorMessage = error.toString();
       });
+    });
+  }
+
+  _setRoomAsState(Room room) {
+    _loading = false;
+    _room = room;
+    selectedAttributes = room.attributes.map((attr) {
+      return attr.values[0].value;
+    }).toList();
+  }
+
+  _sendData() {
+    setState(() {
+      _loading = true;
+      loadingString = "Sende Daten...";
+    });
+
+    Map<String, String> attributes = Map();
+    for (int i = 0; i < _room.attributes.length; i++) {
+      attributes[_room.attributes[i].name] = selectedAttributes[i];
+    }
+
+    String uuid;
+    if (widget.forOtherUser) {
+      uuid = Profile.generateToken();
+    }
+
+    Repository()
+        .joinRoom(_room.id.toString(), nameController.text, attributes,
+            uuid: uuid)
+        .then((_) {
+      if (widget.forOtherUser) {
+        Navigator.pop(context, true);
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => new ClientScreen(_room.id)),
+        );
+      }
+    }, onError: (error) {
+      _showError(error.toString());
+    });
+  }
+
+  _showError(String error) {
+    final snackBar = SnackBar(
+      duration: Duration(seconds: 6),
+      content: Row(
+        children: <Widget>[
+          Icon(Icons.error),
+          Expanded(
+              child: Container(
+            padding: const EdgeInsets.only(left: 8),
+            child: Text(error),
+          ))
+        ],
+      ),
+    );
+
+    _scaffoldKey.currentState..removeCurrentSnackBar();
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+
+    setState(() {
+      _loading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Attribute auswählen"),
       ),
-      body: _loading ? noValidRoom() : getAttributeView(),
+      body: _loading ? _getLoadingIndicator() : getAttributeView(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: _room != null ? setFloatingActionButton() : null,
+      floatingActionButton:
+          _room != null && _loading == false ? setFloatingActionButton() : null,
     );
   }
 
@@ -59,7 +157,7 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
               children: [
                 CircularProgressIndicator(),
                 Padding(padding: EdgeInsets.only(right: 20)),
-                Text('Lade Daten...')
+                Text(loadingString)
               ]),
         ]);
   }
@@ -71,8 +169,16 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+                Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+                    child: TextField(
+                      controller: nameController,
+                      decoration:
+                          DefaultThemes.inputDecoration(context, "Name"),
+                    )),
                 Expanded(
                     child: ListView.builder(
+                  padding: EdgeInsets.only(bottom: 60),
                   itemCount: _room.attributes.length,
                   itemBuilder: (context, pos) {
                     return getListViewItem(pos);
@@ -87,19 +193,21 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-          Image.asset(
-            'assets/images/page_not_found_su7k.png',
-            height: 250,
-            width: 250,
+          Text(
+            'Kein Beitritt in Raum möglich. \n\n' + errorMessage,
+            textAlign: TextAlign.center,
           ),
-          Text('Kein Beitritt in Raum möglich.',
-              style: Theme.of(context).textTheme.display1),
+          Padding(padding: EdgeInsets.only(top: 20)),
+          RaisedButton(
+            child: Text("Erneut versuchen"),
+            onPressed: _loadRoomData,
+          )
         ]));
   }
 
   Widget getListViewItem(pos) {
     return Padding(
-        padding: EdgeInsets.only(top: 20, bottom: 20.0, left: 5, right: 5),
+        padding: EdgeInsets.only(top: 0, bottom: 20.0, left: 5, right: 5),
         child: _getDropdown(
             pos,
             _room.attributes[pos].name,
@@ -111,13 +219,9 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
   Widget setFloatingActionButton() {
     return FloatingActionButton.extended(
         icon: Icon(Icons.save),
-        onPressed: () => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => new ClientScreen(_room.id)),
-              )
-            },
+        backgroundColor:
+            nameController.text != "" ? null : Theme.of(context).disabledColor,
+        onPressed: nameController.text != "" ? _sendData : null,
         label: new Text('Speichern'));
   }
 

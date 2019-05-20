@@ -32,15 +32,33 @@ class UserWidget extends StatelessWidget {
                 children: user.attributes.map((attribute) {
                   AttributeValue attributeValue = attribute.values[0];
 
+                  Color backgroundColor = attributeValue.color;
+                  Color fontColor = _getFontColorForBackground(backgroundColor);
+
                   return Padding(
                       padding: EdgeInsets.only(right: 15),
                       child: Chip(
-                        avatar: Icon(MdiIcons.information),
-                        label: Text(attributeValue.value),
+                        backgroundColor: backgroundColor,
+                        avatar: Icon(MdiIcons.information, color: fontColor),
+                        label: Text(
+                          attributeValue.value,
+                          style: TextStyle(color: fontColor),
+                        ),
                       ));
-                  // TODO change to color from attribute
                 }).toList(),
               )),
         ));
+  }
+
+  Color _getFontColorForBackground(Color background) {
+    final int maxBrightness = 255 + 500 + 255;
+    double brightness =
+        background.red + background.green * 2.5 + background.blue;
+
+    if (brightness < maxBrightness / 2) {
+      return Colors.white;
+    } else {
+      return Colors.black;
+    }
   }
 }
