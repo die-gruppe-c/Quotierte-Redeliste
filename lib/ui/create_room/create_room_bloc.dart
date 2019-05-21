@@ -10,6 +10,7 @@ class CreateRoomBloc {
 
   createNewRoom() {
     _room = Room();
+    _room.name = "";
     var attribute = Attribute("");
     attribute.values.add(AttributeValue(""));
     _room.attributes.add(attribute);
@@ -27,17 +28,25 @@ class CreateRoomBloc {
     return _room.attributes.length;
   }
 
+  getAttributes(){
+    return _room.attributes;
+  }
+
+  getName(){
+    return _room.name;
+  }
+
   addAttribute(Attribute attribute) {
     _room.attributes.add(attribute);
   }
 
   removeAttribute(int idx) {
-    _room.attributes.removeAt(idx);
+    return _room.attributes.removeAt(idx);
   }
 
   postNewRoom(callback({Room result, String error})) async {
     var roomToPost = Room.clone(_room);
-
+    print(roomToPost.toMap());
     _repository
         .createRoom(roomToPost)
         .then((room) => callback(result: room))
