@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/models/room.dart';
+import 'package:quotierte_redeliste/models/speaking_category.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/resources/room_websocket.dart';
@@ -80,7 +81,7 @@ class _ClientScreenState extends State<ClientScreen> {
       return _showError(
           "Verbindung verloren \n\n" + widget.webSocket.getErrorMessage());
     } else {
-      return Column(children: [_list(), _buttons()]);
+      return Column(children: [_list(), _buttons2()]);
     }
   }
 
@@ -98,28 +99,40 @@ class _ClientScreenState extends State<ClientScreen> {
     ]);
   }
 
-  Widget _buttons() {
+  Widget _buttons2() {
     return Container(
+        color: Theme.of(context).appBarTheme.color,
+        padding: EdgeInsets.only(bottom: 30.0, top: 30.0),
         decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: Theme.of(context).disabledColor)),
+          color: Theme.of(context).appBarTheme.color,
+          border: Border(top: BorderSide(color: Theme.of(context).accentColor)),
         ),
-        child: ListTile(
-            leading: Icon(
-              Icons.add_circle_outline,
-              size: 40,
-              color: Theme.of(context).hintColor,
-            ),
-            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-            title: Row(children: [
-              Padding(padding: EdgeInsets.only(right: 16)),
-              Text("Benutzer ohne Handy hinzufügen")
-            ])));
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildButtonColumn(
+                Theme.of(context).accentColor,
+                Icon(Icons.error_outline),
+                'Meldung',
+                widget.webSocket.wantToSpeak(SpeakingCategory('Meldung', '1'))),
+            _buildButtonColumn(
+                Theme.of(context).accentColor,
+                Icon(Icons.record_voice_over),
+                'Reden',
+                widget.webSocket.wantToSpeak(SpeakingCategory('Reden', '2'))),
+            _buildButtonColumn(
+                Theme.of(context).accentColor,
+                Icon(Icons.info_outline),
+                'Anmerkung',
+                widget.webSocket
+                    .wantToSpeak(SpeakingCategory('Anmerkung', '3'))),
+          ],
+        ));
   }
 
   Widget _list() {
     return StreamBuilder(
-      stream: widget.webSocket.getAllUsers(),
+      stream: widget.webSocket.getSpeakingList(),
       builder: (context, snapshot) {
         return snapshot.hasData
             ? _buildWithData(context, snapshot.data)
@@ -136,7 +149,7 @@ class _ClientScreenState extends State<ClientScreen> {
           decoration: BoxDecoration(color: Theme.of(context).splashColor),
           padding: EdgeInsets.all(10),
           child: Text(
-            "Anzahl Gäste: " + users.length.toString(),
+            "Aktueller Redner: " + users[0].name,
             textAlign: TextAlign.center,
           )),
       Expanded(
@@ -165,5 +178,24 @@ class _ClientScreenState extends State<ClientScreen> {
             ])
       ],
     ));
+  }
+
+  Column _buildButtonColumn(
+      Color color, Widget icon, String label, Function function) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        FlatButton(
+          onPressed: function,
+          color: Theme.of(context).accentColor,
+          textColor: Theme.of(context).accentColor,
+          shape: StadiumBorder(),
+          child: Column(
+            children: <Widget>[icon, Text(label)],
+          ),
+        )
+      ],
+    );
   }
 }

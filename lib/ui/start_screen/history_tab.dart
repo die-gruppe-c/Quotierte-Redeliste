@@ -84,13 +84,3 @@ class _HistoryTabState extends State<HistoryTab> {
     );
   }
 }
-/*
-Card(
-child: Padding(
-padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
-child: Text(
-'ID: ' + _rooms[pos].id.toString() + ' NAME: ' + _rooms[pos].name,
-style: TextStyle(
-fontSize: 18.0,
-),
-),*/
