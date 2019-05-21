@@ -222,7 +222,7 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
   Widget _getFloatingActionButton() {
     if (_state != RoomState.ERROR && _state != RoomState.DISCONNECTED)
       return FloatingActionButton.extended(
-          label: new Text('Start'),
+          label: new Text('Raum starten'),
           icon: Icon(Icons.play_arrow),
           onPressed: () {
             widget.webSocket.start();
