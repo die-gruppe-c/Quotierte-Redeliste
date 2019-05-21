@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:quotierte_redeliste/ui/moderator_screen/moderator_screen.dart';
-import 'package:quotierte_redeliste/ui/start_screen/start_screen.dart';
+import 'package:quotierte_redeliste/ui/splash_screen/splash_screen.dart';
 
 const PRIMARY_COLOR = Colors.white;
 const PRIMARY_COLOR_DARK = Colors.black87;
@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             title: 'Quoty',
             theme: theme,
-            home: StartScreen(),
+            home: SplashScreen(),
             routes: {
               "/room/moderator": (_) => new ModeratorScreen(),
             },
