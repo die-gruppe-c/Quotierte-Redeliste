@@ -99,11 +99,12 @@ class RoomApi {
       print("Room created: " + response.body);
       return;
     } else {
-      throw Exception('Fehler beim beitreten: ' + response.body);
+      throw Exception('Fehler beim beitreten: \n' + response.body);
     }
   }
 
-  String _getAttributesJsonFromMap(Map<String, String> attributes) {
+  List<Map<String, dynamic>> _getAttributesJsonFromMap(
+      Map<String, String> attributes) {
     List<Map<String, dynamic>> attributesList = List();
 
     attributes.forEach((key, value) {
@@ -119,7 +120,7 @@ class RoomApi {
       attributesList.add(oneAttributeMap);
     });
 
-    return json.encode(attributesList);
+    return attributesList;
   }
 
   Future<Map> _getHeaders() async {

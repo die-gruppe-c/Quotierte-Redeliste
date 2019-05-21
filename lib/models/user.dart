@@ -1,3 +1,5 @@
+import 'attribute.dart';
+
 class User {
   // frontend_id only available when room started
   String id = "-1";
@@ -7,8 +9,7 @@ class User {
 
   String name;
 
-  // first string is the name of the attribute, second string is the value
-  Map<String, String> attributes;
+  List<Attribute> attributes;
 
   bool createdByOwner = true;
   bool online = false;
@@ -25,11 +26,10 @@ class User {
     this.createdByOwner = json['createdByOwner'];
     this.online = json['online'];
 
-    this.attributes = Map<String, String>();
+    this.attributes = List();
     List attributes = json['attributes'];
-    print(attributes.toString());
     attributes.forEach((attrJson) {
-      this.attributes[attrJson["name"]] = attrJson["values"][0]["name"];
+      this.attributes.add(Attribute.fromJsonObject(attrJson));
     });
   }
 }

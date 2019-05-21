@@ -22,39 +22,36 @@ class _HistoryTabState extends State<HistoryTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: _rooms == null ? getEmptyState() : getListView());
+    return _rooms == null ? getEmptyState() : getListView();
   }
 
   Widget getEmptyState() {
-    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Padding(
-          padding: EdgeInsets.only(top: 150),
-          child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-            CircularProgressIndicator(),
-            Padding(padding: EdgeInsets.only(top: 25)),
-            Text('Räume werden geladen')
-          ]))
-    ]);
+    return Padding(
+        padding: EdgeInsets.only(top: 10),
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          CircularProgressIndicator(),
+          Padding(padding: EdgeInsets.only(top: 25)),
+          Text('Räume werden geladen')
+        ]));
   }
 
   Widget getListView() {
     return _rooms.isEmpty
         ? noDataAvailable()
-        : Column(children: [
-            Expanded(
-                child: ListView.builder(
-              itemCount: _rooms.length,
-              itemBuilder: (context, pos) {
-                return getListViewItem(pos);
-              },
-            ))
-          ]);
+        : ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _rooms.length,
+            itemBuilder: (context, pos) {
+              return getListViewItem(pos);
+            },
+          );
   }
 
   Widget noDataAvailable() {
-    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+    return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
       Padding(
-          padding: EdgeInsets.only(top: 150),
+          padding: EdgeInsets.only(top: 10),
           child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [Text('Kein Räume gefunden.')]))

@@ -19,7 +19,7 @@ class Profile {
 
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  Future getUsername() async {
+  Future<String> getUsername() async {
     if (_username == null) {
       final SharedPreferences prefs = await _prefs;
       _username = prefs.getString(TAG_USERNAME);
@@ -48,7 +48,7 @@ class Profile {
       final SharedPreferences prefs = await _prefs;
 
       if (!prefs.containsKey(TAG_TOKEN)) {
-        _token = _generateToken();
+        _token = generateToken();
         prefs.setString(TAG_TOKEN, _token);
       } else {
         _token = prefs.getString(TAG_TOKEN);
@@ -58,7 +58,7 @@ class Profile {
     return _token;
   }
 
-  static String _generateToken() {
+  static String generateToken() {
     var uuid = new Uuid();
     return uuid.v4();
   }

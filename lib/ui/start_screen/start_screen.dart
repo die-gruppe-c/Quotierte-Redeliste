@@ -16,49 +16,9 @@ class StartScreen extends StatelessWidget {
       appBar: setAppbar(context),
       body: SingleChildScrollView(
           child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-        set_enterroom_card(context),
-        set_historyroom_card(context),
+        _setEnterRoomCard(context),
+        _setHistoryRoomTitle(context),
         HistoryTab()
-        /*Row(children: <Widget>[
-          Expanded(
-            child: new Container(
-                margin: const EdgeInsets.only(left: 16.0, right: 20.0),
-                child: Divider(
-                  color: Theme.of(context).accentColor,
-                  height: 40,
-                )),
-          ),
-          Text("Raum beitreten"),
-          Expanded(
-            child: new Container(
-                margin: const EdgeInsets.only(left: 20.0, right: 16.0),
-                child: Divider(
-                  color: Theme.of(context).accentColor,
-                  height: 40,
-                )),
-          ),
-        ]),
-        EnterNewRoomTab(),
-        Row(children: <Widget>[
-          Expanded(
-            child: new Container(
-                margin: const EdgeInsets.only(left: 16.0, right: 20.0),
-                child: Divider(
-                  color: Theme.of(context).accentColor,
-                  height: 40,
-                )),
-          ),
-          Text("Vergangene Räume"),
-          Expanded(
-            child: new Container(
-                margin: const EdgeInsets.only(left: 20.0, right: 16.0),
-                child: Divider(
-                  color: Theme.of(context).accentColor,
-                  height: 40,
-                )),
-          ),
-        ]),
-        HistoryTab(),*/
       ])),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: setFloatingActionButton(context),
@@ -110,7 +70,7 @@ class StartScreen extends StatelessWidget {
     );
   }
 
-  Widget set_enterroom_card(context) {
+  Widget _setEnterRoomCard(context) {
     return Center(
       child: Card(
         margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
@@ -132,22 +92,18 @@ class StartScreen extends StatelessWidget {
     );
   }
 
-  Widget set_historyroom_card(context) {
-    return Center(
-      child: Card(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        margin: EdgeInsets.all(10.0),
-        elevation: 0,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            const ListTile(
-              leading: Icon(MdiIcons.history),
-              title: Text('Raumhistorie'),
-              subtitle: Text('In der Vergangenheit betretene Räume'),
-            ),
-          ],
-        ),
+  Widget _setHistoryRoomTitle(context) {
+    return Container(
+      margin: EdgeInsets.all(10.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const ListTile(
+            leading: Icon(MdiIcons.history),
+            title: Text('Raumhistorie'),
+            subtitle: Text('In der Vergangenheit betretene Räume'),
+          ),
+        ],
       ),
     );
   }
