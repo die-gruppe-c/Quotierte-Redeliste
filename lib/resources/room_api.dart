@@ -20,7 +20,7 @@ class RoomApi {
     if (response.statusCode == 201) {
       return Room.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to create room: \n' + response.body);
+      throw ApiException(response.body);
     }
   }
 
@@ -130,4 +130,18 @@ class RoomApi {
 
     return map;
   }
+
+}
+
+class ApiException implements Exception{
+
+  final String msg;
+  const ApiException(this.msg);
+
+  @override
+  String toString() {
+    return msg;
+  }
+
+
 }

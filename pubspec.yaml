@@ -30,6 +30,7 @@ dependencies:
   web_socket_channel: ^1.0.12
   rxdart: ^0.21.0
   dynamic_theme: ^1.0.0
+  flutter_material_color_picker: ^1.0.0
 
 dev_dependencies:
   flutter_launcher_icons: "^0.7.0"
@@ -82,3 +83,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.io/custom-fonts/#from-packages
+
+  fonts:
+    - family:  CustomIcons
+      fonts:
+       - asset: fonts/CustomIcons.ttf
