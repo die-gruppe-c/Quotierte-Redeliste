@@ -8,12 +8,10 @@ import 'package:quotierte_redeliste/models/attribute_value.dart';
 import 'package:quotierte_redeliste/ui/create_room/create_room_bloc.dart';
 
 class EditRoomWidget extends StatefulWidget {
-  ScrollListener scrollListener;
-
   @override
   _EditRoomWidgetState createState() => _EditRoomWidgetState();
 
-  EditRoomWidget({Key key, this.scrollListener}) : super(key: key);
+  EditRoomWidget({Key key}) : super(key: key);
 }
 
 class _EditRoomWidgetState extends State<EditRoomWidget> {
@@ -23,33 +21,12 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
 
   final GlobalKey<AnimatedListState> _attrListKey = GlobalKey();
 
-  ScrollController _scrollController;
-
-  ScrollListener _scrollListener;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-    _scrollListener = widget.scrollListener;
-    _scrollController.addListener(scrollListener);
-  }
-
-  scrollListener() {
-    if (_scrollListener != null) {
-      _scrollListener(
-          _scrollController.offset,
-          _scrollController.position.minScrollExtent,
-          _scrollController.position.outOfRange);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-        child: AnimatedList(
+    return AnimatedList(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       key: _attrListKey,
-      controller: _scrollController,
       initialItemCount: createRoomBloc.getAttributeCount(),
       itemBuilder: (BuildContext context, int index, Animation animation) {
         return FadeTransition(
@@ -58,7 +35,7 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
               createRoomBloc.getAttribute(index), index),
         );
       },
-    ));
+    );
   }
 
   _buildAttributeListItem(Attribute attribute, [int attrIdx]) {

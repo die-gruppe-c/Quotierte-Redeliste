@@ -18,7 +18,7 @@ void main() {
     systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
   ));
 
-//  debugPaintSizeEnabled = true;
+  debugPaintSizeEnabled = false;
   runApp(MyApp());
 }
 
