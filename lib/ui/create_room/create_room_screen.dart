@@ -25,40 +25,39 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   @override
   void initState() {
+    super.initState();
     createRoomBloc.createNewRoom();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(''),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        textTheme: Theme.of(context).textTheme,
-        iconTheme: Theme.of(context).iconTheme,
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-          onPressed: () {
-            Navigator.maybePop(context);
-          },
-        ),
-        elevation: appBarElevated && !ResponsiveContainer.isTablet(context) ? 4 : 0,
-        actions: [],
-        bottom: buildToolbarBottom()
-      ),
+          title: Text(''),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          textTheme: Theme.of(context).textTheme,
+          iconTheme: Theme.of(context).iconTheme,
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+            onPressed: () {
+              Navigator.maybePop(context);
+            },
+          ),
+          elevation:
+              appBarElevated && !ResponsiveContainer.isTablet(context) ? 4 : 0,
+          actions: [],
+          bottom: buildToolbarBottom()),
       // body is the majority of the screen.
       body: createRequestSend ? buildLoadingBody() : buildBody(),
-      floatingActionButton: FloatingActionButton (
-        onPressed: _save,
-        child: Icon(Icons.save)
-      ),
+      floatingActionButton:
+          FloatingActionButton(onPressed: _save, child: Icon(Icons.save)),
     );
   }
 
-  _scrollListener(double offset, double minScrollExtent, bool outOfRangePosition) {
+  _scrollListener(
+      double offset, double minScrollExtent, bool outOfRangePosition) {
     bool newElevationState;
 
     if (offset <= minScrollExtent && !outOfRangePosition) {
@@ -84,24 +83,22 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     } else {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (context) => WaitingRoomScreen()),
+        MaterialPageRoute(builder: (context) => WaitingRoomScreen()),
       );
     }
   }
 
-  buildToolbarBottom(){
-
-    return ResponsiveContainer.isTablet(context) ?
-      null
-          :
-      NameInputContainer(
-          alignment: Alignment(-1.0, 0.0),
-          padding: const EdgeInsets.only(left: 56, right: PADDING_SIDE, bottom: 8),
-          child: buildNameTf() );
+  buildToolbarBottom() {
+    return ResponsiveContainer.isTablet(context)
+        ? null
+        : NameInputContainer(
+            alignment: Alignment(-1.0, 0.0),
+            padding:
+                const EdgeInsets.only(left: 56, right: PADDING_SIDE, bottom: 8),
+            child: buildNameTf());
   }
 
-  buildNameTf(){
+  buildNameTf() {
     var titleController = new TextEditingController();
     titleController.text = createRoomBloc.getName();
 
@@ -123,46 +120,29 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
   }
 
   buildBody() {
-
-    if(ResponsiveContainer.isTablet(context)){
-      return Center(
-          child: Container(
-            padding: ResponsiveContainer.isTablet(context) ? const EdgeInsets.only(top: 8, bottom: 32) : null,
-            child: Card(
-              elevation: 2,
-              child: Container(
-                constraints: BoxConstraints( maxWidth: 500),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.only(left: PADDING_SIDE, top: 8, bottom: 8, right: PADDING_SIDE),
-                      child: buildNameTf(),
-                    ),
-                    Divider(
-                      height: 2,
-                    ),
-                    EditRoomWidget(scrollListener: _scrollListener),
-                  ], // Children
-                ),
-              ),
-            )
-          )
-      );
-    }else{
-      return Container(
-          constraints: BoxConstraints( maxWidth: 500),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Divider(
-                height: appBarElevated ? 0 : 2,
-              ),
-              EditRoomWidget(scrollListener: _scrollListener),
-            ], // Children
-          ),
-      );
-    }
+    return ResponsiveContainer(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ResponsiveContainer.isTablet(context)
+                ? Container(
+                    padding: const EdgeInsets.only(
+                        left: PADDING_SIDE,
+                        top: 8,
+                        bottom: 8,
+                        right: PADDING_SIDE),
+                    child: buildNameTf(),
+                  )
+                : Container(),
+            Divider(
+              height: ResponsiveContainer.isTablet(context) || !appBarElevated
+                  ? 2
+                  : 0,
+            ),
+            EditRoomWidget()
+          ], // Children
+        ),
+        scrollListener: _scrollListener);
   }
 
   buildLoadingBody() {
@@ -183,7 +163,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     );
   }
 
-  _save(){
+  _save() {
     if (!createRequestSend) {
       if (!checkInput()) return;
       createRoomBloc.postNewRoom(_onRoomCreated);
@@ -194,57 +174,59 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
   }
 
   bool checkInput() {
+    if (createRoomBloc.getName() == "")
+      return _showError("Enter a name for the room.");
 
-    if(createRoomBloc.getName() == "") return _showError("Enter a name for the room.");
+    if (createRoomBloc.getAttributeCount() < 2)
+      return _showError("Kein Attribut vorhanden.");
 
-    if(createRoomBloc.getAttributeCount() < 2) return _showError("Kein Attribut vorhanden.");
-
-    for(Attribute attribute in createRoomBloc.getAttributes()){
-
-      if(attribute.name == "" && attribute.values.length > 0 && attribute.values[0].value != ""){
+    for (Attribute attribute in createRoomBloc.getAttributes()) {
+      if (attribute.name == "" &&
+          attribute.values.length > 0 &&
+          attribute.values[0].value != "") {
         return _showError("Ein Attribut hat keinen Namen.");
       }
 
-      if(attribute.name == "") continue;
+      if (attribute.name == "") continue;
 
-      if(attribute.values.length < 3) {
-        return _showError("Ein Attribut muss mindestens zwei Ausprägungen haben.");
+      if (attribute.values.length < 3) {
+        return _showError(
+            "Ein Attribut muss mindestens zwei Ausprägungen haben.");
       }
 
       int totalWeights = 0;
 
-      for(var value in attribute.values){
+      for (var value in attribute.values) {
         totalWeights += value.weight;
 
-        for(var checkValue in attribute.values){
-          if(checkValue == value) continue;
-          if(checkValue.value == value.value) {
+        for (var checkValue in attribute.values) {
+          if (checkValue == value) continue;
+          if (checkValue.value == value.value) {
             return _showError(
                 "Attribut ${attribute.name} enthält zwei gleiche Ausprägungen.");
           }
         }
       }
 
-      if(totalWeights != 0 && totalWeights != 100){
-        return _showError("Gewichte der Attributausprägungen müssen zusammen 100 ergeben.");
+      if (totalWeights != 0 && totalWeights != 100) {
+        return _showError(
+            "Gewichte der Attributausprägungen müssen zusammen 100 ergeben.");
       }
 
       //check for duplicates
-      for(Attribute checkAttribute in createRoomBloc.getAttributes()){
-        if(checkAttribute == attribute) continue;
+      for (Attribute checkAttribute in createRoomBloc.getAttributes()) {
+        if (checkAttribute == attribute) continue;
 
-        if(checkAttribute.name == attribute.name){
+        if (checkAttribute.name == attribute.name) {
           return _showError("Es existieren zwei Attribute mit gleichem Namen.");
         }
       }
-
     }
 
     return true;
   }
 
-  bool _showError(String text, {bool error = false}){
-
+  bool _showError(String text, {bool error = false}) {
     var actions = <Widget>[];
 
     actions.add(FlatButton(
@@ -254,7 +236,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
       },
     ));
 
-    if(error){
+    if (error) {
       actions.add(FlatButton(
         child: Text('ERNEUT VERSUCHEN'),
         onPressed: () {
@@ -276,9 +258,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     );
 
     return false;
-
   }
-
 }
 
 class NameInputContainer extends Container implements PreferredSizeWidget {
