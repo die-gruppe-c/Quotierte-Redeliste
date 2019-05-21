@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quotierte_redeliste/icons/custom_icons.dart';
 import 'package:quotierte_redeliste/models/attribute.dart';
 import 'package:quotierte_redeliste/models/attribute_value.dart';
 import 'package:quotierte_redeliste/ui/create_room/create_room_bloc.dart';
-import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
-
 
 class EditRoomWidget extends StatefulWidget {
-
   ScrollListener scrollListener;
 
   @override
   _EditRoomWidgetState createState() => _EditRoomWidgetState();
 
-  EditRoomWidget({Key key, this.scrollListener}): super(key: key);
-  
+  EditRoomWidget({Key key, this.scrollListener}) : super(key: key);
 }
 
 class _EditRoomWidgetState extends State<EditRoomWidget> {
@@ -29,7 +26,6 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
   ScrollController _scrollController;
 
   ScrollListener _scrollListener;
-
 
   @override
   void initState() {
@@ -52,16 +48,16 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
   Widget build(BuildContext context) {
     return Expanded(
         child: AnimatedList(
-          key: _attrListKey,
-          controller: _scrollController,
-          initialItemCount: createRoomBloc.getAttributeCount(),
-          itemBuilder: (BuildContext context, int index, Animation animation) {
-            return FadeTransition(
-              opacity: animation,
-              child: _buildAttributeListItem(
-                  createRoomBloc.getAttribute(index), index),
-            );
-          },
+      key: _attrListKey,
+      controller: _scrollController,
+      initialItemCount: createRoomBloc.getAttributeCount(),
+      itemBuilder: (BuildContext context, int index, Animation animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: _buildAttributeListItem(
+              createRoomBloc.getAttribute(index), index),
+        );
+      },
     ));
   }
 
@@ -122,7 +118,8 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                                           .getAttribute(createRoomBloc
                                                   .getAttributeCount() -
                                               1)
-                                          .name == "") {
+                                          .name ==
+                                      "") {
                                 removeAttribute(
                                     createRoomBloc.getAttributeCount() - 1);
                               }
@@ -139,17 +136,21 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ))),
                 Container(
-                  child: attribute.values.length <= 2 ? null : IconButton(
-                    icon: Icon(CustomIcons.weight_balance),
-                    onPressed: () {
-                      setState(() {
-                        attribute.addWeights();
-                      });
-                      showDialog(
-                          context: context,
-                          builder: (_) => WeightPickerDialog(attribute: attribute)
-                      ).then((_)=>setState((){}));
-                    },),
+                  child: attribute.values.length <= 2
+                      ? null
+                      : IconButton(
+                          icon: Icon(CustomIcons.weight_balance),
+                          onPressed: () {
+                            setState(() {
+                              attribute.addWeights();
+                            });
+                            showDialog(
+                                    context: context,
+                                    builder: (_) => WeightPickerDialog(
+                                        attribute: attribute))
+                                .then((_) => setState(() {}));
+                          },
+                        ),
                 ),
               ],
             ),
@@ -183,96 +184,105 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
 
     bool allNull = true;
 
-    attribute.values.forEach((value){
-      if(value.weight != 0) allNull = false;
+    attribute.values.forEach((value) {
+      if (value.weight != 0) allNull = false;
     });
 
     return Container(
-      child: Container(
-        padding: const EdgeInsets.only(left: 40, right: 12),
-        child: Row(
-          children: <Widget>[
-            Center(
+        child: Container(
+      padding: const EdgeInsets.only(left: 40, right: 12),
+      child: Row(
+        children: <Widget>[
+          Center(
+            child: Container(
+                padding: const EdgeInsets.only(right: 4),
+                child: IconButton(
+                  icon: Icon(
+                    icon,
+                    color: iconColor,
+                  ),
+                  onPressed: newValueMode
+                      ? null
+                      : () {
+                          showDialog(
+                              context: context,
+                              builder: (_) => new AlertDialog(
+                                    title: new Text("Farbe wählen"),
+                                    content: MaterialColorPicker(
+                                      onColorChange: (Color color) {
+                                        setState(() {
+                                          attribute.values[valueIdx].color =
+                                              color;
+                                        });
+                                      },
+                                    ),
+                                    actions: <Widget>[
+                                      new FlatButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: new Text(
+                                            'OK',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ))
+                                    ],
+                                  ));
+                        },
+                )),
+          ),
+          Expanded(
               child: Container(
-                  padding: const EdgeInsets.only( right: 4),
-                  child: IconButton(
-                    icon: Icon(
-                      icon,
-                      color: iconColor,
-                    ),
-                    onPressed: newValueMode ? null : () {
-                      showDialog(
-                          context: context,
-                          builder: (_) => new AlertDialog(
-                            title: new Text("Farbe wählen"),
-                            content: MaterialColorPicker(
-                              onColorChange: (Color color) {
-                                setState(() {
-                                  attribute.values[valueIdx].color = color;
-                                });
-                              },
-                            ),
-                            actions: <Widget>[
-                              new FlatButton(onPressed: () {
-                                Navigator.of(context).pop();
-                              }, child: new Text('OK', style: TextStyle(fontWeight: FontWeight.bold),))
-                            ],
-                          )
-                      );
-                    },
-                  )),
-            ),
-            Expanded(
-                child: Container(
-                    padding: const EdgeInsets.only(right: PADDING_SIDE),
-                    child: TextField(
-                      controller: new TextEditingController.fromValue(
-                          new TextEditingValue(
-                              text: attribute.values[valueIdx].value,
-                              selection: new TextSelection.collapsed(
-                                  offset:
-                                  attribute.values[valueIdx].value.length))),
-                      cursorColor: Theme.of(context).hintColor,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(50),
-                      ],
-                      textCapitalization: TextCapitalization.sentences,
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "Wert hinzufügen",
-                          hintStyle:
-                          TextStyle(color: Theme.of(context).hintColor)),
-                      onChanged: (text) {
-                        attribute.values[valueIdx].value = text;
-                        setState(() {
-                          if (valueIdx == attribute.values.length - 1 &&
-                              text.length > 0) {
-                            attribute.values.add(AttributeValue(""));
-                          } else if (valueIdx == attribute.values.length - 2 &&
-                              text.length == 0 &&
-                              attribute.values[attribute.values.length - 1]
-                                  .value ==
-                                  "") {
-                            attribute.values.removeLast();
-                          }
-                        });
-                      },
-                      onEditingComplete: () {
-                        if (valueIdx < attribute.values.length - 2 &&
-                            attribute.values[valueIdx].value == "") {
-                          setState(() {
-                            attribute.values.removeAt(valueIdx);
-                          });
+                  padding: const EdgeInsets.only(right: PADDING_SIDE),
+                  child: TextField(
+                    controller: new TextEditingController.fromValue(
+                        new TextEditingValue(
+                            text: attribute.values[valueIdx].value,
+                            selection: new TextSelection.collapsed(
+                                offset:
+                                    attribute.values[valueIdx].value.length))),
+                    cursorColor: Theme.of(context).hintColor,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(50),
+                    ],
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Wert hinzufügen",
+                        hintStyle:
+                            TextStyle(color: Theme.of(context).hintColor)),
+                    onChanged: (text) {
+                      attribute.values[valueIdx].value = text;
+                      setState(() {
+                        if (valueIdx == attribute.values.length - 1 &&
+                            text.length > 0) {
+                          attribute.values.add(AttributeValue(""));
+                        } else if (valueIdx == attribute.values.length - 2 &&
+                            text.length == 0 &&
+                            attribute.values[attribute.values.length - 1]
+                                    .value ==
+                                "") {
+                          attribute.values.removeLast();
                         }
-                      },
-                      style:
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                    ))),
-            Text(newValueMode || allNull ? "" : "${attribute.values[valueIdx].weight}%"),
-          ],
-        ),
-      )
-    );
+                      });
+                    },
+                    onEditingComplete: () {
+                      if (valueIdx < attribute.values.length - 2 &&
+                          attribute.values[valueIdx].value == "") {
+                        setState(() {
+                          attribute.values.removeAt(valueIdx);
+                        });
+                      }
+                    },
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                  ))),
+          Text(newValueMode || allNull
+              ? ""
+              : "${attribute.values[valueIdx].weight}%"),
+        ],
+      ),
+    ));
   }
 
   addAttribute() {
@@ -301,22 +311,18 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
       duration: Duration(milliseconds: REMOVE_ATTRIBUTE_ANIM_DURATION),
     );
   }
-
 }
 
-class WeightPickerDialog extends StatefulWidget{
-
+class WeightPickerDialog extends StatefulWidget {
   final attribute;
 
   const WeightPickerDialog({Key key, this.attribute}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => WeightPickerDialogState();
-
 }
 
-class WeightPickerDialogState extends State<WeightPickerDialog>{
-
+class WeightPickerDialogState extends State<WeightPickerDialog> {
   Attribute attribute;
 
   @override
@@ -331,42 +337,53 @@ class WeightPickerDialogState extends State<WeightPickerDialog>{
       title: Text("Wähle Gewichtungen"),
       content: Container(
         width: 300,
-        child: Column(
-          children: [
-            Expanded( child:
-            ListView.separated(
-              itemBuilder: (context, position){
-                return _buildValueWeightSelectorItem(context, position);
-              },
-              itemCount: this.attribute.values.length - 1,
-              separatorBuilder: (context, index) => Divider(),
-            )),
-      ]),
+        child: Column(children: [
+          Expanded(
+              child: ListView.separated(
+            itemBuilder: (context, position) {
+              return _buildValueWeightSelectorItem(context, position);
+            },
+            itemCount: this.attribute.values.length - 1,
+            separatorBuilder: (context, index) => Divider(),
+          )),
+        ]),
       ),
       actions: <Widget>[
-        new FlatButton(onPressed: () {
-          setState(() {
-            for (var value in this.attribute.values){
-              value.weight = 0;
-            }
-          });
-          Navigator.of(context).pop();
-        }, child: new Text('ALLE ENTFERNEN', style: TextStyle(fontWeight: FontWeight.bold),)),
-        new FlatButton(onPressed: () {
-          Navigator.of(context).pop();
-        }, child: new Text('OK', style: TextStyle(fontWeight: FontWeight.bold),)),
+        new FlatButton(
+            onPressed: () {
+              setState(() {
+                for (var value in this.attribute.values) {
+                  value.weight = 0;
+                }
+              });
+              Navigator.of(context).pop();
+            },
+            child: new Text(
+              'ALLE ENTFERNEN',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )),
+        new FlatButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: new Text(
+              'OK',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )),
       ],
     );
   }
 
   _buildValueWeightSelectorItem(BuildContext context, int valueIdx) {
-
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(attribute.values[valueIdx].value, textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+          Text(
+            attribute.values[valueIdx].value,
+            textAlign: TextAlign.left,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           Row(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
@@ -375,7 +392,8 @@ class WeightPickerDialogState extends State<WeightPickerDialog>{
                   value: attribute.values[valueIdx].weight.toDouble(),
                   min: 0.0,
                   max: 100.0,
-                  onChanged: (weight){
+                  activeColor: Theme.of(context).accentColor,
+                  onChanged: (weight) {
                     setState(() {
                       this.attribute.setWeight(weight.toInt(), valueIdx);
                     });
@@ -383,13 +401,12 @@ class WeightPickerDialogState extends State<WeightPickerDialog>{
                 ),
               ),
               Text("${attribute.values[valueIdx].weight}%")
-          ],)
+            ],
+          )
         ],
       ),
     );
   }
-
 }
 
 typedef ScrollListener = void Function(double, double, bool);
-

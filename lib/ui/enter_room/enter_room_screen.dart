@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/models/profile.dart';
 import 'package:quotierte_redeliste/models/room.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
-import 'package:quotierte_redeliste/ui/display_client/display_client_screen.dart';
 import 'package:quotierte_redeliste/ui/themes/DefaultThemes.dart';
+import 'package:quotierte_redeliste/ui/waiting_room/waiting_room_screen.dart';
 
 class EnterRoomScreen extends StatefulWidget {
   final String roomId;
@@ -101,7 +101,7 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
       } else {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => new ClientScreen(_room.id)),
+          MaterialPageRoute(builder: (context) => WaitingRoomScreen()),
         );
       }
     }, onError: (error) {
