@@ -50,16 +50,16 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
     });
 
     _roomSubscription = widget.webSocket.getRoomData().listen((room) {
+      setState(() {
+        _room = room;
+      });
+
       if (room.running) {
         if (_isModerator())
           _navigateToModeratorScreen();
         else
           _navigateToClientScreen();
       }
-
-      setState(() {
-        _room = room;
-      });
     });
   }
 
