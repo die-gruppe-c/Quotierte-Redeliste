@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quotierte_redeliste/models/room.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 
@@ -59,18 +60,27 @@ class _HistoryTabState extends State<HistoryTab> {
   }
 
   Widget getListViewItem(pos) {
-    return Padding(
-        padding: EdgeInsets.only(bottom: 2.0, left: 4, right: 4),
-        child: Card(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
-            child: Text(
-              _rooms[pos].name,
-              style: TextStyle(
-                fontSize: 18.0,
-              ),
-            ),
-          ),
-        ));
+    return Card(
+      margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 2.0),
+      elevation: 1,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ListTile(
+              leading: Icon(MdiIcons.forum),
+              title: Text('Raum: ' +
+                  _rooms[pos].name +
+                  ' (ID: ' +
+                  _rooms[pos].id.toString() +
+                  ')'),
+              subtitle: Text('Erstellt am ' +
+                  _rooms[pos].createOn.day.toString() +
+                  '.' +
+                  _rooms[pos].createOn.month.toString() +
+                  '.' +
+                  _rooms[pos].createOn.year.toString())),
+        ],
+      ),
+    );
   }
 }

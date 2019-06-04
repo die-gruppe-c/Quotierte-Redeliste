@@ -33,6 +33,7 @@ class _DisplayRoomScreenState extends State<DisplayRoomScreen> {
       key: _scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
+          icon: Icon(Icons.arrow_back),
           tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: () {
             Navigator.maybePop(context);

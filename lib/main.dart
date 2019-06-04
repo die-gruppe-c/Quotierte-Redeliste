@@ -11,6 +11,11 @@ const HINT_COLOR = Colors.black38;
 const ACCENT_COLOR = Colors.red;
 const DISABLED_COLOR = Colors.black26;
 
+//TODO: Wenn name nicht gesetzt dann Fehlermeldung bei raum beitreten.
+//TODO: Wenn raumbeigetreten und dann rausgeflogen o.ä. dann über raum beitreten wieder attribut screen anstatt direkt in warteraum/raum.
+//TODO: Invalid Argument error wenn in Warteraum gehen ohne einem beigetreten zu sein.
+//TODO: Wenn raum nicht archiviert wird kann der nutzer nie mehr in einen neuen beitreten.
+
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     // TODO change when darkmode changes
@@ -26,7 +31,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new DynamicTheme(
-        defaultBrightness: Brightness.light,
+        defaultBrightness: Brightness.dark,
         data: (brightness) {
           if (brightness == Brightness.light) {
             return ThemeData(
