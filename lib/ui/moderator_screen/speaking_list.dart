@@ -92,7 +92,6 @@ class _SpeakingListState extends State<SpeakingList> {
   }
 
   _removeUserFromSpeakingList(String userId) {
-    print("remove user: " + userId);
     _webSocket.removeUserFromSpeakingList(userId);
   }
 
