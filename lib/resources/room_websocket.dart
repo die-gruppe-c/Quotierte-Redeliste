@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:quotierte_redeliste/models/currently_speaking.dart';
 import 'package:quotierte_redeliste/models/profile.dart';
 import 'package:quotierte_redeliste/models/speaking_category.dart';
+import 'package:quotierte_redeliste/models/speaking_list_entry.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:rxdart/rxdart.dart';
@@ -43,12 +45,13 @@ class RoomWebSocket {
   IOWebSocketChannel _webSocket;
 
   _ObservableStream<List<User>> _streamAllUsers;
-  _ObservableStream<List<String>> _streamSpeakers;
+  _ObservableStream<List<SpeakingListEntry>> _streamSpeakers;
   _ObservableStream<List<String>> _streamSortedUsers;
   _ObservableStream<List<String>> _streamWantToSpeak;
   _ObservableStream<List<SpeakingCategory>> _streamSpeakCategories;
   _ObservableStream<Room> _streamRoomData;
   _ObservableStream<RoomState> _streamRoomState;
+  _ObservableStream<CurrentlySpeaking> _streamCurrentlySpeaking;
 
   bool _closed = true;
   String _errorMessage;
@@ -66,6 +69,7 @@ class RoomWebSocket {
     _streamSpeakCategories = _ObservableStream();
     _streamRoomState = _ObservableStream();
     _streamRoomData = _ObservableStream();
+    _streamCurrentlySpeaking = _ObservableStream();
   }
 
   /// call this only once
@@ -109,6 +113,9 @@ class RoomWebSocket {
         case _WebSocketCommands.ROOM:
           _roomData(commandData);
           break;
+        case _WebSocketCommands.CURRENTLY_SPEAKING:
+          _currentlySpeaking(commandData);
+          break;
       }
     }, onDone: _onClosed, onError: _onError);
 
@@ -130,7 +137,9 @@ class RoomWebSocket {
     _streamAllUsers.add(listUsers);
   }
 
-  _speakingList(List<String> ids) {
+  _speakingList(List<dynamic> entries) {
+    List<SpeakingListEntry> ids =
+        entries.map((entry) => SpeakingListEntry.fromJson(entry)).toList();
     _streamSpeakers.add(ids);
   }
 
@@ -159,12 +168,18 @@ class RoomWebSocket {
     _streamRoomData.add(Room.fromJson(roomData));
   }
 
+  _currentlySpeaking(Map<String, dynamic> data) {
+    _streamCurrentlySpeaking.add(CurrentlySpeaking.fromJson(data));
+  }
+
   _onClosed() {
+    print("Websocket closed");
     _streamRoomState.add(RoomState.DISCONNECTED);
     close();
   }
 
   _onError(error) {
+    print("Websocket error: " + error.toString());
     this._errorMessage = error.toString();
     _streamRoomState.add(RoomState.ERROR);
     close();
@@ -178,7 +193,9 @@ class RoomWebSocket {
     _streamSortedUsers.close();
     _streamWantToSpeak.close();
     _streamSpeakCategories.close();
+    _streamRoomState.close();
     _streamRoomData.close();
+    _streamCurrentlySpeaking.close();
 
     _closed = true;
   }
@@ -187,7 +204,7 @@ class RoomWebSocket {
     return _streamAllUsers.getStream();
   }
 
-  Stream<List<String>> getSpeakingList() {
+  Stream<List<SpeakingListEntry>> getSpeakingList() {
     return _streamSpeakers.getStream();
   }
 
@@ -211,19 +228,28 @@ class RoomWebSocket {
     return _streamRoomState.getStream();
   }
 
+  Stream<CurrentlySpeaking> getCurrentlySpeaking() {
+    return _streamCurrentlySpeaking.getStream();
+  }
+
   String getErrorMessage() {
     if (_errorMessage == null) return "";
     return _errorMessage;
   }
 
+  _sendCommand(String command) {
+    print("websocket send: " + command);
+    _webSocket.sink.add(command);
+  }
+
   wantToSpeak(SpeakingCategory category) {
     String data = _WebSocketCommands.WANT_TO_SPEAK + ":" + category.id;
-    _webSocket.sink.add(data);
+    _sendCommand(data);
   }
 
   doNotWantToSpeak() {
     String data = _WebSocketCommands.WANT_NOT_TO_SPEAK;
-    _webSocket.sink.add(data);
+    _sendCommand(data);
   }
 
   changeOrderOfSpeakingList(String userId, int newPosition) {
@@ -232,27 +258,26 @@ class RoomWebSocket {
         userId +
         "," +
         newPosition.toString();
-    _webSocket.sink.add(data);
+    _sendCommand(data);
   }
 
   addUserToSpeakingList(String userId) {
     String data = _WebSocketCommands.ADD_USER_TO_SPEAKING_LIST + ":" + userId;
-    _webSocket.sink.add(data);
+    _sendCommand(data);
   }
 
   removeUserFromSpeakingList(String userId) {
     String data =
         _WebSocketCommands.REMOVE_USER_FROM_SPEAKING_LIST + ":" + userId;
-    _webSocket.sink.add(data);
+    _sendCommand(data);
   }
 
   start() {
-    String data = _WebSocketCommands.START;
-    _webSocket.sink.add(data);
+    _sendCommand(_WebSocketCommands.START);
   }
 
   updateUserList() {
-    _webSocket.sink.add(_WebSocketCommands.UPDATE_USER_LIST);
+    _sendCommand(_WebSocketCommands.UPDATE_USER_LIST);
   }
 }
 
@@ -264,9 +289,10 @@ class _WebSocketCommands {
   // only moderator
   static const USERS_SORTED = "usersSorted";
   static const USERS_WANT_TO_SPEAK = "usersWantToSpeak";
+  static const CURRENTLY_SPEAKING = "currentlySpeaking";
 
   static const ROOM = "room";
-  static const SPEAKING_LIST = "speakingList";
+  static const SPEAKING_LIST = "speechList";
   static const STARTED = "started";
   static const ALL_USERS = "allUsers";
   static const SPEAK_CATEGORIES = "speechTypes";
