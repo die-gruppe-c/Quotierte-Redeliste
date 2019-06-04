@@ -1,11 +1,22 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class AttributeValue {
   String value;
-  Color color = Colors.black;
-  int weight = 50;
+  Color color;
+  int weight;
 
-  AttributeValue(this.value);
+  static const colors = [
+    Colors.blue, Colors.green, Colors.amber, Colors.deepPurple,
+    Colors.orange, Colors.pink, Colors.lime
+  ];
+
+  AttributeValue(String value){
+    this.value = value;
+    this.color = generateColor();
+    this.weight = 0;
+  }
 
   AttributeValue.fromJson(json) {
     this.weight = json['weight'];
@@ -17,6 +28,13 @@ class AttributeValue {
     value = attr.value;
     color = attr.color;
     weight = attr.weight;
+  }
+
+  Color generateColor(){
+
+    var rng = new Random();
+
+    return colors[rng.nextInt(colors.length)];
   }
 
   /// Construct a color from a hex code string, of the format #RRGGBB.

@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:quotierte_redeliste/icons/custom_icons.dart';
 import 'package:quotierte_redeliste/models/attribute.dart';
 import 'package:quotierte_redeliste/models/attribute_value.dart';
 import 'package:quotierte_redeliste/ui/create_room/create_room_bloc.dart';
 
 class EditRoomWidget extends StatefulWidget {
-  var _scrollListener;
-
   @override
-  _EditRoomWidgetState createState() => _EditRoomWidgetState(_scrollListener);
+  _EditRoomWidgetState createState() => _EditRoomWidgetState();
 
-  EditRoomWidget({scrollListener}) {
-    this._scrollListener = scrollListener;
-  }
+  EditRoomWidget({Key key}) : super(key: key);
 }
 
 class _EditRoomWidgetState extends State<EditRoomWidget> {
@@ -23,33 +21,12 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
 
   final GlobalKey<AnimatedListState> _attrListKey = GlobalKey();
 
-  ScrollController _scrollcontroller;
-
-  var _scrollListener;
-
-  _EditRoomWidgetState(this._scrollListener);
-
-  @override
-  void initState() {
-    _scrollcontroller = ScrollController();
-    _scrollcontroller.addListener(scrollListener);
-  }
-
-  scrollListener() {
-    if (_scrollListener != null) {
-      _scrollListener(
-          _scrollcontroller.offset,
-          _scrollcontroller.position.minScrollExtent,
-          _scrollcontroller.position.outOfRange);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-        child: AnimatedList(
+    return AnimatedList(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       key: _attrListKey,
-      controller: _scrollcontroller,
       initialItemCount: createRoomBloc.getAttributeCount(),
       itemBuilder: (BuildContext context, int index, Animation animation) {
         return FadeTransition(
@@ -58,7 +35,7 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
               createRoomBloc.getAttribute(index), index),
         );
       },
-    ));
+    );
   }
 
   _buildAttributeListItem(Attribute attribute, [int attrIdx]) {
@@ -135,6 +112,23 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ))),
+                Container(
+                  child: attribute.values.length <= 2
+                      ? null
+                      : IconButton(
+                          icon: Icon(CustomIcons.weight_balance),
+                          onPressed: () {
+                            setState(() {
+                              attribute.addWeights();
+                            });
+                            showDialog(
+                                    context: context,
+                                    builder: (_) => WeightPickerDialog(
+                                        attribute: attribute))
+                                .then((_) => setState(() {}));
+                          },
+                        ),
+                ),
               ],
             ),
             ListView.builder(
@@ -153,25 +147,65 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
 
   _buildAttributeValueListItem(
       BuildContext context, Attribute attribute, int valueIdx) {
-    var icon = MdiIcons.menuRight;
-    var iconColor = Theme.of(context).primaryIconTheme.color;
+    var icon = Icons.fiber_manual_record;
+    //var iconColor = Theme.of(context).hintColor;
+    var iconColor = attribute.values[valueIdx].color;
 
-    if (valueIdx == attribute.values.length - 1 &&
-        attribute.values[valueIdx].value.length == 0) {
+    var newValueMode = valueIdx == attribute.values.length - 1 &&
+        attribute.values[valueIdx].value.length == 0;
+
+    if (newValueMode) {
       icon = MdiIcons.menuRightOutline;
-
       iconColor = Theme.of(context).hintColor;
     }
 
+    bool allNull = true;
+
+    attribute.values.forEach((value) {
+      if (value.weight != 0) allNull = false;
+    });
+
     return Container(
+        child: Container(
+      padding: const EdgeInsets.only(left: 40, right: 12),
       child: Row(
         children: <Widget>[
           Center(
             child: Container(
-                padding: const EdgeInsets.only(left: 56, right: 4),
-                child: Icon(
-                  icon,
-                  color: iconColor,
+                padding: const EdgeInsets.only(right: 4),
+                child: IconButton(
+                  icon: Icon(
+                    icon,
+                    color: iconColor,
+                  ),
+                  onPressed: newValueMode
+                      ? null
+                      : () {
+                          showDialog(
+                              context: context,
+                              builder: (_) => new AlertDialog(
+                                    title: new Text("Farbe wählen"),
+                                    content: MaterialColorPicker(
+                                      onColorChange: (Color color) {
+                                        setState(() {
+                                          attribute.values[valueIdx].color =
+                                              color;
+                                        });
+                                      },
+                                    ),
+                                    actions: <Widget>[
+                                      new FlatButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: new Text(
+                                            'OK',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ))
+                                    ],
+                                  ));
+                        },
                 )),
           ),
           Expanded(
@@ -220,9 +254,12 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                   ))),
+          Text(newValueMode || allNull
+              ? ""
+              : "${attribute.values[valueIdx].weight}%"),
         ],
       ),
-    );
+    ));
   }
 
   addAttribute() {
@@ -252,3 +289,101 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
     );
   }
 }
+
+class WeightPickerDialog extends StatefulWidget {
+  final attribute;
+
+  const WeightPickerDialog({Key key, this.attribute}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => WeightPickerDialogState();
+}
+
+class WeightPickerDialogState extends State<WeightPickerDialog> {
+  Attribute attribute;
+
+  @override
+  void initState() {
+    super.initState();
+    this.attribute = widget.attribute;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text("Wähle Gewichtungen"),
+      content: Container(
+        width: 300,
+        child: Column(children: [
+          Expanded(
+              child: ListView.separated(
+            itemBuilder: (context, position) {
+              return _buildValueWeightSelectorItem(context, position);
+            },
+            itemCount: this.attribute.values.length - 1,
+            separatorBuilder: (context, index) => Divider(),
+          )),
+        ]),
+      ),
+      actions: <Widget>[
+        new FlatButton(
+            onPressed: () {
+              setState(() {
+                for (var value in this.attribute.values) {
+                  value.weight = 0;
+                }
+              });
+              Navigator.of(context).pop();
+            },
+            child: new Text(
+              'ALLE ENTFERNEN',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )),
+        new FlatButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: new Text(
+              'OK',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )),
+      ],
+    );
+  }
+
+  _buildValueWeightSelectorItem(BuildContext context, int valueIdx) {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            attribute.values[valueIdx].value,
+            textAlign: TextAlign.left,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                child: Slider(
+                  value: attribute.values[valueIdx].weight.toDouble(),
+                  min: 0.0,
+                  max: 100.0,
+                  activeColor: Theme.of(context).accentColor,
+                  onChanged: (weight) {
+                    setState(() {
+                      this.attribute.setWeight(weight.toInt(), valueIdx);
+                    });
+                  },
+                ),
+              ),
+              Text("${attribute.values[valueIdx].weight}%")
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
+typedef ScrollListener = void Function(double, double, bool);

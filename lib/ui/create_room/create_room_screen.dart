@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quotierte_redeliste/models/attribute.dart';
 import 'package:quotierte_redeliste/models/room.dart';
+import 'package:quotierte_redeliste/ui/components/ResponsiveContainer.dart';
 import 'package:quotierte_redeliste/ui/create_room/create_room_bloc.dart';
 import 'package:quotierte_redeliste/ui/create_room/edit_room_widget.dart';
-import 'package:quotierte_redeliste/ui/display_room/display_room_screen.dart';
+import 'package:quotierte_redeliste/ui/waiting_room/waiting_room_screen.dart';
 
 class CreateRoomScreen extends StatefulWidget {
   CreateRoomScreen({Key key}) : super(key: key);
@@ -17,84 +19,45 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   static const double PADDING_SIDE = 16;
 
-  var saveBtnColor;
-
   bool appBarElevated = false;
 
   bool createRequestSend = false;
 
   @override
   void initState() {
+    super.initState();
     createRoomBloc.createNewRoom();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (saveBtnColor == null) saveBtnColor = Theme.of(context).disabledColor;
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Quoty'),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-          onPressed: () {
-            Navigator.maybePop(context);
-          },
-        ),
-        elevation: appBarElevated ? 4 : 0,
-        actions: <Widget>[
-          Container(
-            padding: const EdgeInsets.only(
-                right: PADDING_SIDE, left: PADDING_SIDE, top: 12, bottom: 12),
-            child: FlatButton(
-              color: saveBtnColor,
-              child: Text("ERSTELLEN"),
-              onPressed: () {
-                if (!createRequestSend) {
-                  createRoomBloc.postNewRoom(_onRoomCreated);
-                  setState(() {
-                    createRequestSend = true;
-                  });
-                }
-              },
-              shape: new RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(4.0)),
-            ),
+          title: Text(''),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          textTheme: Theme.of(context).textTheme,
+          iconTheme: Theme.of(context).iconTheme,
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+            onPressed: () {
+              Navigator.maybePop(context);
+            },
           ),
-        ],
-        bottom: NameInputContainer(
-            alignment: Alignment(-1.0, 0.0),
-            padding: const EdgeInsets.only(left: 56, right: PADDING_SIDE),
-            child: TextField(
-              autofocus: true,
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(50),
-              ],
-              textCapitalization: TextCapitalization.sentences,
-              maxLines: null,
-              decoration: InputDecoration(
-                  border: InputBorder.none, hintText: "Raumname eingeben"),
-              onChanged: (text) {
-                createRoomBloc.setRoomName(text);
-                setState(() {
-                  if (text.length > 0) {
-                    saveBtnColor = Theme.of(context).accentColor;
-                  } else {
-                    saveBtnColor = Theme.of(context).disabledColor;
-                  }
-                });
-              },
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.normal),
-            )),
-      ),
+          elevation:
+              appBarElevated && !ResponsiveContainer.isTablet(context) ? 4 : 0,
+          actions: [],
+          bottom: buildToolbarBottom()),
       // body is the majority of the screen.
       body: createRequestSend ? buildLoadingBody() : buildBody(),
+      floatingActionButton:
+          FloatingActionButton(onPressed: _save, child: Icon(Icons.save)),
     );
   }
 
-  _scrollListener(offset, minScrollExtent, outOfRangePosition) {
+  _scrollListener(
+      double offset, double minScrollExtent, bool outOfRangePosition) {
     bool newElevationState;
 
     if (offset <= minScrollExtent && !outOfRangePosition) {
@@ -112,46 +75,74 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   _onRoomCreated({Room result, String error}) {
     if (error != null) {
-      final snackBar = SnackBar(
-        content: Row(
-          children: <Widget>[
-            Icon(Icons.error),
-            Container(
-              padding: const EdgeInsets.only(left: 8),
-              child: Text(error),
-            )
-          ],
-        ),
-      );
-
-      _scaffoldKey.currentState.showSnackBar(snackBar);
-
       setState(() {
         createRequestSend = false;
       });
+
+      _showError(error, error: true);
     } else {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (context) => DisplayRoomScreen(
-                  roomId: result.id,
-                )),
+        MaterialPageRoute(builder: (context) => WaitingRoomScreen()),
       );
     }
   }
 
-  buildBody() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Divider(
-            height: appBarElevated ? 0 : 2,
-          ),
-          EditRoomWidget(scrollListener: _scrollListener),
-        ], // Children
-      ),
+  buildToolbarBottom() {
+    return ResponsiveContainer.isTablet(context)
+        ? null
+        : NameInputContainer(
+            alignment: Alignment(-1.0, 0.0),
+            padding:
+                const EdgeInsets.only(left: 56, right: PADDING_SIDE, bottom: 8),
+            child: buildNameTf());
+  }
+
+  buildNameTf() {
+    var titleController = new TextEditingController();
+    titleController.text = createRoomBloc.getName();
+
+    return TextField(
+      autofocus: true,
+      controller: titleController,
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(50),
+      ],
+      textCapitalization: TextCapitalization.sentences,
+      maxLines: 1,
+      decoration: InputDecoration(
+          border: InputBorder.none, hintText: "Raumname eingeben"),
+      onChanged: (text) {
+        createRoomBloc.setRoomName(text);
+      },
+      style: TextStyle(fontSize: 26, fontWeight: FontWeight.normal),
     );
+  }
+
+  buildBody() {
+    return ResponsiveContainer(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ResponsiveContainer.isTablet(context)
+                ? Container(
+                    padding: const EdgeInsets.only(
+                        left: PADDING_SIDE,
+                        top: 8,
+                        bottom: 8,
+                        right: PADDING_SIDE),
+                    child: buildNameTf(),
+                  )
+                : Container(),
+            Divider(
+              height: ResponsiveContainer.isTablet(context) || !appBarElevated
+                  ? 2
+                  : 0,
+            ),
+            EditRoomWidget()
+          ], // Children
+        ),
+        scrollListener: _scrollListener);
   }
 
   buildLoadingBody() {
@@ -170,6 +161,103 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
         ], // Children
       ),
     );
+  }
+
+  _save() {
+    if (!createRequestSend) {
+      if (!checkInput()) return;
+      createRoomBloc.postNewRoom(_onRoomCreated);
+      setState(() {
+        createRequestSend = true;
+      });
+    }
+  }
+
+  bool checkInput() {
+    if (createRoomBloc.getName() == "")
+      return _showError("Enter a name for the room.");
+
+    if (createRoomBloc.getAttributeCount() < 2)
+      return _showError("Kein Attribut vorhanden.");
+
+    for (Attribute attribute in createRoomBloc.getAttributes()) {
+      if (attribute.name == "" &&
+          attribute.values.length > 0 &&
+          attribute.values[0].value != "") {
+        return _showError("Ein Attribut hat keinen Namen.");
+      }
+
+      if (attribute.name == "") continue;
+
+      if (attribute.values.length < 3) {
+        return _showError(
+            "Ein Attribut muss mindestens zwei Ausprägungen haben.");
+      }
+
+      int totalWeights = 0;
+
+      for (var value in attribute.values) {
+        totalWeights += value.weight;
+
+        for (var checkValue in attribute.values) {
+          if (checkValue == value) continue;
+          if (checkValue.value == value.value) {
+            return _showError(
+                "Attribut ${attribute.name} enthält zwei gleiche Ausprägungen.");
+          }
+        }
+      }
+
+      if (totalWeights != 0 && totalWeights != 100) {
+        return _showError(
+            "Gewichte der Attributausprägungen müssen zusammen 100 ergeben.");
+      }
+
+      //check for duplicates
+      for (Attribute checkAttribute in createRoomBloc.getAttributes()) {
+        if (checkAttribute == attribute) continue;
+
+        if (checkAttribute.name == attribute.name) {
+          return _showError("Es existieren zwei Attribute mit gleichem Namen.");
+        }
+      }
+    }
+
+    return true;
+  }
+
+  bool _showError(String text, {bool error = false}) {
+    var actions = <Widget>[];
+
+    actions.add(FlatButton(
+      child: Text('Ok'),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    ));
+
+    if (error) {
+      actions.add(FlatButton(
+        child: Text('ERNEUT VERSUCHEN'),
+        onPressed: () {
+          _save();
+          Navigator.of(context).pop();
+        },
+      ));
+    }
+
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(error ? 'Fehler' : 'Falsche Eingabe'),
+          content: Text(text),
+          actions: actions,
+        );
+      },
+    );
+
+    return false;
   }
 }
 

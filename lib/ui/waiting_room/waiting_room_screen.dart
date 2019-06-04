@@ -112,11 +112,25 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
         child: Scaffold(
             appBar: AppBar(
               title: Text("Warteraum"),
+              actions: [_getRoomIdWidget()],
             ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerFloat,
             floatingActionButton: _getFloatingActionButton(),
             body: showContentOrError(context)));
+  }
+
+  Widget _getRoomIdWidget() {
+    return _room != null && _room.id != null
+        ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Padding(
+                padding: EdgeInsets.only(right: 10),
+                child: Text(
+                  "Beitrittscode: " + _room.id.toString(),
+                  style: TextStyle(fontSize: 20),
+                ))
+          ])
+        : Container();
   }
 
   Widget showContentOrError(BuildContext context) {
@@ -220,7 +234,9 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
   }
 
   Widget _getFloatingActionButton() {
-    if (_state != RoomState.ERROR && _state != RoomState.DISCONNECTED)
+    if (_state != RoomState.ERROR &&
+        _state != RoomState.DISCONNECTED &&
+        _isModerator())
       return FloatingActionButton.extended(
           label: new Text('Raum starten'),
           icon: Icon(Icons.play_arrow),

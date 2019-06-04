@@ -212,6 +212,7 @@ class RoomWebSocket {
   }
 
   String getErrorMessage() {
+    if (_errorMessage == null) return "";
     return _errorMessage;
   }
 
