@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
@@ -14,8 +16,42 @@ class ModeratorScreen extends StatefulWidget {
 
 class _ModeratorScreenState extends State<ModeratorScreen> {
   String roomName = "Test";
+  RoomState _state;
+  String _error;
 
   RoomWebSocket _webSocket = Repository().webSocket();
+  StreamSubscription _stateSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _initWebSocket();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _stateSubscription.cancel();
+    _webSocket.close();
+  }
+
+  _initWebSocket({bool reconnect}) {
+    if (reconnect == true) {
+      _webSocket.connect();
+
+      setState(() {
+        _error = null;
+        _state = null;
+      });
+    }
+
+    _stateSubscription = _webSocket.getRoomState().listen((state) {
+      setState(() {
+        _state = state;
+        _error = _webSocket.getErrorMessage();
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,14 +78,41 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: _floatingActionButton(context),
-        body: StreamBuilder(
-          stream: _webSocket.getAllUsers(),
-          builder: (context, snapshot) {
-            return snapshot.hasData
-                ? _buildWithData(context, snapshot.data)
-                : _getLoadingIndicator();
-          },
-        ));
+        body: _buildScreenOrShowError(context));
+  }
+
+  Widget _buildScreenOrShowError(BuildContext context) {
+    return _state != RoomState.DISCONNECTED && _state != RoomState.ERROR
+        ? _buildScreenWhenNoError(context)
+        : _errorAndReconnect(context);
+  }
+
+  Widget _buildScreenWhenNoError(BuildContext context) {
+    return StreamBuilder(
+      stream: _webSocket.getAllUsers(),
+      builder: _showListsOrLoadingIndicator,
+    );
+  }
+
+  Widget _errorAndReconnect(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("Verbindung unterbrochen"),
+        _error != null && _error != "" ? Text(_error) : Container(),
+        Padding(padding: EdgeInsets.only(bottom: 10)),
+        RaisedButton(
+            child: Text("Erneut Verbinden"),
+            onPressed: () => _initWebSocket(reconnect: true))
+      ],
+    );
+  }
+
+  Widget _showListsOrLoadingIndicator(
+      BuildContext context, AsyncSnapshot<List<User>> snapshot) {
+    return snapshot.hasData
+        ? _buildWithData(context, snapshot.data)
+        : _getLoadingIndicator();
   }
 
   Widget _floatingActionButton(context) {

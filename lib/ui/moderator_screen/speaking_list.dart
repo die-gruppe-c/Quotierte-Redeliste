@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:quotierte_redeliste/models/currently_speaking.dart';
+import 'package:quotierte_redeliste/models/speaking_list_entry.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/resources/room_websocket.dart';
@@ -15,31 +19,46 @@ class SpeakingList extends StatefulWidget {
 
 class _SpeakingListState extends State<SpeakingList> {
   RoomWebSocket _webSocket = Repository().webSocket();
-  List<User> _usersSpeakingList;
+  List<SpeakingListEntry> _usersSpeakingList;
+  CurrentlySpeaking _currentlySpeaking;
+
+  StreamSubscription _speakingListSubscription;
+  StreamSubscription _currentlySpeakingSubscription;
 
   @override
   void initState() {
     super.initState();
     _usersSpeakingList = List();
 
-    _webSocket.getSpeakingList().listen((List<String> speakingList) {
-      List<User> newSpeakingList = List();
-
-      speakingList.forEach((userId) {
-        newSpeakingList.add(widget.users.firstWhere((user) {
-          return user.id == userId;
-        }));
-      });
-
+    _speakingListSubscription = _webSocket
+        .getSpeakingList()
+        .listen((List<SpeakingListEntry> speakingList) {
       setState(() {
-        _usersSpeakingList = newSpeakingList;
+        _usersSpeakingList = speakingList;
+      });
+    });
+
+    _currentlySpeakingSubscription = _webSocket
+        .getCurrentlySpeaking()
+        .listen((CurrentlySpeaking currentlySpeaking) {
+      setState(() {
+        _currentlySpeaking = currentlySpeaking;
       });
     });
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    if (_speakingListSubscription != null) _speakingListSubscription.cancel();
+
+    if (_currentlySpeakingSubscription != null)
+      _currentlySpeakingSubscription.cancel();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return _usersSpeakingList.length != 0
+    return _usersSpeakingList.length != 0 || _currentlySpeaking != null
         ? _getList(_usersSpeakingList)
         : Expanded(
             child: Column(
@@ -47,20 +66,29 @@ class _SpeakingListState extends State<SpeakingList> {
                 children: [Text("Keine Redner")]));
   }
 
-  Widget _getList(List<User> list) {
+  Widget _getList(List<SpeakingListEntry> list) {
+//    list.removeWhere((user) => user.id == "-1");
+
     return Expanded(
-      child: ReorderableListView(
-          children: list.map((user) {
-            return UserWidget(
-              user,
-              key: Key(user.id),
-              onTap: () {
-                _removeUserFromSpeakingList(user.id);
-              },
-            );
-          }).toList(),
-          onReorder: _listReordered),
-    );
+        child: ReorderableListView(
+            header: _currentlySpeaking != null
+                ? UserWidget(
+                    widget.users.firstWhere((searchUser) =>
+                        searchUser.id == _currentlySpeaking.speakerId),
+                    highlight: true,
+                  )
+                : Container(),
+            children: list.map((user) {
+              return UserWidget(
+                widget.users
+                    .firstWhere((searchUser) => searchUser.id == user.id),
+                key: Key(user.id),
+                onTap: () {
+                  _removeUserFromSpeakingList(user.id);
+                },
+              );
+            }).toList(),
+            onReorder: _listReordered));
   }
 
   _removeUserFromSpeakingList(String userId) {
@@ -69,16 +97,16 @@ class _SpeakingListState extends State<SpeakingList> {
   }
 
   _listReordered(int oldIndex, int newIndex) {
-    // TODO soll der state dirket gesetzt werden oder soll auf eine Antwort vom backend gewartet werden?
-    setState(() {
-      if (newIndex > oldIndex) {
-        newIndex -= 1;
-      }
-      final item = _usersSpeakingList.removeAt(oldIndex);
-      _usersSpeakingList.insert(newIndex, item);
-    });
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
 
     _webSocket.changeOrderOfSpeakingList(
         _usersSpeakingList[oldIndex].id, newIndex);
+
+    setState(() {
+      final item = _usersSpeakingList.removeAt(oldIndex);
+      _usersSpeakingList.insert(newIndex, item);
+    });
   }
 }
