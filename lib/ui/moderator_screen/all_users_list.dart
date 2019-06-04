@@ -34,6 +34,10 @@ class _AllUsersListState extends State<AllUsersList> {
     });
   }
 
+  void _onUserTap(int pos) {
+    _webSocket.addUserToSpeakingList(_sortedUsers[pos].id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return _sortedUsers.length != 0
@@ -50,7 +54,12 @@ class _AllUsersListState extends State<AllUsersList> {
       controller: widget.scrollController,
       itemCount: list.length,
       itemBuilder: (context, pos) {
-        return UserWidget(list[pos]);
+        return UserWidget(
+          list[pos],
+          onTap: () {
+            _onUserTap(pos);
+          },
+        );
       },
     ));
   }
