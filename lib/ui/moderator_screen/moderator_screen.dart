@@ -116,10 +116,11 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
   }
 
   Widget _floatingActionButton(context) {
+    // TODO change this depending on state
     return FloatingActionButton.extended(
-        icon: Icon(Icons.play_arrow),
+        icon: Icon(Icons.pause),
         onPressed: () => _webSocket.start(),
-        label: new Text('Start'));
+        label: new Text('Pause'));
   }
 
   Widget _buildWithData(BuildContext context, List<User> users) {

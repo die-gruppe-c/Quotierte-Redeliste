@@ -25,6 +25,8 @@ class _ObservableStream<T> {
     _observable.listen((data) {});
   }
 
+  bool isOpen() => !_streamController.isClosed;
+
   Stream<T> getStream() => _observable;
 
   add(T send) => _streamController.add(send);
@@ -174,7 +176,7 @@ class RoomWebSocket {
 
   _onClosed() {
     print("Websocket closed");
-    _streamRoomState.add(RoomState.DISCONNECTED);
+    if (_streamRoomState.isOpen()) _streamRoomState.add(RoomState.DISCONNECTED);
     close();
   }
 
