@@ -241,7 +241,7 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
         _state != RoomState.DISCONNECTED &&
         _isModerator())
       return FloatingActionButton.extended(
-          label: new Text('Start'),
+          label: new Text('Raum starten'),
           icon: Icon(Icons.play_arrow),
           onPressed: () {
             widget.webSocket.start();
