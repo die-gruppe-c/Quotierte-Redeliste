@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quotierte_redeliste/models/room.dart';
@@ -8,7 +6,6 @@ import 'package:quotierte_redeliste/ui/start_screen/start_screen.dart';
 import 'package:quotierte_redeliste/ui/waiting_room/waiting_room_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-
   SplashScreen({Key key}) : super(key: key);
 
   @override
@@ -16,28 +13,22 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
-
-
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      body: Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Image.asset('assets/images/icon_placeholder.png',),
-              Container(
-                padding: const EdgeInsets.only(top: 32),
-                child: CircularProgressIndicator(),
-              )
-            ]
-        )
-      )
-    );
-
+        body: Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+          Image.asset(
+            'assets/images/icon_placeholder.png',
+          ),
+          Container(
+            padding: const EdgeInsets.only(top: 32),
+            child: CircularProgressIndicator(),
+          )
+        ])));
   }
 
   @override
@@ -47,14 +38,16 @@ class _SplashScreenState extends State<SplashScreen> {
     _connectToServer();
   }
 
-  _connectToServer(){
-    Repository().getRoomToJoin().then((Room room){
+  _connectToServer() {
+    Repository().getRoomToJoin().then((Room room) {
       var screen;
 
-      if(room == null) screen = StartScreen();
-      else screen = WaitingRoomScreen();
+      if (room == null)
+        screen = StartScreen();
+      else
+        screen = WaitingRoomScreen();
 
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => screen),
       );
@@ -63,7 +56,8 @@ class _SplashScreenState extends State<SplashScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Verbindung zum Server konnte nicht hergestellt werden...'),
+            title: Text(
+                'Verbindung zum Server konnte nicht hergestellt werden...'),
             actions: [
               FlatButton(
                 child: Text('SCHLIESSEN'),

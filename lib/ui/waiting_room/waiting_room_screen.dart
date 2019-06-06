@@ -5,10 +5,12 @@ import 'package:quotierte_redeliste/models/room.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/resources/room_websocket.dart';
+import 'package:quotierte_redeliste/ui/components/custom_snackbar.dart';
 import 'package:quotierte_redeliste/ui/display_client/display_client_screen.dart';
 import 'package:quotierte_redeliste/ui/enter_room/enter_room_screen.dart';
 import 'package:quotierte_redeliste/ui/moderator_screen/moderator_screen.dart';
 import 'package:quotierte_redeliste/ui/moderator_screen/user_widget.dart';
+import 'package:quotierte_redeliste/ui/start_screen/start_screen.dart';
 
 class WaitingRoomScreen extends StatefulWidget {
   final RoomWebSocket webSocket = Repository().webSocket();
@@ -22,6 +24,8 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
   RoomState _state;
   StreamSubscription _stateSubscription;
   StreamSubscription _roomSubscription;
+
+  CustomSnackbar _customSnackbar = CustomSnackbar();
 
   @override
   void initState() {
@@ -81,6 +85,11 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
     );
   }
 
+  _navigateToMainScreen() {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => StartScreen()));
+  }
+
   _createNewUser() {
     Navigator.push(
         context,
@@ -96,6 +105,14 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
     });
   }
 
+  _leaveRoom() {
+    Repository().roomApi.leaveRoom().then((_) {
+      _navigateToMainScreen();
+    }).catchError((error) {
+      _customSnackbar.showError(error);
+    });
+  }
+
   bool _isModerator() {
     return _room != null && _room.owner != null && _room.owner != "";
   }
@@ -105,11 +122,14 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
     return true;
   }
 
+  // ------------ BUILD -------------
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: _onWillPop,
         child: Scaffold(
+            key: _customSnackbar.scaffoldKey,
             appBar: AppBar(
               title: Text("Warteraum"),
               actions: [_getRoomIdWidget()],
@@ -236,13 +256,21 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
   Widget _getFloatingActionButton() {
     if (_state != RoomState.ERROR &&
         _state != RoomState.DISCONNECTED &&
-        _isModerator())
+        _isModerator()) {
       return FloatingActionButton.extended(
           label: new Text('Raum starten'),
           icon: Icon(Icons.play_arrow),
           onPressed: () {
             widget.webSocket.start();
           });
+    } else if (!_isModerator()) {
+      return FloatingActionButton.extended(
+          label: new Text('Raum Verlassen'),
+          icon: Icon(Icons.exit_to_app),
+          onPressed: () {
+            _leaveRoom();
+          });
+    }
 
     return null;
   }
