@@ -103,6 +103,19 @@ class RoomApi {
     }
   }
 
+  Future<void> leaveRoom() async {
+    final headers = await _getHeaders();
+
+    final response =
+        await client.post(BASE_URL + "/room/leave", headers: headers);
+    if (response.statusCode == 201) {
+      print("Leaved room");
+      return;
+    } else {
+      throw Exception('Fehler: ' + response.body);
+    }
+  }
+
   List<Map<String, dynamic>> _getAttributesJsonFromMap(
       Map<String, String> attributes) {
     List<Map<String, dynamic>> attributesList = List();
@@ -130,11 +143,9 @@ class RoomApi {
 
     return map;
   }
-
 }
 
-class ApiException implements Exception{
-
+class ApiException implements Exception {
   final String msg;
   const ApiException(this.msg);
 
@@ -142,6 +153,4 @@ class ApiException implements Exception{
   String toString() {
     return msg;
   }
-
-
 }

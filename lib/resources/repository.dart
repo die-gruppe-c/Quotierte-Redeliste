@@ -22,4 +22,6 @@ class Repository {
           String roomId, String name, Map<String, String> attributes,
           {String uuid}) =>
       roomApi.joinRoom(roomId, name, attributes, uuid: uuid);
+
+  Future<void> leaveRoom() => roomApi.leaveRoom();
 }
