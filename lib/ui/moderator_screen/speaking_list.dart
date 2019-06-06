@@ -67,11 +67,10 @@ class _SpeakingListState extends State<SpeakingList> {
   }
 
   Widget _getList(List<SpeakingListEntry> list) {
-//    list.removeWhere((user) => user.id == "-1");
-
     return Expanded(
         child: ReorderableListView(
-            header: _currentlySpeaking != null
+            header: _currentlySpeaking != null &&
+                    _currentlySpeaking.speakerId != null
                 ? UserWidget(
                     widget.users.firstWhere((searchUser) =>
                         searchUser.id == _currentlySpeaking.speakerId),
