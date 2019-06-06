@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/models/profile.dart';
 import 'package:quotierte_redeliste/models/room.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
+import 'package:quotierte_redeliste/ui/components/custom_snackbar.dart';
 import 'package:quotierte_redeliste/ui/themes/DefaultThemes.dart';
 import 'package:quotierte_redeliste/ui/waiting_room/waiting_room_screen.dart';
 
@@ -19,7 +20,7 @@ class EnterRoomScreen extends StatefulWidget {
 }
 
 class _EnterRoomScreenState extends State<EnterRoomScreen> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _customSnackbar = CustomSnackbar();
 
   Room _room;
   bool _loading = true;
@@ -110,22 +111,7 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
   }
 
   _showError(String error) {
-    final snackBar = SnackBar(
-      duration: Duration(seconds: 6),
-      content: Row(
-        children: <Widget>[
-          Icon(Icons.error),
-          Expanded(
-              child: Container(
-            padding: const EdgeInsets.only(left: 8),
-            child: Text(error),
-          ))
-        ],
-      ),
-    );
-
-    _scaffoldKey.currentState..removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(snackBar);
+    _customSnackbar.showError(error);
 
     setState(() {
       _loading = false;
@@ -135,7 +121,7 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
+      key: _customSnackbar.scaffoldKey,
       appBar: AppBar(
         title: Text("Attribute auswählen"),
       ),
