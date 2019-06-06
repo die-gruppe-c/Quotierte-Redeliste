@@ -2,7 +2,6 @@ import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quotierte_redeliste/ui/create_room/create_room_screen.dart';
-import 'package:quotierte_redeliste/ui/display_client/display_client_screen.dart';
 import 'package:quotierte_redeliste/ui/display_profile/profile_screen.dart';
 import 'package:quotierte_redeliste/ui/start_screen/enter_new_room_tab.dart';
 import 'package:quotierte_redeliste/ui/start_screen/history_tab.dart';
@@ -46,15 +45,6 @@ class StartScreen extends StatelessWidget {
                 Theme.of(context).brightness == Brightness.dark
                     ? Brightness.light
                     : Brightness.dark);
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.room),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ClientScreen(2523)),
-            );
           },
         ),
         IconButton(

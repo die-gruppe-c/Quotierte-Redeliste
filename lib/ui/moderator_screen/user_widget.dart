@@ -6,13 +6,16 @@ import 'package:quotierte_redeliste/models/user.dart';
 class UserWidget extends StatelessWidget {
   final User user;
   final Function onTap;
+  final bool highlight;
 
-  UserWidget(this.user, {this.onTap, Key key}) : super(key: key);
+  UserWidget(this.user, {this.onTap, this.highlight = false, Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
         decoration: BoxDecoration(
+          color: highlight ? Colors.grey : Colors.transparent,
           border: Border(
               bottom: BorderSide(color: Theme.of(context).disabledColor)),
         ),

@@ -11,19 +11,35 @@ class HistoryTab extends StatefulWidget {
 
 class _HistoryTabState extends State<HistoryTab> {
   List<Room> _rooms;
+  bool error;
 
-  void initState() {
-    super.initState();
+  void _loadRooms() {
+    setState(() {
+      error = false;
+    });
+
     Repository().getAllRooms().then((rooms) {
       setState(() {
         _rooms = rooms;
       });
+    }).catchError((error) {
+      print("Error when getting rooms: " + error.toString());
+      setState(() {
+        this.error = true;
+      });
     });
+  }
+
+  void initState() {
+    super.initState();
+    _loadRooms();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _rooms == null ? getEmptyState() : getListView();
+    return error == true
+        ? getErrorWidget()
+        : _rooms == null ? getEmptyState() : getListView();
   }
 
   Widget getEmptyState() {
@@ -33,6 +49,16 @@ class _HistoryTabState extends State<HistoryTab> {
           CircularProgressIndicator(),
           Padding(padding: EdgeInsets.only(top: 25)),
           Text('Räume werden geladen')
+        ]));
+  }
+
+  Widget getErrorWidget() {
+    return Padding(
+        padding: EdgeInsets.only(top: 10),
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          Text("Konnte die Räume nicht laden"),
+          Padding(padding: EdgeInsets.only(top: 25)),
+          RaisedButton(child: Text("Erneut versuchen"), onPressed: _loadRooms)
         ]));
   }
 

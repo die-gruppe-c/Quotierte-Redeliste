@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:quotierte_redeliste/models/currently_speaking.dart';
 import 'package:quotierte_redeliste/models/room.dart';
 import 'package:quotierte_redeliste/models/speaking_category.dart';
+import 'package:quotierte_redeliste/models/speaking_list_entry.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/resources/room_websocket.dart';
@@ -21,9 +23,14 @@ class ClientScreen extends StatefulWidget {
 
 class _ClientScreenState extends State<ClientScreen> {
   Room _room;
+  List<User> _allUsers;
+  CurrentlySpeaking _currentlySpeaking;
+
   RoomState _state;
   StreamSubscription _stateSubscription;
   StreamSubscription _roomSubscription;
+  StreamSubscription _usersSubscription;
+  StreamSubscription _currentlySpeakingSubscription;
 
   @override
   void initState() {
@@ -49,6 +56,20 @@ class _ClientScreenState extends State<ClientScreen> {
         _room = room;
       });
     });
+
+    _usersSubscription = widget.webSocket.getAllUsers().listen((users) {
+      setState(() {
+        _allUsers = users;
+      });
+    });
+
+    _currentlySpeakingSubscription = widget.webSocket
+        .getCurrentlySpeaking()
+        .listen((CurrentlySpeaking currentlySpeaking) {
+      setState(() {
+        _currentlySpeaking = currentlySpeaking;
+      });
+    });
   }
 
   @override
@@ -56,6 +77,8 @@ class _ClientScreenState extends State<ClientScreen> {
     super.dispose();
     _stateSubscription.cancel();
     _roomSubscription.cancel();
+    _usersSubscription.cancel();
+    _currentlySpeakingSubscription.cancel();
   }
 
   Future<bool> _onWillPop() async {
@@ -63,13 +86,20 @@ class _ClientScreenState extends State<ClientScreen> {
     return true;
   }
 
+  User _getUserById(String userId) {
+    return _allUsers.firstWhere((searchUser) => searchUser.id == userId);
+  }
+
+  // -------------- BUILD ------------------
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: _onWillPop,
         child: Scaffold(
             appBar: AppBar(
-              title: Text('Raum: ' + _room.name),
+              title:
+                  _room != null ? Text('Raum: ' + _room.name) : Text("Loading"),
             ),
             body: showContentOrError(context)));
   }
@@ -141,23 +171,26 @@ class _ClientScreenState extends State<ClientScreen> {
     );
   }
 
-  Widget _buildWithData(BuildContext context, List<User> users) {
+  Widget _buildWithData(BuildContext context, List<SpeakingListEntry> users) {
     return Expanded(
         child:
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Container(
-          decoration: BoxDecoration(color: Theme.of(context).splashColor),
-          padding: EdgeInsets.all(10),
-          child: Text(
-            "Aktueller Redner: " + users[0].name,
-            textAlign: TextAlign.center,
-          )),
+      _currentlySpeaking != null && _currentlySpeaking.speakerId != null
+          ? Container(
+              decoration: BoxDecoration(color: Theme.of(context).splashColor),
+              padding: EdgeInsets.all(10),
+              child: Text(
+                "Aktueller Redner: " +
+                    _getUserById(_currentlySpeaking.speakerId).name,
+                textAlign: TextAlign.center,
+              ))
+          : Container(),
       Expanded(
           child: ListView.builder(
         padding: EdgeInsets.only(bottom: 80),
         itemCount: users.length,
         itemBuilder: (context, pos) {
-          return UserWidget(users[pos]);
+          return UserWidget(_getUserById(users[pos].id));
         },
       ))
     ]));
