@@ -1,3 +1,4 @@
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/models/profile.dart';
 import 'package:quotierte_redeliste/ui/themes/DefaultThemes.dart';
@@ -22,9 +23,22 @@ class _ProfileState extends State<ProfileScreen> {
             Profile().setToken(_tokenController.text);
           });
         }));
+
+    Profile().darkModeEnabled().then(_changeDarkMode);
+  }
+
+  _changeDarkMode(bool enabled) {
+    Profile().setDarkMode(enabled);
+    setState(() {
+      _darkMode = enabled;
+    });
+
+    DynamicTheme.of(context)
+        .setBrightness(enabled ? Brightness.dark : Brightness.light);
   }
 
   String _username = "";
+  bool _darkMode = false;
   String _token = "";
   TextEditingController _usernameController;
   TextEditingController _tokenController;
@@ -67,19 +81,27 @@ class _ProfileState extends State<ProfileScreen> {
                         controller: _usernameController,
                       )),
                     ]),
+                    Padding(padding: EdgeInsets.only(top: 20)),
+                    _darkModeToggle(),
                     Padding(padding: EdgeInsets.only(top: 30)),
-                    // TODO only for test purpose
-                    Row(children: [
-                      Flexible(
-                          child: TextField(
-                        decoration:
-                            DefaultThemes.inputDecoration(context, "Token"),
-                        controller: _tokenController,
-                      )),
-                    ])
+                    _tokenWidget()
                   ])),
         ], // Children
       ),
     );
   }
+
+  Widget _darkModeToggle() => Row(children: [
+        Switch(value: _darkMode, onChanged: _changeDarkMode),
+        Text("Dark Mode")
+      ]);
+
+  Widget _tokenWidget() => Profile.isInDebugMode()
+      ? Row(children: [
+          Flexible(
+              child: TextField(
+                  decoration: DefaultThemes.inputDecoration(context, "Token"),
+                  controller: _tokenController))
+        ])
+      : Container();
 }
