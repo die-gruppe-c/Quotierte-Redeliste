@@ -55,7 +55,9 @@ class UserWidget extends StatelessWidget {
 
   Widget _getUsername() => Text(user.name, style: TextStyle(fontSize: 20.0));
 
-  Widget _getAttributeRow() => Row(
+  Widget _getAttributeRow() => SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
           children: user.attributes.map((attribute) {
         AttributeValue attributeValue = attribute.values[0];
 
@@ -68,7 +70,7 @@ class UserWidget extends StatelessWidget {
                 backgroundColor: backgroundColor,
                 label: Text(attributeValue.value,
                     style: TextStyle(color: fontColor))));
-      }).toList());
+      }).toList()));
 
   Widget _getAttributeRowAndButtons() =>
       Column(children: [_getAttributeRow(), _getButtonsForActualSpeaking()]);
