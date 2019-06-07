@@ -65,14 +65,16 @@ class _HistoryTabState extends State<HistoryTab> {
   Widget getListView() {
     return _rooms.isEmpty
         ? noDataAvailable()
-        : ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _rooms.length,
-            itemBuilder: (context, pos) {
-              return getListViewItem(pos);
-            },
-          );
+        : Padding(
+            padding: EdgeInsets.only(bottom: 80),
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _rooms.length,
+              itemBuilder: (context, pos) {
+                return getListViewItem(pos);
+              },
+            ));
   }
 
   Widget noDataAvailable() {
