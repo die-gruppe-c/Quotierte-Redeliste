@@ -147,7 +147,7 @@ class _WaitingRoomState extends State<WaitingRoomScreen> {
     return _room != null && _room.id != null
         ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Padding(
-                padding: EdgeInsets.only(right: 10),
+                padding: EdgeInsets.only(right: 10, left: 10),
                 child: Text(
                   "Beitrittscode: " + _room.id.toString(),
                   style: TextStyle(fontSize: 20),

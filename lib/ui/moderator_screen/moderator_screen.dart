@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:quotierte_redeliste/models/currently_speaking.dart';
+import 'package:quotierte_redeliste/models/room.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/resources/room_websocket.dart';
@@ -8,6 +10,7 @@ import 'package:quotierte_redeliste/ui/components/ResponsiveContainer.dart';
 import 'package:quotierte_redeliste/ui/moderator_screen/all_users_list.dart';
 import 'package:quotierte_redeliste/ui/moderator_screen/speaking_list.dart';
 import 'package:quotierte_redeliste/ui/moderator_screen/want_to_speak_list.dart';
+import 'package:quotierte_redeliste/ui/start_screen/start_screen.dart';
 
 class ModeratorScreen extends StatefulWidget {
   @override
@@ -15,7 +18,6 @@ class ModeratorScreen extends StatefulWidget {
 }
 
 class _ModeratorScreenState extends State<ModeratorScreen> {
-  String roomName = "Test";
   RoomState _state;
   String _error;
 
@@ -46,12 +48,19 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
     }
 
     _stateSubscription = _webSocket.getRoomState().listen((state) {
-      setState(() {
-        _state = state;
-        _error = _webSocket.getErrorMessage();
-      });
+      if (state == RoomState.ARCHIVED) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => StartScreen()));
+      } else {
+        setState(() {
+          _state = state;
+          _error = _webSocket.getErrorMessage();
+        });
+      }
     });
   }
+
+  _endRoom() => _webSocket.stopRoom();
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +74,7 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
   Widget _buildScaffold(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(roomName),
+          title: _getRoomTitle(),
           bottom: ResponsiveContainer.isTablet(context)
               ? null
               : TabBar(
@@ -77,8 +86,18 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
                 ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: _floatingActionButton(context),
+        floatingActionButton: _getFloatingActionButton(),
         body: _buildScreenOrShowError(context));
+  }
+
+  Widget _getRoomTitle() {
+    return StreamBuilder(
+        stream: _webSocket.getRoomData(),
+        builder: (context, AsyncSnapshot<Room> snapshot) {
+          return snapshot.hasData
+              ? Text("Raum: " + snapshot.data.name)
+              : Text("Lade daten...");
+        });
   }
 
   Widget _buildScreenOrShowError(BuildContext context) {
@@ -113,14 +132,6 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
     return snapshot.hasData
         ? _buildWithData(context, snapshot.data)
         : _getLoadingIndicator();
-  }
-
-  Widget _floatingActionButton(context) {
-    // TODO change this depending on state
-    return FloatingActionButton.extended(
-        icon: Icon(Icons.pause),
-        onPressed: () => _webSocket.start(),
-        label: new Text('Pause'));
   }
 
   Widget _buildWithData(BuildContext context, List<User> users) {
@@ -202,5 +213,18 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
                 Text('Lade Daten...')
               ]),
         ]);
+  }
+
+  Widget _getFloatingActionButton() {
+    return StreamBuilder(
+        stream: _webSocket.getCurrentlySpeaking(),
+        builder: (context, AsyncSnapshot<CurrentlySpeaking> snapshot) {
+          return snapshot.hasData && snapshot.data.speakerId != null
+              ? Container()
+              : FloatingActionButton.extended(
+                  icon: Icon(Icons.exit_to_app),
+                  label: Text("Raum beenden"),
+                  onPressed: _endRoom);
+        });
   }
 }

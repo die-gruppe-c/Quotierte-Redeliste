@@ -112,6 +112,9 @@ class RoomWebSocket {
         case _WebSocketCommands.STARTED:
           _roomStarted();
           break;
+        case _WebSocketCommands.ARCHIVED:
+          _roomArchived();
+          break;
         case _WebSocketCommands.ROOM:
           _roomData(commandData);
           break;
@@ -154,25 +157,15 @@ class RoomWebSocket {
     _streamSpeakCategories.add(newSpeakingCategories);
   }
 
-  _usersSorted(List<String> ids) {
-    _streamSortedUsers.add(ids);
-  }
+  _usersSorted(List<String> ids) => _streamSortedUsers.add(ids);
+  _usersWantToSpeak(List<String> ids) => _streamWantToSpeak.add(ids);
+  _roomStarted() => _streamRoomState.add(RoomState.STARTED);
+  _roomArchived() => _streamRoomState.add(RoomState.ARCHIVED);
+  _roomData(Map<String, dynamic> roomData) =>
+      _streamRoomData.add(Room.fromJson(roomData));
 
-  _usersWantToSpeak(List<String> ids) {
-    _streamWantToSpeak.add(ids);
-  }
-
-  _roomStarted() {
-    _streamRoomState.add(RoomState.STARTED);
-  }
-
-  _roomData(Map<String, dynamic> roomData) {
-    _streamRoomData.add(Room.fromJson(roomData));
-  }
-
-  _currentlySpeaking(Map<String, dynamic> data) {
-    _streamCurrentlySpeaking.add(CurrentlySpeaking.fromJson(data));
-  }
+  _currentlySpeaking(Map<String, dynamic> data) =>
+      _streamCurrentlySpeaking.add(CurrentlySpeaking.fromJson(data));
 
   _onClosed() {
     print("Websocket closed");
@@ -202,37 +195,17 @@ class RoomWebSocket {
     _closed = true;
   }
 
-  Stream<List<User>> getAllUsers() {
-    return _streamAllUsers.getStream();
-  }
-
-  Stream<List<SpeakingListEntry>> getSpeakingList() {
-    return _streamSpeakers.getStream();
-  }
-
-  Stream<List<SpeakingCategory>> getSpeakCategories() {
-    return _streamSpeakCategories.getStream();
-  }
-
-  Stream<List<String>> getAllUsersSorted() {
-    return _streamSortedUsers.getStream();
-  }
-
-  Stream<List<String>> getUsersWantToSpeak() {
-    return _streamWantToSpeak.getStream();
-  }
-
-  Stream<Room> getRoomData() {
-    return _streamRoomData.getStream();
-  }
-
-  Stream<RoomState> getRoomState() {
-    return _streamRoomState.getStream();
-  }
-
-  Stream<CurrentlySpeaking> getCurrentlySpeaking() {
-    return _streamCurrentlySpeaking.getStream();
-  }
+  Stream<List<User>> getAllUsers() => _streamAllUsers.getStream();
+  Stream<List<SpeakingListEntry>> getSpeakingList() =>
+      _streamSpeakers.getStream();
+  Stream<List<SpeakingCategory>> getSpeakCategories() =>
+      _streamSpeakCategories.getStream();
+  Stream<List<String>> getAllUsersSorted() => _streamSortedUsers.getStream();
+  Stream<List<String>> getUsersWantToSpeak() => _streamWantToSpeak.getStream();
+  Stream<Room> getRoomData() => _streamRoomData.getStream();
+  Stream<RoomState> getRoomState() => _streamRoomState.getStream();
+  Stream<CurrentlySpeaking> getCurrentlySpeaking() =>
+      _streamCurrentlySpeaking.getStream();
 
   String getErrorMessage() {
     if (_errorMessage == null) return "";
@@ -274,16 +247,15 @@ class RoomWebSocket {
     _sendCommand(data);
   }
 
-  start() {
-    _sendCommand(_WebSocketCommands.START);
-  }
-
-  updateUserList() {
-    _sendCommand(_WebSocketCommands.UPDATE_USER_LIST);
-  }
+  start() => _sendCommand(_WebSocketCommands.START);
+  stopRoom() => _sendCommand(_WebSocketCommands.STOP_ROOM);
+  updateUserList() => _sendCommand(_WebSocketCommands.UPDATE_USER_LIST);
+  startSpeech() => _sendCommand(_WebSocketCommands.START_SPEECH);
+  pauseSpeech() => _sendCommand(_WebSocketCommands.PAUSE_SPEECH);
+  stopSpeech() => _sendCommand(_WebSocketCommands.STOP_SPEECH);
 }
 
-enum RoomState { STARTED, DISCONNECTED, ERROR }
+enum RoomState { STARTED, DISCONNECTED, ERROR, ARCHIVED }
 
 class _WebSocketCommands {
   // receive
@@ -296,6 +268,7 @@ class _WebSocketCommands {
   static const ROOM = "room";
   static const SPEAKING_LIST = "speechList";
   static const STARTED = "started";
+  static const ARCHIVED = "archived";
   static const ALL_USERS = "allUsers";
   static const SPEAK_CATEGORIES = "speechTypes";
 
@@ -307,6 +280,10 @@ class _WebSocketCommands {
   static const CHANGE_ORDER_SPEAKING_LIST = "changeSortOrder";
   static const ADD_USER_TO_SPEAKING_LIST = "addUserToSpeechList";
   static const REMOVE_USER_FROM_SPEAKING_LIST = "removeUserFromSpeechList";
+  static const START_SPEECH = "startSpeech";
+  static const PAUSE_SPEECH = "pauseSpeech";
+  static const STOP_SPEECH = "stopSpeech";
+  static const STOP_ROOM = "archieve";
 
   static const REGISTER = "register";
   static const WANT_TO_SPEAK = "wantToSpeak";

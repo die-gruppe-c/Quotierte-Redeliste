@@ -43,43 +43,44 @@ class _ProfileState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Profil'),
-        actions: <Widget>[
-          // Add actions
-        ],
-      ),
-      // body is the majority of the screen.
-      body: Column(
-        children: [
-          Padding(
-              padding:
-                  EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 30),
-              child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [
-                      Flexible(
-                          child: TextField(
-                        decoration:
-                            DefaultThemes.inputDecoration(context, "Name"),
-                        controller: _usernameController,
-                      )),
-                    ]),
-                    Padding(padding: EdgeInsets.only(top: 30)),
-                    // TODO only for test purpose
-                    Row(children: [
-                      Flexible(
-                          child: TextField(
-                        decoration:
-                            DefaultThemes.inputDecoration(context, "Token"),
-                        controller: _tokenController,
-                      )),
-                    ])
-                  ])),
-        ], // Children
-      ),
-    );
+        appBar: AppBar(
+          title: Text('Profil'),
+          actions: <Widget>[
+            // Add actions
+          ],
+        ),
+        // body is the majority of the screen.
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                  padding:
+                      EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 30),
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(children: [
+                          Flexible(
+                              child: TextField(
+                            decoration:
+                                DefaultThemes.inputDecoration(context, "Name"),
+                            controller: _usernameController,
+                          )),
+                        ]),
+                        Padding(padding: EdgeInsets.only(top: 30)),
+                        // TODO only for test purpose
+                        Row(children: [
+                          Flexible(
+                              child: TextField(
+                            decoration:
+                                DefaultThemes.inputDecoration(context, "Token"),
+                            controller: _tokenController,
+                          )),
+                        ])
+                      ])),
+            ], // Children
+          ),
+        ));
   }
 }
