@@ -17,7 +17,8 @@ class SpeakingList extends StatefulWidget {
   State<StatefulWidget> createState() => _SpeakingListState();
 }
 
-class _SpeakingListState extends State<SpeakingList> {
+class _SpeakingListState extends State<SpeakingList>
+    implements UserWidgetInteraction {
   RoomWebSocket _webSocket = Repository().webSocket();
   List<SpeakingListEntry> _usersSpeakingList;
   CurrentlySpeaking _currentlySpeaking;
@@ -58,7 +59,8 @@ class _SpeakingListState extends State<SpeakingList> {
 
   @override
   Widget build(BuildContext context) {
-    return _usersSpeakingList.length != 0 || _currentlySpeaking != null
+    return _usersSpeakingList.length != 0 ||
+            (_currentlySpeaking != null && _currentlySpeaking.speakerId != null)
         ? _getList(_usersSpeakingList)
         : Expanded(
             child: Column(
@@ -74,7 +76,8 @@ class _SpeakingListState extends State<SpeakingList> {
                 ? UserWidget(
                     widget.users.firstWhere((searchUser) =>
                         searchUser.id == _currentlySpeaking.speakerId),
-                    highlight: true,
+                    currentlySpeaking: _currentlySpeaking,
+                    userWidgetInteraction: this,
                   )
                 : Container(),
             children: list.map((user) {
@@ -107,4 +110,13 @@ class _SpeakingListState extends State<SpeakingList> {
       _usersSpeakingList.insert(newIndex, item);
     });
   }
+
+  @override
+  void next() => _webSocket.stopSpeech();
+
+  @override
+  void pause() => _webSocket.pauseSpeech();
+
+  @override
+  void resume() => _webSocket.startSpeech();
 }

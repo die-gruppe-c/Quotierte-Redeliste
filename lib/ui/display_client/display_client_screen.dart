@@ -10,6 +10,7 @@ import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/resources/room_websocket.dart';
 import 'package:quotierte_redeliste/ui/moderator_screen/user_widget.dart';
+import 'package:quotierte_redeliste/ui/start_screen/start_screen.dart';
 
 class ClientScreen extends StatefulWidget {
   final RoomWebSocket webSocket = Repository().webSocket();
@@ -46,9 +47,14 @@ class _ClientScreenState extends State<ClientScreen> {
     widget.webSocket.connect();
 
     _stateSubscription = widget.webSocket.getRoomState().listen((state) {
-      setState(() {
-        _state = state;
-      });
+      if (state == RoomState.ARCHIVED) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => StartScreen()));
+      } else {
+        setState(() {
+          _state = state;
+        });
+      }
     });
 
     _roomSubscription = widget.webSocket.getRoomData().listen((room) {
