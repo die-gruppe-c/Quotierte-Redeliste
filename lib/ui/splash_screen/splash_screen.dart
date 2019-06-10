@@ -1,5 +1,7 @@
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quotierte_redeliste/models/profile.dart';
 import 'package:quotierte_redeliste/models/room.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/ui/start_screen/start_screen.dart';
@@ -34,6 +36,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+
+    Profile().darkModeEnabled().then((enabled) {
+      DynamicTheme.of(context)
+          .setBrightness(enabled ? Brightness.dark : Brightness.light);
+    });
 
     _connectToServer();
   }

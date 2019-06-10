@@ -1,6 +1,6 @@
-import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:quotierte_redeliste/models/profile.dart';
 import 'package:quotierte_redeliste/ui/create_room/create_room_screen.dart';
 import 'package:quotierte_redeliste/ui/display_profile/profile_screen.dart';
 import 'package:quotierte_redeliste/ui/start_screen/enter_new_room_tab.dart';
@@ -35,19 +35,6 @@ class StartScreen extends StatelessWidget {
       //actionsIconTheme: Theme.of(context).iconTheme,
       actions: <Widget>[
         IconButton(
-          icon: new Icon(
-            Theme.of(context).brightness == Brightness.light
-                ? Icons.brightness_5
-                : Icons.brightness_7,
-          ),
-          onPressed: () {
-            DynamicTheme.of(context).setBrightness(
-                Theme.of(context).brightness == Brightness.dark
-                    ? Brightness.light
-                    : Brightness.dark);
-          },
-        ),
-        IconButton(
           icon: Icon(Icons.speaker_notes),
           onPressed: () {
             Navigator.push(
@@ -56,16 +43,17 @@ class StartScreen extends StatelessWidget {
             );
           },
         ),
-        IconButton(
-          // TODO remove only for testing
-          icon: Icon(Icons.account_circle),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ProfileScreen()),
-            );
-          },
-        ),
+        Profile.isInDebugMode()
+            ? IconButton(
+                icon: Icon(Icons.account_circle),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfileScreen()),
+                  );
+                },
+              )
+            : Container(),
       ],
     );
   }
