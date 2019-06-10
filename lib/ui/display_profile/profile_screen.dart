@@ -57,13 +57,7 @@ class _ProfileState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Profil'),
-          actions: <Widget>[
-            // Add actions
-          ],
-        ),
-        // body is the majority of the screen.
+        appBar: AppBar(title: Text('Profil')),
         body: SingleChildScrollView(
           child: Column(
             children: [
