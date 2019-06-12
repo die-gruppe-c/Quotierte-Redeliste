@@ -45,17 +45,15 @@ class ColoredLine extends StatelessWidget {
         children: values.map((data) => _getOneColor(data)).toList());
   }
 
-  Widget _getOneColor(ColorLineData data) => data.valueInPercent != 0
-      ? Expanded(
-          flex: data.valueInPercent,
-          child: Container(
-              color: data.color,
-              child: Center(
-                  child: Text(data.valueName,
-                      maxLines: 1,
-                      softWrap: false,
-                      style: TextStyle(
-                          color: ColorUtils.getFontColorForBackground(
-                              data.color))))))
-      : Container();
+  Widget _getOneColor(ColorLineData data) => Expanded(
+      flex: data.valueInPercent,
+      child: Container(
+          color: data.color,
+          child: Center(
+              child: Text(data.valueName,
+                  maxLines: 1,
+                  softWrap: false,
+                  style: TextStyle(
+                      color:
+                          ColorUtils.getFontColorForBackground(data.color))))));
 }
