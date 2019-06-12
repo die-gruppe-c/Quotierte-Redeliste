@@ -35,7 +35,6 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
 
     if (widget.forOtherUser != true) {
       Profile().getUsername().then((username) {
-        print("username: " + username);
         nameController = TextEditingController(text: username);
         nameController.addListener(() => setState(() {}));
       });
@@ -158,18 +157,14 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
                 Padding(
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 25),
                     child: TextField(
-                      controller: nameController,
-                      decoration:
-                          DefaultThemes.inputDecoration(context, "Name"),
-                    )),
+                        controller: nameController,
+                        decoration:
+                            DefaultThemes.inputDecoration(context, "Name"))),
                 Expanded(
                     child: ListView.builder(
-                  padding: EdgeInsets.only(bottom: 60),
-                  itemCount: _room.attributes.length,
-                  itemBuilder: (context, pos) {
-                    return getListViewItem(pos);
-                  },
-                )),
+                        padding: EdgeInsets.only(bottom: 60),
+                        itemCount: _room.attributes.length,
+                        itemBuilder: (context, pos) => getListViewItem(pos))),
               ]);
   }
 
@@ -194,20 +189,18 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
   Widget getListViewItem(pos) {
     return Padding(
         padding: EdgeInsets.only(top: 0, bottom: 20.0, left: 5, right: 5),
-        child: _getDropdown(
-            pos,
-            _room.attributes[pos].name,
-            _room.attributes[pos].values.map((attr) {
-              return attr.value;
-            }).toList()));
+        child: _getDropdown(pos, _room.attributes[pos].name,
+            _room.attributes[pos].values.map((attr) => attr.value).toList()));
   }
 
   Widget setFloatingActionButton() {
+    bool floatingButtonDisabled = nameController.text == "";
+
     return FloatingActionButton.extended(
         icon: Icon(Icons.save),
         backgroundColor:
-            nameController.text != "" ? null : Theme.of(context).disabledColor,
-        onPressed: nameController.text != "" ? _sendData : null,
+            floatingButtonDisabled ? Theme.of(context).disabledColor : null,
+        onPressed: floatingButtonDisabled ? null : _sendData,
         label: new Text('Speichern'));
   }
 
@@ -225,12 +218,12 @@ class _EnterRoomScreenState extends State<EnterRoomScreen> {
                   child: new DropdownButton(
                     value: selectedAttributes[pos],
                     isDense: true,
-                    items: values.map((String value) {
-                      return new DropdownMenuItem(
-                        value: value,
-                        child: new Text(value),
-                      );
-                    }).toList(),
+                    items: values
+                        .map((String value) => DropdownMenuItem(
+                              value: value,
+                              child: new Text(value),
+                            ))
+                        .toList(),
                     onChanged: (newValue) {
                       setState(() {
                         selectedAttributes[pos] = newValue;

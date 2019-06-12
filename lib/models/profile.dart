@@ -13,9 +13,11 @@ class Profile {
   // End Singleton pattern
   static const TAG_USERNAME = 'username';
   static const TAG_TOKEN = 'usertoken';
+  static const TAG_DARK_MODE = 'darkMode';
 
   String _username;
   String _token;
+  bool _darkMode;
 
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
@@ -35,7 +37,24 @@ class Profile {
     prefs.setString(TAG_USERNAME, username);
   }
 
-  // TODO only for test purpose
+  Future<bool> darkModeEnabled() async {
+    if (_darkMode == null) {
+      final SharedPreferences prefs = await _prefs;
+      _darkMode = prefs.getBool(TAG_DARK_MODE);
+    }
+
+    if (_darkMode == null) _darkMode = false;
+
+    return _darkMode;
+  }
+
+  setDarkMode(bool enabled) async {
+    _darkMode = enabled;
+
+    final SharedPreferences prefs = await _prefs;
+    prefs.setBool(TAG_DARK_MODE, enabled);
+  }
+
   setToken(String token) async {
     _token = token;
 
@@ -61,5 +80,11 @@ class Profile {
   static String generateToken() {
     var uuid = new Uuid();
     return uuid.v4();
+  }
+
+  static bool isInDebugMode() {
+    bool inDebugMode = false;
+    assert(inDebugMode = true);
+    return inDebugMode;
   }
 }
