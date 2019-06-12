@@ -11,6 +11,9 @@ const HINT_COLOR = Colors.black38;
 const ACCENT_COLOR = Colors.red;
 const DISABLED_COLOR = Colors.black26;
 
+const ACCENT_DARK_COLOR = Colors.teal;
+const ACCENT_DARK_COLOR_LIGHT = Colors.tealAccent;
+
 //TODO: Wenn name nicht gesetzt dann Fehlermeldung bei raum beitreten.
 //TODO: Wenn raumbeigetreten und dann rausgeflogen o.ä. dann über raum beitreten wieder attribut screen anstatt direkt in warteraum/raum.
 //TODO: Invalid Argument error wenn in Warteraum gehen ohne einem beigetreten zu sein.
@@ -54,9 +57,13 @@ class MyApp extends StatelessWidget {
           } else {
             return ThemeData(
               scaffoldBackgroundColor: Colors.grey[850],
-              primarySwatch: ACCENT_COLOR,
+              primarySwatch: ACCENT_DARK_COLOR,
               primaryColorDark: Colors.white,
               brightness: brightness,
+              textSelectionColor: ACCENT_DARK_COLOR_LIGHT,
+              textSelectionHandleColor: ACCENT_DARK_COLOR_LIGHT,
+              cursorColor: ACCENT_DARK_COLOR_LIGHT,
+              accentColor: ACCENT_DARK_COLOR_LIGHT,
             );
           }
         },
