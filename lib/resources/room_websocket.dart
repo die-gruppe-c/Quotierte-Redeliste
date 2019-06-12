@@ -5,6 +5,7 @@ import 'package:quotierte_redeliste/models/currently_speaking.dart';
 import 'package:quotierte_redeliste/models/profile.dart';
 import 'package:quotierte_redeliste/models/speaking_category.dart';
 import 'package:quotierte_redeliste/models/speaking_list_entry.dart';
+import 'package:quotierte_redeliste/models/speech_statistic.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:rxdart/rxdart.dart';
@@ -54,6 +55,7 @@ class RoomWebSocket {
   _ObservableStream<Room> _streamRoomData;
   _ObservableStream<RoomState> _streamRoomState;
   _ObservableStream<CurrentlySpeaking> _streamCurrentlySpeaking;
+  _ObservableStream<List<SpeechStatistic>> _streamStatistics;
 
   bool _closed = true;
   String _errorMessage;
@@ -72,6 +74,7 @@ class RoomWebSocket {
     _streamRoomState = _ObservableStream();
     _streamRoomData = _ObservableStream();
     _streamCurrentlySpeaking = _ObservableStream();
+    _streamStatistics = _ObservableStream();
   }
 
   /// call this only once
@@ -121,6 +124,9 @@ class RoomWebSocket {
         case _WebSocketCommands.CURRENTLY_SPEAKING:
           _currentlySpeaking(commandData);
           break;
+        case _WebSocketCommands.SPEECH_STATISTICS:
+          _speechStatistics(commandData);
+          break;
       }
     }, onDone: _onClosed, onError: _onError);
 
@@ -167,6 +173,9 @@ class RoomWebSocket {
   _currentlySpeaking(Map<String, dynamic> data) =>
       _streamCurrentlySpeaking.add(CurrentlySpeaking.fromJson(data));
 
+  _speechStatistics(commandData) =>
+      _streamStatistics.add(SpeechStatistic.listFromJson(commandData));
+
   _onClosed() {
     print("Websocket closed");
     if (_streamRoomState.isOpen()) _streamRoomState.add(RoomState.DISCONNECTED);
@@ -191,6 +200,7 @@ class RoomWebSocket {
     _streamRoomState.close();
     _streamRoomData.close();
     _streamCurrentlySpeaking.close();
+    _streamStatistics.close();
 
     _closed = true;
   }
@@ -206,6 +216,8 @@ class RoomWebSocket {
   Stream<RoomState> getRoomState() => _streamRoomState.getStream();
   Stream<CurrentlySpeaking> getCurrentlySpeaking() =>
       _streamCurrentlySpeaking.getStream();
+  Stream<List<SpeechStatistic>> getStatistics() =>
+      _streamStatistics.getStream();
 
   String getErrorMessage() {
     if (_errorMessage == null) return "";
@@ -264,6 +276,7 @@ class _WebSocketCommands {
   static const USERS_SORTED = "usersSorted";
   static const USERS_WANT_TO_SPEAK = "usersWantToSpeak";
   static const CURRENTLY_SPEAKING = "currentlySpeaking";
+  static const SPEECH_STATISTICS = "speechStatistics";
 
   static const ROOM = "room";
   static const SPEAKING_LIST = "speechList";
