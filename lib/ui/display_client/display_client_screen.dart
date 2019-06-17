@@ -138,7 +138,6 @@ class _ClientScreenState extends State<ClientScreen> {
   Widget _buttons2() {
     return Container(
         color: Theme.of(context).appBarTheme.color,
-        padding: EdgeInsets.only(bottom: 30.0, top: 30.0),
         decoration: BoxDecoration(
           color: Theme.of(context).appBarTheme.color,
           border: Border(top: BorderSide(color: Theme.of(context).accentColor)),
@@ -148,20 +147,16 @@ class _ClientScreenState extends State<ClientScreen> {
           children: [
             _buildButtonColumn(
                 Theme.of(context).accentColor,
-                Icon(Icons.error_outline),
-                'Meldung',
-                widget.webSocket.wantToSpeak(SpeakingCategory('Meldung', '1'))),
-            _buildButtonColumn(
-                Theme.of(context).accentColor,
-                Icon(Icons.record_voice_over),
-                'Reden',
-                widget.webSocket.wantToSpeak(SpeakingCategory('Reden', '2'))),
-            _buildButtonColumn(
-                Theme.of(context).accentColor,
                 Icon(Icons.info_outline),
-                'Anmerkung',
-                widget.webSocket
-                    .wantToSpeak(SpeakingCategory('Anmerkung', '3'))),
+                'Meldung',
+                () => widget.webSocket
+                    .wantToSpeak(SpeakingCategory('SPEECH_CONTRIBUTION', '1'))),
+            _buildButtonColumn(
+                Theme.of(context).accentColor,
+                Icon(Icons.help_outline),
+                'Frage',
+                () => widget.webSocket
+                    .wantToSpeak(SpeakingCategory('QUESTION', '2')))
           ],
         ));
   }
@@ -220,18 +215,16 @@ class _ClientScreenState extends State<ClientScreen> {
   }
 
   Column _buildButtonColumn(
-      Color color, Widget icon, String label, Function function) {
+      Color color, Widget icon, String label, VoidCallback function) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         FlatButton(
+          padding: EdgeInsets.all(30),
           onPressed: function,
-          color: Theme.of(context).accentColor,
-          textColor: Theme.of(context).accentColor,
-          shape: StadiumBorder(),
           child: Column(
-            children: <Widget>[icon, Text(label)],
+            children: [icon, Text(label)],
           ),
         )
       ],
