@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quotierte_redeliste/models/speaking_list_entry.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/resources/room_websocket.dart';
@@ -16,46 +17,39 @@ class WantToSpeakList extends StatefulWidget {
 
 class _WantToSpeakListState extends State<WantToSpeakList> {
   RoomWebSocket _webSocket = Repository().webSocket();
-  List<User> _usersWantToSpeak;
-
-  @override
-  void initState() {
-    super.initState();
-    _usersWantToSpeak = List();
-
-    _webSocket.getUsersWantToSpeak().listen((List<String> wantToSpeak) {
-      List<User> newWantToSpeakList = List();
-
-      wantToSpeak.forEach((userId) {
-        newWantToSpeakList.add(widget.users.firstWhere((user) {
-          return user.id == userId;
-        }));
-      });
-
-      setState(() {
-        _usersWantToSpeak = newWantToSpeakList;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return _usersWantToSpeak.length != 0
-        ? _getList(_usersWantToSpeak)
-        : Expanded(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [Text("Keine Meldungen")]));
+    return StreamBuilder(
+        stream: _webSocket.getUsersWantToSpeak(),
+        builder:
+            (context, AsyncSnapshot<List<SpeakingListEntry>> wantToSpeak) =>
+                wantToSpeak.hasData && wantToSpeak.data.length != 0
+                    ? _getList(wantToSpeak.data)
+                    : _emptyState());
   }
 
-  Widget _getList(List<User> list) {
+  Widget _emptyState() => Expanded(
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [Text("Keine Meldungen")]));
+
+  Widget _getList(List<SpeakingListEntry> list) {
+    List<User> wantToSpeakList = List();
+
+    list.forEach((userWantToSpeak) {
+      wantToSpeakList.add(widget.users.firstWhere((user) {
+        return user.id == userWantToSpeak.id;
+      }));
+    });
+
     return Expanded(
         child: ListView.builder(
       controller: widget.scrollController,
       itemCount: list.length,
       itemBuilder: (context, pos) {
         return UserWidget(
-          list[pos],
+          wantToSpeakList[pos],
           onTap: () {
             _addUserToSpeakingList(list[pos].id);
           },
