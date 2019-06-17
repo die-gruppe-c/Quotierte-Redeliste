@@ -50,7 +50,7 @@ class RoomWebSocket {
   _ObservableStream<List<User>> _streamAllUsers;
   _ObservableStream<List<SpeakingListEntry>> _streamSpeakers;
   _ObservableStream<List<String>> _streamSortedUsers;
-  _ObservableStream<List<String>> _streamWantToSpeak;
+  _ObservableStream<List<SpeakingListEntry>> _streamWantToSpeak;
   _ObservableStream<List<SpeakingCategory>> _streamSpeakCategories;
   _ObservableStream<Room> _streamRoomData;
   _ObservableStream<RoomState> _streamRoomState;
@@ -163,8 +163,13 @@ class RoomWebSocket {
     _streamSpeakCategories.add(newSpeakingCategories);
   }
 
-  _usersSorted(List<String> ids) => _streamSortedUsers.add(ids);
-  _usersWantToSpeak(List<String> ids) => _streamWantToSpeak.add(ids);
+  _usersSorted(List<dynamic> ids) =>
+      _streamSortedUsers.add(ids.map((value) => value.toString()).toList());
+  _usersWantToSpeak(List<dynamic> ids) {
+    ids = ids.map((value) => SpeakingListEntry.fromJson(value)).toList();
+    _streamWantToSpeak.add(ids);
+  }
+
   _roomStarted() => _streamRoomState.add(RoomState.STARTED);
   _roomArchived() => _streamRoomState.add(RoomState.ARCHIVED);
   _roomData(Map<String, dynamic> roomData) =>
@@ -211,7 +216,8 @@ class RoomWebSocket {
   Stream<List<SpeakingCategory>> getSpeakCategories() =>
       _streamSpeakCategories.getStream();
   Stream<List<String>> getAllUsersSorted() => _streamSortedUsers.getStream();
-  Stream<List<String>> getUsersWantToSpeak() => _streamWantToSpeak.getStream();
+  Stream<List<SpeakingListEntry>> getUsersWantToSpeak() =>
+      _streamWantToSpeak.getStream();
   Stream<Room> getRoomData() => _streamRoomData.getStream();
   Stream<RoomState> getRoomState() => _streamRoomState.getStream();
   Stream<CurrentlySpeaking> getCurrentlySpeaking() =>
@@ -273,8 +279,8 @@ class _WebSocketCommands {
   // receive
 
   // only moderator
-  static const USERS_SORTED = "usersSorted";
-  static const USERS_WANT_TO_SPEAK = "usersWantToSpeak";
+  static const USERS_SORTED = "sortedList";
+  static const USERS_WANT_TO_SPEAK = "wantToSpeakList";
   static const CURRENTLY_SPEAKING = "currentlySpeaking";
   static const SPEECH_STATISTICS = "speechStatistics";
 

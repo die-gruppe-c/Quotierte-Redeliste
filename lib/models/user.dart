@@ -16,6 +16,8 @@ class User {
 
   User();
 
+  bool isOwnUser() => _uuid != null && _uuid != "";
+
   User.fromJson(Map<String, dynamic> json) {
     this._uuid = json['uuid'];
 

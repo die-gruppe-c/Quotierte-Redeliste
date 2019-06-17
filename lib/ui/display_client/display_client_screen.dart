@@ -25,13 +25,12 @@ class ClientScreen extends StatefulWidget {
 class _ClientScreenState extends State<ClientScreen> {
   Room _room;
   List<User> _allUsers;
-  CurrentlySpeaking _currentlySpeaking;
+  String ownUserId;
 
   RoomState _state;
   StreamSubscription _stateSubscription;
   StreamSubscription _roomSubscription;
   StreamSubscription _usersSubscription;
-  StreamSubscription _currentlySpeakingSubscription;
 
   @override
   void initState() {
@@ -66,14 +65,7 @@ class _ClientScreenState extends State<ClientScreen> {
     _usersSubscription = widget.webSocket.getAllUsers().listen((users) {
       setState(() {
         _allUsers = users;
-      });
-    });
-
-    _currentlySpeakingSubscription = widget.webSocket
-        .getCurrentlySpeaking()
-        .listen((CurrentlySpeaking currentlySpeaking) {
-      setState(() {
-        _currentlySpeaking = currentlySpeaking;
+        ownUserId = users.firstWhere((user) => user.isOwnUser()).id;
       });
     });
   }
@@ -84,7 +76,6 @@ class _ClientScreenState extends State<ClientScreen> {
     _stateSubscription.cancel();
     _roomSubscription.cancel();
     _usersSubscription.cancel();
-    _currentlySpeakingSubscription.cancel();
   }
 
   Future<bool> _onWillPop() async {
@@ -95,6 +86,8 @@ class _ClientScreenState extends State<ClientScreen> {
   User _getUserById(String userId) {
     return _allUsers.firstWhere((searchUser) => searchUser.id == userId);
   }
+
+  _notWantToSpeak() => widget.webSocket.doNotWantToSpeak();
 
   // -------------- BUILD ------------------
 
@@ -117,7 +110,7 @@ class _ClientScreenState extends State<ClientScreen> {
       return _showError(
           "Verbindung verloren \n\n" + widget.webSocket.getErrorMessage());
     } else {
-      return Column(children: [_list(), _buttons2()]);
+      return Column(children: [_list(), _bottomRowStreamListener()]);
     }
   }
 
@@ -135,72 +128,109 @@ class _ClientScreenState extends State<ClientScreen> {
     ]);
   }
 
-  Widget _buttons2() {
-    return Container(
-        color: Theme.of(context).appBarTheme.color,
-        padding: EdgeInsets.only(bottom: 30.0, top: 30.0),
-        decoration: BoxDecoration(
-          color: Theme.of(context).appBarTheme.color,
-          border: Border(top: BorderSide(color: Theme.of(context).accentColor)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildButtonColumn(
-                Theme.of(context).accentColor,
-                Icon(Icons.error_outline),
-                'Meldung',
-                widget.webSocket.wantToSpeak(SpeakingCategory('Meldung', '1'))),
-            _buildButtonColumn(
-                Theme.of(context).accentColor,
-                Icon(Icons.record_voice_over),
-                'Reden',
-                widget.webSocket.wantToSpeak(SpeakingCategory('Reden', '2'))),
-            _buildButtonColumn(
-                Theme.of(context).accentColor,
-                Icon(Icons.info_outline),
-                'Anmerkung',
-                widget.webSocket
-                    .wantToSpeak(SpeakingCategory('Anmerkung', '3'))),
-          ],
-        ));
+  Widget _bottomRowStreamListener() {
+    return StreamBuilder(
+        stream: widget.webSocket.getUsersWantToSpeak(),
+        builder: (context, AsyncSnapshot<List<SpeakingListEntry>> snapshot) {
+          bool selfWantToSpeak = snapshot.hasData &&
+              snapshot.data.indexWhere(
+                      (value) => _getUserById(value.id).isOwnUser()) !=
+                  -1;
+
+          return Container(
+              color: Theme.of(context).appBarTheme.color,
+              decoration: BoxDecoration(
+                color: Theme.of(context).appBarTheme.color,
+                border: Border(
+                    top: BorderSide(color: Theme.of(context).accentColor)),
+              ),
+              child: selfWantToSpeak
+                  ? _bottomRowWhileWantToSpeak()
+                  : _bottomRowWithButtons());
+        });
   }
 
-  Widget _list() {
-    return StreamBuilder(
-      stream: widget.webSocket.getSpeakingList(),
-      builder: (context, snapshot) {
-        return snapshot.hasData
-            ? _buildWithData(context, snapshot.data)
-            : _getLoadingIndicator();
-      },
+  Widget _bottomRowWithButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _buildBottomButton(
+            Icon(Icons.info_outline),
+            'Meldung',
+            () => widget.webSocket
+                .wantToSpeak(SpeakingCategory('SPEECH_CONTRIBUTION', '1'))),
+        _buildBottomButton(
+            Icon(Icons.help_outline),
+            'Frage',
+            () =>
+                widget.webSocket.wantToSpeak(SpeakingCategory('QUESTION', '2')))
+      ],
     );
   }
+
+  Widget _bottomRowWhileWantToSpeak() => Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          FlatButton(
+              padding: EdgeInsets.all(30),
+              child: Text("Meldung zurückziehen"),
+              onPressed: _notWantToSpeak)
+        ],
+      );
+
+  Widget _list() => StreamBuilder(
+        stream: widget.webSocket.getSpeakingList(),
+        builder: (context, snapshot) {
+          return snapshot.hasData
+              ? _buildWithData(context, snapshot.data)
+              : _getLoadingIndicator();
+        },
+      );
 
   Widget _buildWithData(BuildContext context, List<SpeakingListEntry> users) {
     return Expanded(
         child:
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      _currentlySpeaking != null && _currentlySpeaking.speakerId != null
-          ? Container(
-              decoration: BoxDecoration(color: Theme.of(context).splashColor),
-              padding: EdgeInsets.all(10),
-              child: Text(
-                "Aktueller Redner: " +
-                    _getUserById(_currentlySpeaking.speakerId).name,
-                textAlign: TextAlign.center,
-              ))
-          : Container(),
+      _currentlySpeakingWidget(),
       Expanded(
           child: ListView.builder(
-        padding: EdgeInsets.only(bottom: 80),
-        itemCount: users.length,
-        itemBuilder: (context, pos) {
-          return UserWidget(_getUserById(users[pos].id));
-        },
-      ))
+              padding: EdgeInsets.only(bottom: 80),
+              itemCount: users.length,
+              itemBuilder: (context, pos) =>
+                  UserWidget(_getUserById(users[pos].id))))
     ]));
   }
+
+  Widget _currentlySpeakingWidget() => StreamBuilder(
+      stream: widget.webSocket.getCurrentlySpeaking(),
+      builder: (context, AsyncSnapshot<CurrentlySpeaking> snapshot) {
+        if (snapshot.hasData && snapshot.data.speakerId != null) {
+          User currentlySpeaking = _getUserById(snapshot.data.speakerId);
+          if (currentlySpeaking.isOwnUser()) {
+            return Container(
+                padding: EdgeInsets.symmetric(vertical: 30),
+                decoration: BoxDecoration(color: Theme.of(context).splashColor),
+                child: Column(children: [
+                  Text("Du bist an der Reihe",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 20)),
+//                  Padding(padding: EdgeInsets.only(top: 10)),
+//                  RaisedButton(
+//                      child: Text("Beitrag beenden"), onPressed: _endOwnSpeak)
+                ]));
+          } else {
+            return Container(
+                decoration: BoxDecoration(color: Theme.of(context).splashColor),
+                padding: EdgeInsets.all(10),
+                child: Text(
+                    "Aktueller Redner: " +
+                        _getUserById(snapshot.data.speakerId).name,
+                    textAlign: TextAlign.center));
+          }
+        } else {
+          return Container();
+        }
+      });
 
   Widget _getLoadingIndicator() {
     return Expanded(
@@ -219,19 +249,20 @@ class _ClientScreenState extends State<ClientScreen> {
     ));
   }
 
-  Column _buildButtonColumn(
-      Color color, Widget icon, String label, Function function) {
+  Column _buildBottomButton(Widget icon, String label, VoidCallback function) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         FlatButton(
+          padding: EdgeInsets.all(30),
           onPressed: function,
-          color: Theme.of(context).accentColor,
-          textColor: Theme.of(context).accentColor,
-          shape: StadiumBorder(),
           child: Column(
-            children: <Widget>[icon, Text(label)],
+            children: [
+              icon,
+              Padding(padding: EdgeInsets.only(top: 5)),
+              Text(label)
+            ],
           ),
         )
       ],
