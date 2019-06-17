@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
@@ -17,13 +19,15 @@ class AllUsersList extends StatefulWidget {
 class _AllUsersListState extends State<AllUsersList> {
   RoomWebSocket _webSocket = Repository().webSocket();
   List<User> _sortedUsers;
+  StreamSubscription _allUserSubscription;
 
   @override
   void initState() {
     super.initState();
     _sortedUsers = widget.users;
 
-    _webSocket.getAllUsersSorted().listen((List<String> sortedList) {
+    _allUserSubscription =
+        _webSocket.getAllUsersSorted().listen((List<String> sortedList) {
       setState(() {
         _sortedUsers.sort((User userA, User userB) {
           int sortNumberA = sortedList.indexOf(userA.id);
@@ -32,6 +36,12 @@ class _AllUsersListState extends State<AllUsersList> {
         });
       });
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (_allUserSubscription != null) _allUserSubscription.cancel();
   }
 
   void _onUserTap(int pos) {

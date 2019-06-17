@@ -163,7 +163,8 @@ class RoomWebSocket {
     _streamSpeakCategories.add(newSpeakingCategories);
   }
 
-  _usersSorted(List<String> ids) => _streamSortedUsers.add(ids);
+  _usersSorted(List<dynamic> ids) =>
+      _streamSortedUsers.add(ids.map((value) => value.toString()).toList());
   _usersWantToSpeak(List<dynamic> ids) {
     ids = ids.map((value) => SpeakingListEntry.fromJson(value)).toList();
     _streamWantToSpeak.add(ids);
@@ -278,7 +279,7 @@ class _WebSocketCommands {
   // receive
 
   // only moderator
-  static const USERS_SORTED = "usersSorted";
+  static const USERS_SORTED = "sortedList";
   static const USERS_WANT_TO_SPEAK = "wantToSpeakList";
   static const CURRENTLY_SPEAKING = "currentlySpeaking";
   static const SPEECH_STATISTICS = "speechStatistics";
