@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/models/attribute_value.dart';
 import 'package:quotierte_redeliste/models/currently_speaking.dart';
 import 'package:quotierte_redeliste/models/user.dart';
-import 'package:quotierte_redeliste/ui/components/ColorUtils.dart';
+import 'package:quotierte_redeliste/ui/components/Utils.dart';
 
 abstract class UserWidgetInteraction {
   void pause();
@@ -93,7 +93,10 @@ class _UserWidgetState extends State<UserWidget> {
       ? _getUsername()
       : Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [_getUsername(), Text((duration ~/ 1000).toString())],
+          children: [
+            _getUsername(),
+            Text(Utils.getTimeStringFromSeconds(duration ~/ 1000))
+          ],
         );
 
   Widget _getUsername() =>
@@ -106,7 +109,7 @@ class _UserWidgetState extends State<UserWidget> {
         AttributeValue attributeValue = attribute.values[0];
 
         Color backgroundColor = attributeValue.color;
-        Color fontColor = ColorUtils.getFontColorForBackground(backgroundColor);
+        Color fontColor = Utils.getFontColorForBackground(backgroundColor);
 
         return Padding(
             padding: EdgeInsets.only(right: 15),

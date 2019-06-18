@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/models/attribute.dart';
 import 'package:quotierte_redeliste/models/room.dart';
 import 'package:quotierte_redeliste/models/speech_statistic.dart';
-import 'package:quotierte_redeliste/ui/components/ColorUtils.dart';
+import 'package:quotierte_redeliste/ui/components/Utils.dart';
 
 class ColorLineData {
   String valueName;
@@ -56,6 +56,6 @@ class ColoredLine extends StatelessWidget {
                       maxLines: 1,
                       softWrap: false,
                       style: TextStyle(
-                          color: ColorUtils.getFontColorForBackground(
-                              data.color))))));
+                          color:
+                              Utils.getFontColorForBackground(data.color))))));
 }
