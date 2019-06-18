@@ -73,8 +73,8 @@ class _HistoryTabState extends State<HistoryTab> {
       List<int> list = csvAsString.codeUnits;
       Uint8List bytes = Uint8List.fromList(list);
 
-      // TODO test on ios: https://pub.dev/packages/esys_flutter_share#-readme-tab-
-      Share.file('Statistiken', 'statisiken.csv', bytes.buffer.asUint8List(),
+      //for use on ios: https://github.com/flutter/flutter/issues/16049
+      Share.file('Statistiken', 'raum_${id}_protokoll.csv', bytes.buffer.asUint8List(),
           'text/csv');
     }).catchError((error) {
       _closeDialog();
