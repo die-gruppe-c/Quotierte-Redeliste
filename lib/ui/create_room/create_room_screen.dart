@@ -175,7 +175,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   bool checkInput() {
     if (createRoomBloc.getName() == "")
-      return _showError("Enter a name for the room.");
+      return _showError("Raumname fehlt.");
 
     if (createRoomBloc.getAttributeCount() < 2)
       return _showError("Kein Attribut vorhanden.");
