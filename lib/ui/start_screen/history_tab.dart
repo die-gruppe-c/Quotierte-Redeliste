@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -33,6 +36,50 @@ class _HistoryTabState extends State<HistoryTab> {
   void initState() {
     super.initState();
     _loadRooms();
+  }
+
+  /// when text is null an loading indicator is shown
+  showCustomDialog({String text, String title}) {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: text != null
+              ? Text(text)
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [CircularProgressIndicator()]),
+          actions: [
+            text != null
+                ? FlatButton(
+                    child: Text('SCHLIESSEN'), onPressed: () => _closeDialog())
+                : Container()
+          ],
+        );
+      },
+    );
+  }
+
+  _closeDialog() => Navigator.of(context).pop();
+
+  _loadStatisticAndShare(int id) {
+    showCustomDialog(title: "Lade CSV-Datei");
+
+    Repository().getStatisticCSV(id).then((csvAsString) {
+      _closeDialog();
+
+      List<int> list = csvAsString.codeUnits;
+      Uint8List bytes = Uint8List.fromList(list);
+
+      // TODO test on ios: https://pub.dev/packages/esys_flutter_share#-readme-tab-
+      Share.file('Statistiken', 'statisiken.csv', bytes.buffer.asUint8List(),
+          'text/csv');
+    }).catchError((error) {
+      _closeDialog();
+      showCustomDialog(text: error.toString());
+    });
   }
 
   @override
@@ -95,6 +142,7 @@ class _HistoryTabState extends State<HistoryTab> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ListTile(
+              onTap: () => _loadStatisticAndShare(_rooms[pos].id),
               leading: Icon(MdiIcons.forum),
               title: Text('Raum: ' +
                   _rooms[pos].name +
