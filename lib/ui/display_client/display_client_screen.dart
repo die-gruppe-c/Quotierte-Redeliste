@@ -140,12 +140,9 @@ class _ClientScreenState extends State<ClientScreen>
 
   Widget _bottomRowStreamListener() {
     return StreamBuilder(
-        stream: widget.webSocket.getUsersWantToSpeak(),
-        builder: (context, AsyncSnapshot<List<SpeakingListEntry>> snapshot) {
-          bool selfWantToSpeak = snapshot.hasData &&
-              snapshot.data.indexWhere(
-                      (value) => _getUserById(value.id).isOwnUser()) !=
-                  -1;
+        stream: widget.webSocket.getWantToSpeakStatus(),
+        builder: (context, AsyncSnapshot<bool> snapshot) {
+          bool selfWantToSpeak = snapshot.hasData && snapshot.data;
 
           return Container(
               color: Theme.of(context).appBarTheme.color,

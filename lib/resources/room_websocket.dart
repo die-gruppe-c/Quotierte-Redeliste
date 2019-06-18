@@ -56,6 +56,8 @@ class RoomWebSocket {
   _ObservableStream<RoomState> _streamRoomState;
   _ObservableStream<CurrentlySpeaking> _streamCurrentlySpeaking;
   _ObservableStream<List<SpeechStatistic>> _streamStatistics;
+  _ObservableStream<bool>
+      _streamWantToSpeakStatus; // true when the user is on the want to speak list otherwise false
 
   bool _closed = true;
   String _errorMessage;
@@ -75,6 +77,7 @@ class RoomWebSocket {
     _streamRoomData = _ObservableStream();
     _streamCurrentlySpeaking = _ObservableStream();
     _streamStatistics = _ObservableStream();
+    _streamWantToSpeakStatus = _ObservableStream();
   }
 
   /// call this only once
@@ -126,6 +129,12 @@ class RoomWebSocket {
           break;
         case _WebSocketCommands.SPEECH_STATISTICS:
           _speechStatistics(commandData);
+          break;
+        case _WebSocketCommands.WANT_TO_SPEAK_ADDED:
+          _wantToSpeakAdded();
+          break;
+        case _WebSocketCommands.WANT_TO_SPEAK_REMOVED:
+          _wantToSpeakRemoved();
           break;
       }
     }, onDone: _onClosed, onError: _onError);
@@ -181,6 +190,9 @@ class RoomWebSocket {
   _speechStatistics(commandData) =>
       _streamStatistics.add(SpeechStatistic.listFromJson(commandData));
 
+  _wantToSpeakAdded() => _streamWantToSpeakStatus.add(true);
+  _wantToSpeakRemoved() => _streamWantToSpeakStatus.add(false);
+
   _onClosed() {
     print("Websocket closed");
     if (_streamRoomState.isOpen()) _streamRoomState.add(RoomState.DISCONNECTED);
@@ -206,6 +218,7 @@ class RoomWebSocket {
     _streamRoomData.close();
     _streamCurrentlySpeaking.close();
     _streamStatistics.close();
+    _streamWantToSpeakStatus.close();
 
     _closed = true;
   }
@@ -224,6 +237,7 @@ class RoomWebSocket {
       _streamCurrentlySpeaking.getStream();
   Stream<List<SpeechStatistic>> getStatistics() =>
       _streamStatistics.getStream();
+  Stream<bool> getWantToSpeakStatus() => _streamWantToSpeakStatus.getStream();
 
   String getErrorMessage() {
     if (_errorMessage == null) return "";
@@ -290,6 +304,8 @@ class _WebSocketCommands {
   static const ARCHIVED = "archived";
   static const ALL_USERS = "allUsers";
   static const SPEAK_CATEGORIES = "speechTypes";
+  static const WANT_TO_SPEAK_ADDED = "wts_added";
+  static const WANT_TO_SPEAK_REMOVED = "wts_removed";
 
   // send
 
