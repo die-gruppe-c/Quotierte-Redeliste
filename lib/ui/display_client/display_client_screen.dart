@@ -22,7 +22,8 @@ class ClientScreen extends StatefulWidget {
   _ClientScreenState createState() => _ClientScreenState();
 }
 
-class _ClientScreenState extends State<ClientScreen> {
+class _ClientScreenState extends State<ClientScreen>
+    implements UserWidgetInteraction {
   Room _room;
   List<User> _allUsers;
   String ownUserId;
@@ -86,6 +87,15 @@ class _ClientScreenState extends State<ClientScreen> {
   User _getUserById(String userId) {
     return _allUsers.firstWhere((searchUser) => searchUser.id == userId);
   }
+
+  @override
+  void next() => widget.webSocket.stopSpeech();
+
+  @override
+  void pause() => widget.webSocket.pauseSpeech();
+
+  @override
+  void resume() => widget.webSocket.startSpeech();
 
   _notWantToSpeak() => widget.webSocket.doNotWantToSpeak();
 
@@ -207,17 +217,8 @@ class _ClientScreenState extends State<ClientScreen> {
         if (snapshot.hasData && snapshot.data.speakerId != null) {
           User currentlySpeaking = _getUserById(snapshot.data.speakerId);
           if (currentlySpeaking.isOwnUser()) {
-            return Container(
-                padding: EdgeInsets.symmetric(vertical: 30),
-                decoration: BoxDecoration(color: Theme.of(context).splashColor),
-                child: Column(children: [
-                  Text("Du bist an der Reihe",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 20)),
-//                  Padding(padding: EdgeInsets.only(top: 10)),
-//                  RaisedButton(
-//                      child: Text("Beitrag beenden"), onPressed: _endOwnSpeak)
-                ]));
+            return UserWidget(currentlySpeaking,
+                currentlySpeaking: snapshot.data, userWidgetInteraction: this);
           } else {
             return Container(
                 decoration: BoxDecoration(color: Theme.of(context).splashColor),
