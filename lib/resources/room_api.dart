@@ -116,6 +116,20 @@ class RoomApi {
     }
   }
 
+  Future<String> getStatisticCSV(int id) async {
+    final headers = await _getHeaders(contentType: null);
+
+    final response = await client.get(
+        BASE_URL + "/room/statistic?id=" + id.toString(),
+        headers: headers);
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Fehler: ' + response.body);
+    }
+  }
+
   List<Map<String, dynamic>> _getAttributesJsonFromMap(
       Map<String, String> attributes) {
     List<Map<String, dynamic>> attributesList = List();
@@ -136,10 +150,10 @@ class RoomApi {
     return attributesList;
   }
 
-  Future<Map> _getHeaders() async {
+  Future<Map> _getHeaders({contentType = "application/json"}) async {
     var map = new Map<String, String>();
     map["guest_uuid"] = await Profile().getToken();
-    map["Content-Type"] = "application/json";
+    if (contentType != null) map["Content-Type"] = contentType;
 
     return map;
   }

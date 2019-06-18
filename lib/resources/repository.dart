@@ -24,4 +24,6 @@ class Repository {
       roomApi.joinRoom(roomId, name, attributes, uuid: uuid);
 
   Future<void> leaveRoom() => roomApi.leaveRoom();
+
+  Future<String> getStatisticCSV(int id) async => roomApi.getStatisticCSV(id);
 }
