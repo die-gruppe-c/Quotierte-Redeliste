@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
           Image.asset(
-            'assets/images/icon_placeholder.png',
+            'assets/images/ic_launcher.png',
           ),
           Container(
             padding: const EdgeInsets.only(top: 32),
