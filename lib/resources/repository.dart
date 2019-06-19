@@ -4,6 +4,7 @@ import 'package:quotierte_redeliste/resources/room_websocket.dart';
 
 class Repository {
   static const BASE_URL = "mop-gruppec-backend.herokuapp.com";
+  //static const BASE_URL = "192.168.178.20:3000";
 
   final roomApi = RoomApi();
   final roomWebSocket = RoomWebSocket();

@@ -201,7 +201,8 @@ class _EditRoomWidgetState extends State<EditRoomWidget> {
                                           child: new Text(
                                             'OK',
                                             style: TextStyle(
-                                                fontWeight: FontWeight.bold),
+                                                fontWeight: FontWeight.bold,
+                                                color: Theme.of(context).accentColor),
                                           ))
                                     ],
                                   ));
@@ -337,7 +338,7 @@ class WeightPickerDialogState extends State<WeightPickerDialog> {
             },
             child: new Text(
               'ALLE ENTFERNEN',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),
             )),
         new FlatButton(
             onPressed: () {
@@ -345,7 +346,7 @@ class WeightPickerDialogState extends State<WeightPickerDialog> {
             },
             child: new Text(
               'OK',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),
             )),
       ],
     );
