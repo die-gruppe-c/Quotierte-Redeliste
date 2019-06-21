@@ -101,7 +101,16 @@ class _UserWidgetState extends State<UserWidget> {
       align = TextAlign.center;
     }
 
-    return Text(widget.user.name, style: style, textAlign: align,);
+    var tvName = Text(widget.user.name, style: style, textAlign: align,);
+
+    if (widget.user.createdByOwner) return tvName;
+
+    return Row(
+      children: <Widget>[
+        Container( padding: EdgeInsets.only(right: 8), child: Icon(Icons.person)),
+        tvName
+      ],
+    );
   }
 
   Widget _getAttributeRow() => SingleChildScrollView(
