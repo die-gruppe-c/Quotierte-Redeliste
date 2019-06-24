@@ -56,7 +56,7 @@ class _UserWidgetState extends State<UserWidget> {
   }
 
   _setupTimer({resetTimer: true}) {
-    if (resetTimer && widget.currentlySpeaking != null)
+    if ((resetTimer || duration == null) && widget.currentlySpeaking != null)
       duration = widget.currentlySpeaking.duration;
 
     if (timer != null) {
@@ -65,19 +65,18 @@ class _UserWidgetState extends State<UserWidget> {
         timer.cancel();
       } else if (widget.currentlySpeaking != null &&
           widget.currentlySpeaking.running) {
-        timer.cancel();
-        timer = _createTimer();
+        if (!timer.isActive) timer = _createTimer();
       }
     } else if (widget.currentlySpeaking != null &&
         widget.currentlySpeaking.running) {
-      timer = _createTimer();
+      if (!timer.isActive) timer = _createTimer();
     }
   }
 
   Timer _createTimer() {
-    return Timer.periodic(Duration(milliseconds: 333), (timer) {
+    return Timer.periodic(Duration(milliseconds: 500), (timer) {
       setState(() {
-        duration += 333;
+        duration += 500;
       });
     });
   }
@@ -206,7 +205,6 @@ class _UserWidgetState extends State<UserWidget> {
       icon: Icon(Icons.pause),
       color: Theme.of(context).primaryColorDark,
       onPressed: () {
-        _setupTimer();
         widget.userWidgetInteraction.pause();
       });
 
@@ -214,7 +212,6 @@ class _UserWidgetState extends State<UserWidget> {
       icon: Icon(Icons.play_arrow),
       color: Theme.of(context).primaryColorDark,
       onPressed: () {
-        _setupTimer();
         widget.userWidgetInteraction.resume();
       });
 
