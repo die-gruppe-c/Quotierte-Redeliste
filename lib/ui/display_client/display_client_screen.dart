@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:quotierte_redeliste/models/currently_speaking.dart';
 import 'package:quotierte_redeliste/models/room.dart';
-import 'package:quotierte_redeliste/models/speaking_category.dart';
 import 'package:quotierte_redeliste/models/speaking_list_entry.dart';
+import 'package:quotierte_redeliste/models/speech_type.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/resources/room_websocket.dart';
@@ -159,20 +159,12 @@ class _ClientScreenState extends State<ClientScreen>
 
   Widget _bottomRowWithButtons() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        _buildBottomButton(
-            Icon(Icons.info_outline),
-            'Meldung',
-            () => widget.webSocket
-                .wantToSpeak(SpeakingCategory('SPEECH_CONTRIBUTION', '1'))),
-        _buildBottomButton(
-            Icon(Icons.help_outline),
-            'Frage',
-            () =>
-                widget.webSocket.wantToSpeak(SpeakingCategory('QUESTION', '2')))
-      ],
-    );
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: SpeechType.values.map((type) {
+          String typeString = type.toString().split('.').last;
+          return _buildBottomButton(Icon(SpeechTypeUtils.iconForEnum(type)),
+              typeString, () => widget.webSocket.wantToSpeak(typeString));
+        }).toList());
   }
 
   Widget _bottomRowWhileWantToSpeak() => Row(
@@ -203,8 +195,9 @@ class _ClientScreenState extends State<ClientScreen>
           child: ListView.builder(
               padding: EdgeInsets.only(bottom: 80),
               itemCount: users.length,
-              itemBuilder: (context, pos) =>
-                  UserWidget(_getUserById(users[pos].id))))
+              itemBuilder: (context, pos) => UserWidget(
+                  _getUserById(users[pos].id),
+                  speechCategory: users[pos].speechType)))
     ]));
   }
 
@@ -215,7 +208,9 @@ class _ClientScreenState extends State<ClientScreen>
           User currentlySpeaking = _getUserById(snapshot.data.speakerId);
           if (currentlySpeaking.isOwnUser()) {
             return UserWidget(currentlySpeaking,
-                currentlySpeaking: snapshot.data, userWidgetInteraction: this);
+                currentlySpeaking: snapshot.data,
+                userWidgetInteraction: this,
+                speechCategory: snapshot.data.speechTypeId);
           } else {
             return Container(
                 decoration: BoxDecoration(color: Theme.of(context).splashColor),

@@ -17,9 +17,14 @@ class UserWidget extends StatefulWidget {
   final Function onTap;
   final CurrentlySpeaking currentlySpeaking;
   final UserWidgetInteraction userWidgetInteraction;
+  final String speechCategory;
 
   UserWidget(this.user,
-      {this.onTap, this.currentlySpeaking, this.userWidgetInteraction, Key key})
+      {this.speechCategory = "",
+      this.onTap,
+      this.currentlySpeaking,
+      this.userWidgetInteraction,
+      Key key})
       : super(key: key);
 
   @override
@@ -80,9 +85,7 @@ class _UserWidgetState extends State<UserWidget> {
               ? EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0)
               : EdgeInsets.symmetric(horizontal: 4),
           title: Container(
-                  padding: EdgeInsets.only(top: 8),
-                  child: _getUsername()
-                ),
+              padding: EdgeInsets.only(top: 8), child: _getUsername()),
           subtitle: Padding(
             padding: EdgeInsets.only(top: 2, bottom: 4),
             child: widget.currentlySpeaking == null
@@ -94,27 +97,32 @@ class _UserWidgetState extends State<UserWidget> {
 
   Widget _getUsername() {
     var style = Theme.of(context).textTheme.title;
-    var align = TextAlign.start;
 
     if (widget.currentlySpeaking != null) {
       style = Theme.of(context).textTheme.headline;
-      align = TextAlign.center;
     }
 
-    var tvName = Text(widget.user.name, style: style, textAlign: align,);
+    var tvName = Text(widget.user.name, style: style);
 
-    if (widget.user.createdByOwner) return tvName;
+    if (widget.user.createdByOwner)
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[tvName, Text(widget.speechCategory)],
+      );
 
     return Row(
       children: <Widget>[
-        Container( padding: EdgeInsets.only(right: 8), child: Icon(Icons.person)),
+        Container(
+            padding: EdgeInsets.only(right: 8), child: Icon(Icons.person)),
         tvName
       ],
     );
   }
 
   Widget _getAttributeRow() => SingleChildScrollView(
-      padding: widget.currentlySpeaking == null ? EdgeInsets.zero : EdgeInsets.symmetric(horizontal: 8),
+      padding: widget.currentlySpeaking == null
+          ? EdgeInsets.zero
+          : EdgeInsets.symmetric(horizontal: 8),
       scrollDirection: Axis.horizontal,
       child: Row(
           children: widget.user.attributes.map((attribute) {
@@ -131,35 +139,43 @@ class _UserWidgetState extends State<UserWidget> {
                     style: TextStyle(color: fontColor, fontSize: 14))));
       }).toList()));
 
-  Widget _getAttributeRowAndButtons() =>
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [_getAttributeRow(), _getButtonsForActualSpeaking()]);
+  Widget _getAttributeRowAndButtons() => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [_getAttributeRow(), _getButtonsForActualSpeaking()]);
 
-  Widget _getButtonsForActualSpeaking() =>
-
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(32.0),
-            ),
-            child: Container(
-                padding: EdgeInsets.only(top: 4, bottom: 4, left: 22, right: 26),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
-                      Container(padding: EdgeInsets.only(right: 8),child: widget.currentlySpeaking.running ? _pauseButton() : _resumeButton()),
-                      Container(padding: EdgeInsets.only(left: 8),child: _stopButton()),
-                    ]),
+  Widget _getButtonsForActualSpeaking() => Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(32.0),
+        ),
+        child: Container(
+          padding: EdgeInsets.only(top: 4, bottom: 4, left: 22, right: 26),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     Container(
-                      padding: EdgeInsets.only(left: 16),
-                      child: Text(Utils.getTimeStringFromSeconds(duration ~/ 1000),
-                        style: Theme.of(context).textTheme.headline,),
-                    )
-                  ],
+                        padding: EdgeInsets.only(right: 8),
+                        child: widget.currentlySpeaking.running
+                            ? _pauseButton()
+                            : _resumeButton()),
+                    Container(
+                        padding: EdgeInsets.only(left: 8),
+                        child: _stopButton()),
+                  ]),
+              Container(
+                padding: EdgeInsets.only(left: 16),
+                child: Text(
+                  Utils.getTimeStringFromSeconds(duration ~/ 1000),
+                  style: Theme.of(context).textTheme.headline,
                 ),
-
-                ),
-          )
-      ;
+              )
+            ],
+          ),
+        ),
+      );
 
   Widget _pauseButton() => IconButton(
       icon: Icon(Icons.pause),

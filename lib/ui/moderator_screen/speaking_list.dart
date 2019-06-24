@@ -78,6 +78,7 @@ class _SpeakingListState extends State<SpeakingList>
                         searchUser.id == _currentlySpeaking.speakerId),
                     currentlySpeaking: _currentlySpeaking,
                     userWidgetInteraction: this,
+                    speechCategory: _currentlySpeaking.speechTypeId,
                   )
                 : Container(),
             children: list.map((user) {
@@ -88,6 +89,7 @@ class _SpeakingListState extends State<SpeakingList>
                 onTap: () {
                   _removeUserFromSpeakingList(user.id);
                 },
+                speechCategory: user.speechType,
               );
             }).toList(),
             onReorder: _listReordered));
