@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:quotierte_redeliste/models/currently_speaking.dart';
 import 'package:quotierte_redeliste/models/profile.dart';
-import 'package:quotierte_redeliste/models/speaking_category.dart';
 import 'package:quotierte_redeliste/models/speaking_list_entry.dart';
 import 'package:quotierte_redeliste/models/speech_statistic.dart';
 import 'package:quotierte_redeliste/models/user.dart';
@@ -232,8 +231,8 @@ class RoomWebSocket {
     _webSocket.sink.add(command);
   }
 
-  wantToSpeak(SpeakingCategory category) {
-    String data = _WebSocketCommands.WANT_TO_SPEAK + ":" + category.id;
+  wantToSpeak(String category) {
+    String data = _WebSocketCommands.WANT_TO_SPEAK + ":" + category;
     _sendCommand(data);
   }
 
@@ -251,8 +250,12 @@ class RoomWebSocket {
     _sendCommand(data);
   }
 
-  addUserToSpeakingList(String userId) {
-    String data = _WebSocketCommands.ADD_USER_TO_SPEAKING_LIST + ":" + userId;
+  addUserToSpeakingList(String userId, {String category = ""}) {
+    String data = _WebSocketCommands.ADD_USER_TO_SPEAKING_LIST +
+        ":" +
+        userId +
+        " " +
+        category;
     _sendCommand(data);
   }
 
