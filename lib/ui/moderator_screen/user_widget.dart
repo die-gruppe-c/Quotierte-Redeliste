@@ -83,7 +83,7 @@ class _UserWidgetState extends State<UserWidget> {
           onTap: widget.onTap,
           contentPadding: widget.currentlySpeaking == null
               ? EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0)
-              : EdgeInsets.symmetric(horizontal: 4),
+              : EdgeInsets.symmetric(horizontal: 8),
           title: Container(
               padding: EdgeInsets.only(top: 8), child: _getUsername()),
           subtitle: Padding(
@@ -111,10 +111,14 @@ class _UserWidgetState extends State<UserWidget> {
       );
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Container(
-            padding: EdgeInsets.only(right: 8), child: Icon(Icons.person)),
-        tvName
+        Row(children: [
+          Container(
+              padding: EdgeInsets.only(right: 8), child: Icon(Icons.person)),
+          tvName
+        ]),
+        Text(widget.speechCategory)
       ],
     );
   }
