@@ -44,29 +44,50 @@ class _UserWidgetState extends State<UserWidget> {
   @override
   void didUpdateWidget(UserWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _setupTimer();
+
+    if (oldWidget != null &&
+        oldWidget.currentlySpeaking != null &&
+        oldWidget.currentlySpeaking.duration ==
+            widget.currentlySpeaking.duration) {
+      _setupTimer(resetTimer: false);
+    } else {
+      _setupTimer();
+    }
   }
 
-  _setupTimer() {
-    if (timer != null) timer.cancel();
-
-    if (widget.currentlySpeaking != null) {
+  _setupTimer({resetTimer: true}) {
+    if (resetTimer && widget.currentlySpeaking != null)
       duration = widget.currentlySpeaking.duration;
 
-      if (widget.currentlySpeaking.running) {
-        timer = Timer.periodic(Duration(seconds: 1), (timer) {
-          setState(() {
-            duration += 1000;
-          });
-        });
+    if (timer != null) {
+      if (widget.currentlySpeaking == null ||
+          !widget.currentlySpeaking.running) {
+        timer.cancel();
+      } else if (widget.currentlySpeaking != null &&
+          widget.currentlySpeaking.running) {
+        timer.cancel();
+        timer = _createTimer();
       }
+    } else if (widget.currentlySpeaking != null &&
+        widget.currentlySpeaking.running) {
+      timer = _createTimer();
     }
+  }
+
+  Timer _createTimer() {
+    return Timer.periodic(Duration(milliseconds: 333), (timer) {
+      setState(() {
+        duration += 333;
+      });
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    if (timer != null) timer.cancel();
+    if (timer != null) {
+      timer.cancel();
+    }
   }
 
   @override
