@@ -53,6 +53,7 @@ class _WantToSpeakListState extends State<WantToSpeakList> {
           onTap: () {
             _addUserToSpeakingList(list[pos].id);
           },
+          speechCategory: list[pos].speechType,
         );
       },
     ));

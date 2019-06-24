@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:quotierte_redeliste/models/currently_speaking.dart';
 import 'package:quotierte_redeliste/models/profile.dart';
-import 'package:quotierte_redeliste/models/speaking_category.dart';
 import 'package:quotierte_redeliste/models/speaking_list_entry.dart';
 import 'package:quotierte_redeliste/models/speech_statistic.dart';
 import 'package:quotierte_redeliste/models/user.dart';
@@ -51,7 +50,6 @@ class RoomWebSocket {
   _ObservableStream<List<SpeakingListEntry>> _streamSpeakers;
   _ObservableStream<List<String>> _streamSortedUsers;
   _ObservableStream<List<SpeakingListEntry>> _streamWantToSpeak;
-  _ObservableStream<List<SpeakingCategory>> _streamSpeakCategories;
   _ObservableStream<Room> _streamRoomData;
   _ObservableStream<RoomState> _streamRoomState;
   _ObservableStream<CurrentlySpeaking> _streamCurrentlySpeaking;
@@ -72,7 +70,6 @@ class RoomWebSocket {
     _streamSpeakers = _ObservableStream();
     _streamSortedUsers = _ObservableStream();
     _streamWantToSpeak = _ObservableStream();
-    _streamSpeakCategories = _ObservableStream();
     _streamRoomState = _ObservableStream();
     _streamRoomData = _ObservableStream();
     _streamCurrentlySpeaking = _ObservableStream();
@@ -105,9 +102,6 @@ class RoomWebSocket {
           break;
         case _WebSocketCommands.SPEAKING_LIST:
           _speakingList(commandData);
-          break;
-        case _WebSocketCommands.SPEAK_CATEGORIES:
-          _speakCategories(commandData);
           break;
         case _WebSocketCommands.USERS_SORTED:
           _usersSorted(commandData);
@@ -163,15 +157,6 @@ class RoomWebSocket {
     _streamSpeakers.add(ids);
   }
 
-  _speakCategories(Map<String, dynamic> categories) {
-    List<SpeakingCategory> newSpeakingCategories = List();
-
-    categories.forEach((key, value) =>
-        newSpeakingCategories.add(SpeakingCategory(key, value.toString())));
-
-    _streamSpeakCategories.add(newSpeakingCategories);
-  }
-
   _usersSorted(List<dynamic> ids) =>
       _streamSortedUsers.add(ids.map((value) => value.toString()).toList());
   _usersWantToSpeak(List<dynamic> ids) {
@@ -213,7 +198,6 @@ class RoomWebSocket {
     _streamSpeakers.close();
     _streamSortedUsers.close();
     _streamWantToSpeak.close();
-    _streamSpeakCategories.close();
     _streamRoomState.close();
     _streamRoomData.close();
     _streamCurrentlySpeaking.close();
@@ -226,8 +210,6 @@ class RoomWebSocket {
   Stream<List<User>> getAllUsers() => _streamAllUsers.getStream();
   Stream<List<SpeakingListEntry>> getSpeakingList() =>
       _streamSpeakers.getStream();
-  Stream<List<SpeakingCategory>> getSpeakCategories() =>
-      _streamSpeakCategories.getStream();
   Stream<List<String>> getAllUsersSorted() => _streamSortedUsers.getStream();
   Stream<List<SpeakingListEntry>> getUsersWantToSpeak() =>
       _streamWantToSpeak.getStream();
@@ -249,8 +231,8 @@ class RoomWebSocket {
     _webSocket.sink.add(command);
   }
 
-  wantToSpeak(SpeakingCategory category) {
-    String data = _WebSocketCommands.WANT_TO_SPEAK + ":" + category.id;
+  wantToSpeak(String category) {
+    String data = _WebSocketCommands.WANT_TO_SPEAK + ":" + category;
     _sendCommand(data);
   }
 
@@ -268,8 +250,12 @@ class RoomWebSocket {
     _sendCommand(data);
   }
 
-  addUserToSpeakingList(String userId) {
-    String data = _WebSocketCommands.ADD_USER_TO_SPEAKING_LIST + ":" + userId;
+  addUserToSpeakingList(String userId, {String category = ""}) {
+    String data = _WebSocketCommands.ADD_USER_TO_SPEAKING_LIST +
+        ":" +
+        userId +
+        " " +
+        category;
     _sendCommand(data);
   }
 
@@ -303,7 +289,6 @@ class _WebSocketCommands {
   static const STARTED = "started";
   static const ARCHIVED = "archived";
   static const ALL_USERS = "allUsers";
-  static const SPEAK_CATEGORIES = "speechTypes";
   static const WANT_TO_SPEAK_ADDED = "wts_added";
   static const WANT_TO_SPEAK_REMOVED = "wts_removed";
 

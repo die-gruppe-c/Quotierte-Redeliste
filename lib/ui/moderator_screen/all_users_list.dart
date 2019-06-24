@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:quotierte_redeliste/models/speech_type.dart';
 import 'package:quotierte_redeliste/models/user.dart';
 import 'package:quotierte_redeliste/resources/repository.dart';
 import 'package:quotierte_redeliste/resources/room_websocket.dart';
@@ -45,7 +46,8 @@ class _AllUsersListState extends State<AllUsersList> {
   }
 
   void _onUserTap(int pos) {
-    _webSocket.addUserToSpeakingList(_sortedUsers[pos].id);
+    _speechTypeDialog(context).then((category) => _webSocket
+        .addUserToSpeakingList(_sortedUsers[pos].id, category: category));
   }
 
   @override
@@ -72,5 +74,31 @@ class _AllUsersListState extends State<AllUsersList> {
         );
       },
     ));
+  }
+
+  // ------- DIALOG ------
+  Future<String> _speechTypeDialog(BuildContext context) async {
+    return await showDialog<String>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+              title: const Text('Kategorie auswählen'),
+              children: SpeechType.values
+                  .map((type) => SimpleDialogOption(
+                      onPressed: () {
+                        Navigator.pop(
+                            context, SpeechTypeUtils.enumToString(type));
+                      },
+                      child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 5),
+                          child: Row(children: [
+                            Icon(SpeechTypeUtils.iconForEnum(type)),
+                            Padding(padding: EdgeInsets.only(right: 8)),
+                            Text(SpeechTypeUtils.enumToString(type),
+                                style: TextStyle(fontSize: 18))
+                          ]))))
+                  .toList());
+        });
   }
 }
