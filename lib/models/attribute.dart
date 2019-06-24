@@ -100,7 +100,7 @@ class Attribute {
     int totalReduce = rest;
 
     for(int i = 0; i < values.length; i++){
-      if(i == valueIdx) continue;
+      if(i == valueIdx || values[i].value == '') continue;
 
       totalReduce += eachLess;
 

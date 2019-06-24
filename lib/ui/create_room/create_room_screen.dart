@@ -175,7 +175,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   bool checkInput() {
     if (createRoomBloc.getName() == "")
-      return _showError("Enter a name for the room.");
+      return _showError("Raumname fehlt.");
 
     if (createRoomBloc.getAttributeCount() < 2)
       return _showError("Kein Attribut vorhanden.");
@@ -230,7 +230,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     var actions = <Widget>[];
 
     actions.add(FlatButton(
-      child: Text('Ok'),
+      child: Text('OK', style: TextStyle(color: Theme.of(context).accentColor),),
       onPressed: () {
         Navigator.of(context).pop();
       },
@@ -238,7 +238,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
     if (error) {
       actions.add(FlatButton(
-        child: Text('ERNEUT VERSUCHEN'),
+        child: Text('ERNEUT VERSUCHEN', style: TextStyle(color: Theme.of(context).accentColor)),
         onPressed: () {
           _save();
           Navigator.of(context).pop();

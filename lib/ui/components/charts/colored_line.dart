@@ -32,17 +32,42 @@ class ColorLineData {
 
 class ColoredLine extends StatelessWidget {
   final List<ColorLineData> values;
+  final String attributeName;
+  bool hasValues = false;
 
-  ColoredLine(this.values) {
+  ColoredLine(this.values, this.attributeName) {
     this.values.sort(
         (data1, data2) => data2.valueInPercent.compareTo(data1.valueInPercent));
+    for (var data in values){
+      if (data.valueInPercent != 0){
+        hasValues = true;
+        break;
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-        mainAxisSize: MainAxisSize.max,
-        children: values.map((data) => _getOneColor(data)).toList());
+    return Container(
+            padding: EdgeInsets.only(top: 8),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32.0),
+              child: hasValues ? Row(
+                mainAxisSize: MainAxisSize.max,
+                children: values.map((data) => _getOneColor(data)).toList())
+              : Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [ Expanded(
+                    flex: 100,
+                    child: Container(
+                        color: Colors.black26,
+                        child: Center(
+                            child: Text(attributeName,
+                                maxLines: 1,
+                                softWrap: false,
+                                style: TextStyle()
+                            ))))
+              ])));
   }
 
   Widget _getOneColor(ColorLineData data) => data.valueInPercent == 0
