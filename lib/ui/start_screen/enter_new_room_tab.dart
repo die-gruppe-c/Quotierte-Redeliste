@@ -30,7 +30,7 @@ class _EnterNewRoomState extends State<EnterNewRoomTab> {
 
   _enterNewRoom(context) {
     if (_roomCodeController.text != "") {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
             builder: (context) =>
