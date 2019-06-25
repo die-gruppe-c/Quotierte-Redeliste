@@ -44,29 +44,53 @@ class _UserWidgetState extends State<UserWidget> {
   @override
   void didUpdateWidget(UserWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _setupTimer();
+
+    bool sameUser =
+        oldWidget.user != null && oldWidget.user.id == widget.user.id;
+
+    if (sameUser &&
+        oldWidget != null &&
+        oldWidget.currentlySpeaking != null &&
+        oldWidget.currentlySpeaking.duration ==
+            widget.currentlySpeaking.duration) {
+      _setupTimer(resetTimer: false);
+    } else {
+      _setupTimer();
+    }
   }
 
-  _setupTimer() {
-    if (timer != null) timer.cancel();
-
-    if (widget.currentlySpeaking != null) {
+  _setupTimer({resetTimer: true}) {
+    if ((resetTimer || duration == null) && widget.currentlySpeaking != null)
       duration = widget.currentlySpeaking.duration;
 
-      if (widget.currentlySpeaking.running) {
-        timer = Timer.periodic(Duration(seconds: 1), (timer) {
-          setState(() {
-            duration += 1000;
-          });
-        });
+    if (timer != null) {
+      if (widget.currentlySpeaking == null ||
+          !widget.currentlySpeaking.running) {
+        timer.cancel();
+      } else if (widget.currentlySpeaking != null &&
+          widget.currentlySpeaking.running) {
+        if (!timer.isActive) timer = _createTimer();
       }
+    } else if (widget.currentlySpeaking != null &&
+        widget.currentlySpeaking.running) {
+      timer = _createTimer();
     }
+  }
+
+  Timer _createTimer() {
+    return Timer.periodic(Duration(milliseconds: 500), (timer) {
+      setState(() {
+        duration += 500;
+      });
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    if (timer != null) timer.cancel();
+    if (timer != null) {
+      timer.cancel();
+    }
   }
 
   @override
@@ -185,7 +209,6 @@ class _UserWidgetState extends State<UserWidget> {
       icon: Icon(Icons.pause),
       color: Theme.of(context).primaryColorDark,
       onPressed: () {
-        _setupTimer();
         widget.userWidgetInteraction.pause();
       });
 
@@ -193,7 +216,6 @@ class _UserWidgetState extends State<UserWidget> {
       icon: Icon(Icons.play_arrow),
       color: Theme.of(context).primaryColorDark,
       onPressed: () {
-        _setupTimer();
         widget.userWidgetInteraction.resume();
       });
 

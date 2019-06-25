@@ -36,15 +36,15 @@ class _ClientScreenState extends State<ClientScreen>
   @override
   void initState() {
     super.initState();
-    _startConnection();
+    _startConnection(connectToWebSocket: false);
   }
 
-  _startConnection() {
+  _startConnection({connectToWebSocket: true}) {
     setState(() {
       _state = null;
     });
 
-    widget.webSocket.connect();
+    if (connectToWebSocket) widget.webSocket.connect();
 
     _stateSubscription = widget.webSocket.getRoomState().listen((state) {
       if (state == RoomState.ARCHIVED) {
