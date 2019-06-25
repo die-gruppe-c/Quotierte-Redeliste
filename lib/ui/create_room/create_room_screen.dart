@@ -81,10 +81,10 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
       _showError(error, error: true);
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => WaitingRoomScreen()),
-      );
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => WaitingRoomScreen()),
+          (Route<dynamic> route) => false);
     }
   }
 
@@ -174,8 +174,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
   }
 
   bool checkInput() {
-    if (createRoomBloc.getName() == "")
-      return _showError("Raumname fehlt.");
+    if (createRoomBloc.getName() == "") return _showError("Raumname fehlt.");
 
     if (createRoomBloc.getAttributeCount() < 2)
       return _showError("Kein Attribut vorhanden.");
@@ -230,7 +229,10 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     var actions = <Widget>[];
 
     actions.add(FlatButton(
-      child: Text('OK', style: TextStyle(color: Theme.of(context).accentColor),),
+      child: Text(
+        'OK',
+        style: TextStyle(color: Theme.of(context).accentColor),
+      ),
       onPressed: () {
         Navigator.of(context).pop();
       },
@@ -238,7 +240,8 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
     if (error) {
       actions.add(FlatButton(
-        child: Text('ERNEUT VERSUCHEN', style: TextStyle(color: Theme.of(context).accentColor)),
+        child: Text('ERNEUT VERSUCHEN',
+            style: TextStyle(color: Theme.of(context).accentColor)),
         onPressed: () {
           _save();
           Navigator.of(context).pop();
