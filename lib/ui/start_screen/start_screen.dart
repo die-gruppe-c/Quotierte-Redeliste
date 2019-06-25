@@ -34,26 +34,27 @@ class StartScreen extends StatelessWidget {
       iconTheme: Theme.of(context).iconTheme,
       //actionsIconTheme: Theme.of(context).iconTheme,
       actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.speaker_notes),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => WaitingRoomScreen()),
-            );
-          },
-        ),
         Profile.isInDebugMode()
             ? IconButton(
-                icon: Icon(Icons.account_circle),
+                icon: Icon(Icons.speaker_notes),
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProfileScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => WaitingRoomScreen()),
                   );
                 },
               )
             : Container(),
+        IconButton(
+          icon: Icon(Icons.account_circle),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileScreen()),
+            );
+          },
+        )
       ],
     );
   }
