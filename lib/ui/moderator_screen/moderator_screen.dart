@@ -68,19 +68,23 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
-              'Raum beenden?'),
+          title: Text('Raum beenden?'),
           actions: [
             FlatButton(
-              child: Text('ABBRECHEN', style: TextStyle(color: Theme.of(context).accentColor),),
+              child: Text(
+                'ABBRECHEN',
+                style: TextStyle(color: Theme.of(context).accentColor),
+              ),
               onPressed: () {
                 Navigator.of(context, rootNavigator: true).pop('dialog');
               },
             ),
             FlatButton(
-              child: Text('BEENDEN', style: TextStyle(color: Theme.of(context).accentColor)),
+              child: Text('BEENDEN',
+                  style: TextStyle(color: Theme.of(context).accentColor)),
               onPressed: () {
                 Navigator.of(context).pop();
+                _webSocket.stopSpeech();
                 _webSocket.stopRoom();
               },
             )
@@ -115,11 +119,10 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
                   Tab(text: 'Meldeliste')
                 ],
               ),
-
       ),
       body: _buildScreenOrShowError(context));
 
-  Widget _getEndRoomAction(){
+  Widget _getEndRoomAction() {
     return Container(
         padding: EdgeInsets.only(right: 8, top: 12, bottom: 12),
         child: FlatButton(
@@ -128,10 +131,17 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
             borderRadius: BorderRadius.circular(4.0),
           ),
           disabledColor: Colors.black12,
-          child: Text("Raum beenden", style: TextStyle(color: Utils.getFontColorForBackground(Theme.of(context).accentColor)),),
-          onPressed: _state != RoomState.DISCONNECTED && _state != RoomState.ERROR
-            ? _endRoom : null,)
-    );
+          child: Text(
+            "Raum beenden",
+            style: TextStyle(
+                color: Utils.getFontColorForBackground(
+                    Theme.of(context).accentColor)),
+          ),
+          onPressed:
+              _state != RoomState.DISCONNECTED && _state != RoomState.ERROR
+                  ? _endRoom
+                  : null,
+        ));
   }
 
   Widget _getRoomTitle() {
@@ -200,25 +210,22 @@ class _ModeratorScreenState extends State<ModeratorScreen> {
       builder: (context, AsyncSnapshot<Room> room) => room.hasData
           ? StreamBuilder(
               stream: _webSocket.getStatistics(),
-              builder:
-                  (context, AsyncSnapshot<List<SpeechStatistic>> snapshot) =>
-                      !snapshot.hasData
-                          ? Container()
-                          : Container(
-                              decoration: BoxDecoration(
-                                  color: DynamicTheme.of(context).data.cardColor,
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(12), topRight: Radius.circular(12)),
-                                  boxShadow: [BoxShadow(spreadRadius: -1, blurRadius: 1)]),
-                              padding: EdgeInsets.only(left: 8, right: 8),
-                              child: Container(
-                                padding: EdgeInsets.only(top: 8, bottom: 16, left: 8, right: 8),
-                                child: Column(
-                                  children: snapshot.data
-                                      .map((stat) => ColoredLine(
-                                          ColorLineData.listFromSpeechStatistic(
-                                              stat, room.data), stat.attributeName))
-                                      .toList()))))
+              builder: (context, AsyncSnapshot<List<SpeechStatistic>> snapshot) =>
+                  !snapshot.hasData
+                      ? Container()
+                      : Container(
+                          decoration: BoxDecoration(
+                              color: DynamicTheme.of(context).data.cardColor,
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(12),
+                                  topRight: Radius.circular(12)),
+                              boxShadow: [
+                                BoxShadow(spreadRadius: -1, blurRadius: 1)
+                              ]),
+                          padding: EdgeInsets.only(left: 8, right: 8),
+                          child: Container(
+                              padding: EdgeInsets.only(top: 8, bottom: 16, left: 8, right: 8),
+                              child: Column(children: snapshot.data.map((stat) => ColoredLine(ColorLineData.listFromSpeechStatistic(stat, room.data), stat.attributeName)).toList()))))
           : Container());
 
   Widget _buildForPhone(List<User> users) => Expanded(
