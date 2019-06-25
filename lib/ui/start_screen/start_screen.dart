@@ -69,7 +69,7 @@ class StartScreen extends StatelessWidget {
             const ListTile(
               leading: Icon(MdiIcons.login),
               title: Text('Raumbeitritt'),
-              subtitle: Text('Gebe die vierstellige ID des Raumes in das un'),
+              subtitle: Text('Gebe die vierstellige ID des Raumes ein.'),
             ),
             Padding(
                 padding: EdgeInsets.only(top: 6, bottom: 6),
