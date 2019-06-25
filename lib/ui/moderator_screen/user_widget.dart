@@ -45,7 +45,11 @@ class _UserWidgetState extends State<UserWidget> {
   void didUpdateWidget(UserWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget != null &&
+    bool sameUser =
+        oldWidget.user != null && oldWidget.user.id == widget.user.id;
+
+    if (sameUser &&
+        oldWidget != null &&
         oldWidget.currentlySpeaking != null &&
         oldWidget.currentlySpeaking.duration ==
             widget.currentlySpeaking.duration) {
@@ -69,7 +73,7 @@ class _UserWidgetState extends State<UserWidget> {
       }
     } else if (widget.currentlySpeaking != null &&
         widget.currentlySpeaking.running) {
-      if (!timer.isActive) timer = _createTimer();
+      timer = _createTimer();
     }
   }
 
